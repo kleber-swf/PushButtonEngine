@@ -11,8 +11,11 @@ package com.pblabs.engine.resource
     import com.pblabs.engine.PBE;
     
     import flash.display.*;
+    import flash.events.Event;
     import flash.geom.*;
     import flash.system.ApplicationDomain;
+    import flash.system.LoaderContext;
+    import flash.utils.ByteArray;
 
     [EditorData(extensions="swf")]
 
@@ -108,19 +111,28 @@ package com.pblabs.engine.resource
             }
         }
 
-        override public function initialize(data:*):void
-        {
-            // Directly load embedded resources if they gave us a MovieClip.
-            if(data is MovieClip)
-            {
-                onContentReady(data);
-                onLoadComplete();
-                return;
-            }
-            
-            // Otherwise it must be a ByteArray, pass it over to the normal path.
-            super.initialize(data);
-        }
+		override public function initialize(data:*):void
+		{
+			// Directly load embedded resources if they gave us a MovieClip.
+			if (data is MovieClip)
+			{
+				// a mock to make contentLoaderInfo for embedded swf
+				var assetLoader:Loader = new Loader();
+				assetLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onAssetLoaderComplete);
+				assetLoader.loadBytes(data.movieClipData as ByteArray, new LoaderContext(false, ApplicationDomain.currentDomain));
+				return;
+			}
+			
+			// Otherwise it must be a ByteArray, pass it over to the normal path.
+			super.initialize(data);
+		}
+		
+		private final function onAssetLoaderComplete(e:Event):void
+		{
+			// a mock to make contentLoaderInfo for embedded swf
+			onContentReady(e.currentTarget.content);
+			onLoadComplete();
+		}
 
         /**
          * @inheritDoc
