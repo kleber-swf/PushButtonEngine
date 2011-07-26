@@ -9,7 +9,7 @@
 package com.pblabs.rendering2D.spritesheet
 {
     import com.pblabs.engine.resource.SWFResource;
-
+    
     import flash.display.*;
     import flash.geom.*;
     import flash.utils.Dictionary;
@@ -194,7 +194,7 @@ package com.pblabs.rendering2D.spritesheet
             }
 
             _frames = onRasterize(_clip);
-            _bounds = _clip.getBounds(_clip);
+            //_bounds = _clip.getBounds(_clip);
             center = new Point(-_bounds.x, -_bounds.y);
             setCachedFrames(new CachedFramesData(_frames, _bounds, _clip));
         }
@@ -206,6 +206,30 @@ package com.pblabs.rendering2D.spritesheet
         {
             var maxFrames:int = swf.findMaxFrames(mc, mc.totalFrames);
             var rasterized:Array = new Array(maxFrames);
+			
+			mc.gotoAndStop(1);
+			_bounds = mc.getBounds(mc);
+			for (var i:int = 2; i <= maxFrames; i++) 
+			{
+				mc.gotoAndStop(i);
+				var bounds:Rectangle = mc.getBounds(mc);
+				if (bounds.x < _bounds.x)
+				{
+					_bounds.x = bounds.x;
+				}
+				if (bounds.y < _bounds.y)
+				{
+					_bounds.y = bounds.y;
+				}
+				if (bounds.width > _bounds.width)
+				{
+					_bounds.width = bounds.width;
+				}
+				if (bounds.height > _bounds.height)
+				{
+					_bounds.height = bounds.height;
+				}
+			}
 
             if (maxFrames > 0)
                 rasterized[0] = rasterizeFrame(mc, 1);
@@ -229,7 +253,7 @@ package com.pblabs.rendering2D.spritesheet
          */
         protected function getBitmapDataByDisplay(display:DisplayObject):BitmapData 
         {
-            var bounds:Rectangle = display.getBounds(display);
+            var bounds:Rectangle = _bounds;
 
             var bd:BitmapData = new BitmapData(
                 Math.max(1, Math.min(2880, bounds.width * scale.x)),
