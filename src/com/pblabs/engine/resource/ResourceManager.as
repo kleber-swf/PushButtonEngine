@@ -95,7 +95,7 @@ package com.pblabs.engine.resource
                 // Then it wasn't embedded, so error if we're configured for that. 
                 if(onlyLoadEmbeddedResources && !EmbeddedResourceProvider.instance.isResourceKnown(filename, resourceType))
                 {
-                    var tmpR:Resource = new Resource();
+                    var tmpR:Resource = new resourceType();
                     tmpR.filename = filename;
                     tmpR.fail("not embedded in the SWF with type " + resourceType + ".");
                     fail(tmpR, onFailed, "'" + filename + "' was not loaded because it was not embedded in the SWF with type " + resourceType + ".");
