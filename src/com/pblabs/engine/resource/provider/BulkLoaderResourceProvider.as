@@ -230,7 +230,7 @@ package com.pblabs.engine.resource.provider
         private function resourcesProgress(event:BulkProgressEvent):void
         {
             // call the onProgress event/function if one was provided 
-            if (onProgress!=null) onProgress(phase,Math.round(event.percentLoaded*100));
+            if (onProgress!=null) onProgress(phase,int(event.percentLoaded*100));
         }
         
         /**

@@ -351,7 +351,7 @@ package com.pblabs.engine.debug
         public function getScreenHeightInLines():int
         {
             var roundedHeight:int = _outputBitmap.bitmapData.height;
-            return Math.floor(roundedHeight / glyphCache.getLineHeight());
+            return int(roundedHeight / glyphCache.getLineHeight());//Math.floor(roundedHeight / glyphCache.getLineHeight());
         }
         
         public function onFrame(dt:Number):void

@@ -30,22 +30,23 @@ package com.pblabs.rendering2D.modifier
 		{
 			
 			var frameBitmap:Bitmap = new Bitmap(data);
-
 			// flip vertically
 			var matrix:Matrix = new Matrix;
 			matrix.scale(1,-1);
 			matrix.translate(0,data.height);
 			
 			// draw onto new canvas
-			var bitmapData:BitmapData = new BitmapData(data.width,(data.height/100)*heightPercentage);
+			var bitmapData:BitmapData = new BitmapData(data.width,(data.height * 0.01)*heightPercentage);
 			bitmapData.fillRect(bitmapData.rect,0);
 			bitmapData.draw(frameBitmap,matrix);
 						
 			// implement transparency
-			for (var r:int=0; r<bitmapData.height; r++)
+			var width:int = bitmapData.width;
+			var height:int = bitmapData.height;
+			for (var r:int=0; r<height; r++)
 			{
-				var rowFactor:Number = 1 - (r / bitmapData.height);
-				for (var j:int = 0; j <bitmapData.width; j++) {
+				var rowFactor:Number = 1 - (r / height);
+				for (var j:int = 0; j < width; j++) {
 					var pixelColor:uint = bitmapData.getPixel32(j, r);
 					var pixelAlpha:uint = pixelColor>>>24;
 					var pixelRGB:uint = pixelColor & 0xffffff;

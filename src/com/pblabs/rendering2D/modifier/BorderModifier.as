@@ -24,17 +24,19 @@ package com.pblabs.rendering2D.modifier
 		{	
 			data.lock();
 						
-			for (var y:int = 0; y<data.height; y++)
+			var width:int = data.width;
+			var height:int = data.height;
+			for (var y:int = 0; y<height; y++)
 			{
-				if (y==0 || y==data.height-1)
+				if (y==0 || y==height-1)
 				{
-					for (var x:int=0; x<data.width; x++)					
+					for (var x:int=0; x<width; x++)					
 						data.setPixel32(x,y,color);
 				}
 				else
 				{
 					data.setPixel32(0,y,color);
-					data.setPixel32(data.width-1,y,color);
+					data.setPixel32(width-1,y,color);
 				}
 			}
 			

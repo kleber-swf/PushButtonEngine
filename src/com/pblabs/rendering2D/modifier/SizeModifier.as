@@ -63,11 +63,11 @@ package com.pblabs.rendering2D.modifier
 						scaleAspectRatio = newWidth / data.width;
 					
 					// calculate new width and height of visible destination image 
-					destinationWidth = Math.floor(data.width * scaleAspectRatio);
-					destinationHeight = Math.floor(data.height * scaleAspectRatio);
+					destinationWidth = int(data.width * scaleAspectRatio);
+					destinationHeight = int(data.height * scaleAspectRatio);
 				}
 				
-				var destinationDrawRectangle:Rectangle = new Rectangle((newWidth-destinationWidth)/2, (newHeight-destinationHeight)/2, destinationWidth, destinationHeight);
+				var destinationDrawRectangle:Rectangle = new Rectangle((newWidth-destinationWidth)*0.5, (newHeight-destinationHeight)*0.5, destinationWidth, destinationHeight);
 				var sourceDrawRectangle:Rectangle = new Rectangle(0, 0, data.width, data.height);
 				
 				// adjust source and destination rectangles depending on scaleMode
@@ -82,9 +82,9 @@ package com.pblabs.rendering2D.modifier
 					case SCALE_CENTER:
 						// center image within new width/height rectangle for best fit
 						if (newWidth > destinationWidth)
-							destinationDrawRectangle = new Rectangle((newWidth-destinationWidth)/2,0,destinationWidth,newHeight);
+							destinationDrawRectangle = new Rectangle((newWidth-destinationWidth)*0.5,0,destinationWidth,newHeight);
 						else
-							destinationDrawRectangle = new Rectangle(0,(newHeight-destinationHeight)/2,newWidth,destinationHeight);
+							destinationDrawRectangle = new Rectangle(0,(newHeight-destinationHeight)*0.5,newWidth,destinationHeight);
 						break;
 					
 					case SCALE_ZOOM:
@@ -94,12 +94,12 @@ package com.pblabs.rendering2D.modifier
 						if (newWidth > destinationWidth)
 						{
 							destinationHeight = (data.width * imageRatio);
-							sourceDrawRectangle = new Rectangle(0, (data.height - destinationHeight) / 2, data.width, destinationHeight);
+							sourceDrawRectangle = new Rectangle(0, (data.height - destinationHeight) *0.5, data.width, destinationHeight);
 						}
 						else
 						{
 							destinationWidth = (data.height / imageRatio);
-							sourceDrawRectangle = new Rectangle((data.width - destinationWidth)/2,0, destinationWidth, data.height);
+							sourceDrawRectangle = new Rectangle((data.width - destinationWidth)*0.5, destinationWidth, data.height);
 						}                                
 						break;
 				}

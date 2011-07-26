@@ -141,14 +141,14 @@ package com.pblabs.rendering2D.ui
 					(
 						_extents.x+1, 
 						_extents.y+1, 
-						_extents.width-2, _extents.height/10, _extents.width, 
+						_extents.width-2, _extents.height * 0.1, _extents.width, 
 						_extents.width
 					);
 				_thumb.graphics.endFill();
 				
 				_thumb.y = PBUtil.clamp
 					(
-						(_extents.height - (_extents.height/10)) * _progress - 1, 
+						(_extents.height - (_extents.height * 0.1)) * _progress - 1, 
 						0, 
 						_extents.height - _thumb.height - 1
 					);

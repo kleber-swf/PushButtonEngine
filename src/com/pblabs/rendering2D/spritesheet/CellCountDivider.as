@@ -8,8 +8,9 @@
  ******************************************************************************/
 package com.pblabs.rendering2D.spritesheet
 {
-    import flash.geom.Rectangle;
     import com.pblabs.engine.debug.Logger;
+    
+    import flash.geom.Rectangle;
     
     /**
      * Divide a spritesheet into cells based on count - ie, 4 cells by 3 cells.
@@ -62,7 +63,7 @@ package com.pblabs.rendering2D.spritesheet
             var height:int = imageHeight / yCount;
             
             var x:int = index % xCount;
-            var y:int = Math.floor(index / xCount);
+            var y:int = int(index / xCount);
             
             var startX:int = x * width;
             var startY:int = y * height;

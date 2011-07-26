@@ -205,7 +205,7 @@ package com.pblabs.rendering2D
 				}
 				
 				var animationAge:Number = PBE.processManager.virtualTime - _currentAnimationStartTime;
-				var curFrame:int = Math.floor(animationAge / frameTime);
+				var curFrame:int = int(animationAge / frameTime);
 				
 				// Deal with clamping/looping.
 				if (_currentAnimation.loop)

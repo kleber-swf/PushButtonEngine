@@ -177,7 +177,7 @@ package com.pblabs.rendering2D
                 if(!mc)
                     continue;
 
-                currentMax = Math.max(currentMax, mc.totalFrames);            
+                currentMax = currentMax > mc.totalFrames ? currentMax : mc.totalFrames;            
 
                 findMaxFrames(mc, currentMax);
             }
@@ -219,7 +219,7 @@ package com.pblabs.rendering2D
 			// set the bitmapData of this render object
 			clip = res.clip;
 			// set the registration (alignment) point to the sprite's center
-			registrationPoint = new Point(res.clip.width/2,res.clip.height/2);				
+			registrationPoint = new Point(res.clip.width*0.5,res.clip.height*0.5);				
 		}
 		
 		/**

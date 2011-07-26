@@ -226,7 +226,7 @@ package com.pblabs.box2D
         {
 			//Let's make life easy. We'll just use queryRectangle.
 			//queryRectangle(box:Rectangle, mask:ObjectType, results:Array):Boolean
-			var box:Rectangle = new Rectangle(center.x - radius / 2, center.y - radius / 2,
+			var box:Rectangle = new Rectangle(center.x - radius * 0.5, center.y - radius * 0.5,
 				radius, radius );
 			
 			//Query the Box2D objects:

@@ -37,7 +37,7 @@ package com.pblabs.components.stateMachine
          delayRemaining = delay;
          
          if(variance > 0)
-            delayRemaining += Math.round(2.0 * (Math.random() - 0.5) * variance);
+			 delayRemaining += int((2.0 * (Math.random() - 0.5) * variance) + 0.5);//delayRemaining += Math.round(2.0 * (Math.random() - 0.5) * variance);
          
          // Pass control up.
          super.enter(fsm);

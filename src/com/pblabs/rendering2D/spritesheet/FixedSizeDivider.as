@@ -60,7 +60,7 @@ package com.pblabs.rendering2D.spritesheet
             if (!_owningSheet)
                 throw new Error("OwningSheet must be set before calling this!");
             
-            return Math.floor(_owningSheet.imageData.width / width) * Math.floor(_owningSheet.imageData.height / height);
+            return int(_owningSheet.imageData.width / width) * int(_owningSheet.imageData.height / height);
         }
         
         /**
@@ -71,8 +71,8 @@ package com.pblabs.rendering2D.spritesheet
             if (!_owningSheet)
                 throw new Error("OwningSheet must be set before calling this!");
             
-            var x:int = index % Math.floor(_owningSheet.imageData.width / width);
-            var y:int = Math.floor(index / Math.floor(_owningSheet.imageData.width / width));
+            var x:int = index % int(_owningSheet.imageData.width / width);
+            var y:int = int(index / int(_owningSheet.imageData.width / width));
             
             return new Rectangle(x * (width + horizontalSpacing), y * (height + verticalSpacing), width, height);
         }

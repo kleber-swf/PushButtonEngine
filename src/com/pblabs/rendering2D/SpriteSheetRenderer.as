@@ -49,7 +49,7 @@ package com.pblabs.rendering2D
 		{
 			// set the registration (alignment) point to the sprite's center
 			if (spriteSheet.centered)
-			  registrationPoint = new Point(bitmapData.width/2,bitmapData.height/2);
+			  registrationPoint = new Point(bitmapData.width*0.5,bitmapData.height*0.5);
 		}
 		
 		protected override function modify(data:BitmapData):BitmapData

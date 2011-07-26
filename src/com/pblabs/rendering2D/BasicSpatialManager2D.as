@@ -222,7 +222,8 @@ package com.pblabs.rendering2D
 			// and simply check against every potential match, taking the closest hit.
 			// This will suck for long raycasts, but most of them are quite short.
 			var results:Array = new Array();
-			var boundingRect:Rectangle = new Rectangle(Math.min(start.x, end.x) - 0.5, Math.min(start.y, end.y) - 0.5, Math.abs(end.x - start.x) + 1, Math.abs(end.y - start.y) + 1);
+			//var boundingRect:Rectangle = new Rectangle(Math.min(start.x, end.x) - 0.5, Math.min(start.y, end.y) - 0.5, Math.abs(end.x - start.x) + 1, Math.abs(end.y - start.y) + 1);
+			var boundingRect:Rectangle = new Rectangle((start.x < end.x ? start.x : end.x) - 0.5, (start.y < end.y ? start.y : end.y) - 0.5, Math.abs(end.x - start.x) + 1, Math.abs(end.y - start.y) + 1);
 			if (!queryRectangle(boundingRect, mask, results))
 			{
 				return false;

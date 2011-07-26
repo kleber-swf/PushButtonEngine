@@ -21,13 +21,13 @@ package com.pblabs.rendering2D.modifier.animating
 		{
 			// calculate tweened glow values
 			var fIndex:int = index;
-			var fCount:int = Math.floor(count/2);
+			var fCount:int = count >> 1; //Math.floor(count/2);
 			
 			
 			if (index>= fCount)
 			{
 				fCount = count-fCount;
-				fIndex = fCount-(index-(Math.floor(count/2)));
+				fIndex = fCount - (index - (count >> 1)); // fCount-(index-(Math.floor(count/2)));
 			}
 
 			color = fromGlow.color;
@@ -79,7 +79,7 @@ package com.pblabs.rendering2D.modifier.animating
 		// Sin easing
 		private function ease(t:Number, b:Number, c:Number, d:Number):Number
 		{
-			return -c * Math.cos(t / d * (Math.PI / 2)) + c + b;
+			return -c * Math.cos(t / d * (Math.PI * 0.5)) + c + b; //-c * Math.cos(t / d * (Math.PI / 2)) + c + b;
 		}
 		
 		// --------------------------------------------------------------

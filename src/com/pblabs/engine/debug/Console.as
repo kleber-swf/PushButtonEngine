@@ -274,7 +274,7 @@ package com.pblabs.engine.debug
             var entity:IEntity = PBE.lookupEntity("console");
             var pr:PropertyReference = new PropertyReference(reference);
             
-            var downcase:String = String(value).toLowerCase();
+            var downcase:String = value.toLowerCase();
             if (downcase == "true" || downcase == "false")
             {
                 value = PBUtil.stringToBoolean(downcase);
