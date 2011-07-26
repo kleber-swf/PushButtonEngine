@@ -44,23 +44,26 @@ package com.pblabs.engine.debug
         /**
          * Initialize the logging system.
          */
-        public static function startup():void
-        {
-            // Put default listeners into the list.
-            registerListener(new TraceAppender());
-            
-            if(!PBE.IS_SHIPPING_BUILD)
-                registerListener(new UIAppender());
-            
-            // Process pending messages.
-            started = true;
-            for(var i:int=0; i<pendingEntries.length; i++)
-                processEntry(pendingEntries[i]);
-            
-            // Free up the pending entries memory.
-            pendingEntries.length = 0;
-            pendingEntries = null;
-        }
+		public static function startup():void
+		{
+			// Put default listeners into the list.
+			if (!PBE.IS_SHIPPING_BUILD)
+			{
+				registerListener(new TraceAppender());
+				registerListener(new UIAppender());
+				
+				// Process pending messages.
+				started = true;
+				for (var i:int = 0; i < pendingEntries.length; i++)
+				{
+					processEntry(pendingEntries[i]);
+				}
+				
+				// Free up the pending entries memory.
+				pendingEntries.length = 0;
+				pendingEntries = null;
+			}
+		}
         
         /**
          * Call to destructively disable logging. This is useful when going
