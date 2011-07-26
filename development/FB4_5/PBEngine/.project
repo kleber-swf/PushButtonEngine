@@ -19,7 +19,7 @@
 		<link>
 			<name>[source path] src</name>
 			<type>2</type>
-			<locationURI>PARENT-3-PROJECT_LOC/src</locationURI>
+			<location>D:/Desktop/PushButtonEngine/src</location>
 		</link>
 		<link>
 			<name>bin-debug</name>

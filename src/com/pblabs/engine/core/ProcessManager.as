@@ -238,14 +238,20 @@ package com.pblabs.engine.core
             if(object.nextThinkTime < _virtualTime)
                 throw new Error("Tried to queue something into the past, but no flux capacitor is present!");
             
-            Profiler.enter("queueObject");
-            
+			PROFILER::ENABLED
+			{
+            	Profiler.enter("queueObject");
+			}
+			
             if(object.nextThinkTime >= _virtualTime && thinkHeap.contains(object))
                 thinkHeap.remove(object);
             
             thinkHeap.enqueue(object);
             
-            Profiler.exit("queueObject");
+			PROFILER::ENABLED
+			{
+				Profiler.exit("queueObject");
+			}
         }
         
         /**
@@ -401,7 +407,10 @@ package com.pblabs.engine.core
         {
             // This is called from a system event, so it had better be at the 
             // root of the profiler stack!
-            Profiler.ensureAtRoot();
+			PROFILER::ENABLED
+			{
+				Profiler.ensureAtRoot();
+			}
             
             // Track current time.
             var currentTime:Number = getTimer();
@@ -442,7 +451,10 @@ package com.pblabs.engine.core
                 processScheduledObjects();
                 
                 // Do the onTick callbacks, noting time in profiler appropriately.
-                Profiler.enter("Tick");
+				PROFILER::ENABLED
+				{
+					Profiler.enter("Tick");
+				}
                 
                 duringAdvance = true;
                 for(var j:int=0; j<tickedObjects.length; j++)
@@ -451,13 +463,13 @@ package com.pblabs.engine.core
                     if(!object)
                         continue;
                     
-                    Profiler.enter(object.profilerKey);
+                    PROFILER::ENABLED {Profiler.enter(object.profilerKey);}
                     (object.listener as ITickedObject).onTick(TICK_RATE);
-                    Profiler.exit(object.profilerKey);
+                    PROFILER::ENABLED {Profiler.exit(object.profilerKey);}
                 }
                 duringAdvance = false;
                 
-                Profiler.exit("Tick");
+				PROFILER::ENABLED {Profiler.exit("Tick");}
                 
                 // Update virtual time by subtracting from accumulator.
                 _virtualTime += TICK_RATE_MS;
@@ -487,7 +499,7 @@ package com.pblabs.engine.core
             // processScheduledObjects();
             
             // Update objects wanting OnFrame callbacks.
-            Profiler.enter("frame");
+			PROFILER::ENABLED {Profiler.enter("frame");}
             duringAdvance = true;
             _interpolationFactor = elapsed / TICK_RATE_MS;
             for(var i:int=0; i<animatedObjects.length; i++)
@@ -496,19 +508,19 @@ package com.pblabs.engine.core
                 if(!animatedObject)
                     continue;
                 
-                Profiler.enter(animatedObject.profilerKey);
+				PROFILER::ENABLED {Profiler.enter(animatedObject.profilerKey);}
                 (animatedObject.listener as IAnimatedObject).onFrame(deltaTime / 1000);
-                Profiler.exit(animatedObject.profilerKey);
+				PROFILER::ENABLED {Profiler.exit(animatedObject.profilerKey);}
             }
             duringAdvance = false;
-            Profiler.exit("frame");
+			PROFILER::ENABLED {Profiler.exit("frame");}
 
             // Purge the lists if needed.
             if(needPurgeEmpty)
             {
                 needPurgeEmpty = false;
                 
-                Profiler.enter("purgeEmpty");
+				PROFILER::ENABLED {Profiler.enter("purgeEmpty");}
                 
                 for(j=0; j<animatedObjects.length; j++)
                 {
@@ -528,10 +540,10 @@ package com.pblabs.engine.core
                     k--;
                 }
 
-                Profiler.exit("purgeEmpty");
+				PROFILER::ENABLED {Profiler.exit("purgeEmpty");}
             }
             
-            Profiler.ensureAtRoot();
+			PROFILER::ENABLED {Profiler.ensureAtRoot();}
         }
         
         private function processScheduledObjects():void
@@ -540,7 +552,7 @@ package com.pblabs.engine.core
             var oldDeferredMethodQueue:Array = deferredMethodQueue;
             if(oldDeferredMethodQueue.length)
             {
-                Profiler.enter("callLater");
+				PROFILER::ENABLED {Profiler.enter("callLater");}
 
                 // Put a new array in the queue to avoid getting into corrupted
                 // state due to more calls being added.
@@ -555,13 +567,13 @@ package com.pblabs.engine.core
                 // Wipe the old array now we're done with it.
                 oldDeferredMethodQueue.length = 0;
 
-                Profiler.exit("callLater");      	
+				PROFILER::ENABLED {Profiler.exit("callLater");}      	
             }
 
             // Process any queued items.
             if(thinkHeap.size)
             {
-                Profiler.enter("Queue");
+				PROFILER::ENABLED {Profiler.enter("Queue");}
                 
                 while(thinkHeap.front && thinkHeap.front.priority >= -_virtualTime)
                 {
@@ -571,7 +583,7 @@ package com.pblabs.engine.core
                     
                     var type:String = TypeUtility.getObjectClassName(itemRaw);
                     
-                    Profiler.enter(type);
+					PROFILER::ENABLED {Profiler.enter(type);}
                     if(qItem)
                     {
                         // Check here to avoid else block that throws an error - empty callback
@@ -587,11 +599,11 @@ package com.pblabs.engine.core
                     {
                         throw new Error("Unknown type found in thinkHeap.");
                     }
-                    Profiler.exit(type);                    
+					PROFILER::ENABLED {Profiler.exit(type);}                    
                     
                 }
                 
-                Profiler.exit("Queue");                
+				PROFILER::ENABLED {Profiler.exit("Queue");}                
             }
         }
         

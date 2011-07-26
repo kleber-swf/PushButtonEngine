@@ -34,6 +34,9 @@ package com.pblabs.engine.debug
     */
    public class Profiler
    {
+   PROFILER::ENABLED
+   {
+		   
       public static var enabled:Boolean = false;
       public static var nameFieldWidth:int = 50;
       public static var indentAmount:int = 3;
@@ -248,8 +251,11 @@ package com.pblabs.engine.debug
       private static var _rootNode:ProfileInfo;
       private static var _currentNode:ProfileInfo;
    }
+   }
 }
 
+PROFILER::ENABLED
+{
 final class ProfileInfo
 {
    public var name:String;
@@ -272,4 +278,5 @@ final class ProfileInfo
       maxTime = int.MIN_VALUE;
       minTime = int.MAX_VALUE;
    }
+}
 }

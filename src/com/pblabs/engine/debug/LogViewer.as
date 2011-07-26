@@ -142,10 +142,10 @@ package com.pblabs.engine.debug
             }
             
             // Resize display surface.
-            Profiler.enter("LogViewer_resizeBitmap");
+			PROFILER::ENABLED {Profiler.enter("LogViewer_resizeBitmap");}
             _outputBitmap.bitmapData.dispose();
             _outputBitmap.bitmapData = new BitmapData(_width - 10, _height - 30, false, 0x0);
-            Profiler.exit("LogViewer_resizeBitmap");
+			PROFILER::ENABLED {Profiler.exit("LogViewer_resizeBitmap");}
             
             _input.height = 18;
             _input.width = _width-10;
@@ -361,7 +361,7 @@ package com.pblabs.engine.debug
                 return;
             _dirtyConsole = false;
             
-            Profiler.enter("LogViewer.redrawLog");
+			PROFILER::ENABLED {Profiler.enter("LogViewer.redrawLog");}
             
             // Figure our visible range.
             var lineHeight:int = getScreenHeightInLines() - 1;
@@ -390,7 +390,7 @@ package com.pblabs.engine.debug
                 glyphCache.drawLineToBitmap(logCache[i].text, 0, _outputBitmap.height - (endLine+1-i)*glyphCache.getLineHeight(), logCache[i].color, _outputBitmap.bitmapData);
             }
             
-            Profiler.exit("LogViewer.redrawLog");
+			PROFILER::ENABLED {Profiler.exit("LogViewer.redrawLog");}
         }
         
         public function addLogMessage(level:String, loggerName:String, message:String):void

@@ -31,7 +31,6 @@ package com.pblabs.engine
     import flash.display.StageScaleMode;
     import flash.geom.*;
     import flash.net.registerClassAlias;
-    import flash.system.Security;
     import flash.utils.Dictionary;
     import flash.utils.getQualifiedClassName;
     
