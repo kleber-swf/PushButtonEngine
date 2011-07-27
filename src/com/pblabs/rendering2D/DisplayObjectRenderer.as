@@ -525,7 +525,13 @@ package com.pblabs.rendering2D
             _displayObject = value;
             
             if(name && owner && owner.name)
-                _displayObject.name = owner.name + "." + name;
+			{
+				try
+				{
+                	_displayObject.name = owner.name + "." + name;
+				}
+				catch (e:Error) {}
+			}
             
             // Add new scene.
             addToScene();
