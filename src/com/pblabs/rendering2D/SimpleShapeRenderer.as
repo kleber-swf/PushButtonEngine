@@ -120,6 +120,7 @@ package com.pblabs.rendering2D
         public function set isCircle(value:Boolean):void
         {
             _isCircle = value;
+			_isSquare = !value;
             redraw();
         }
 
@@ -134,6 +135,7 @@ package com.pblabs.rendering2D
         public function set isSquare(value:Boolean):void
         {
             _isSquare = value;
+            _isCircle = !value;
             redraw();
         }
 

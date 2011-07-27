@@ -303,7 +303,7 @@ package com.pblabs.engine.debug
                 Logger.warn(Console, "setPoint", "setPoint can only be used with a valid x and y");
                 return;
             }
-            var value:Point = new Point(Number(x), Number(y));
+            var value:Point = new Point(x, y);
             
             entity.setProperty(pr, value);
         }
