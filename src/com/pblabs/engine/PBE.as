@@ -8,6 +8,7 @@
  ******************************************************************************/
 package com.pblabs.engine
 {
+	import com.ffcreations.ui.mouse.MouseInputManager;
     import com.pblabs.engine.core.*;
     import com.pblabs.engine.debug.*;
     import com.pblabs.engine.entity.*;
@@ -69,6 +70,8 @@ package com.pblabs.engine
         
         protected static var _rootGroup:PBGroup = null;
         protected static var _currentGroup:PBGroup = null;
+		protected static var _mouseInputManager:MouseInputManager;
+		
         
         /**
          * Register a type with PushButton Engine so that it can be deserialized,
@@ -216,8 +219,13 @@ package com.pblabs.engine
             
             if(!_inputManager)
                 _inputManager = new InputManager();
-        }
         
+			if (!_mouseInputManager)
+			{
+				_mouseInputManager = new MouseInputManager();
+			}
+		}
+		
         
         /**
          * If you want to use a ResourceBundle, add it to PBE with this method.
@@ -481,6 +489,11 @@ package com.pblabs.engine
             return _inputManager;
         }
         
+		public static function get mouseInputManager():MouseInputManager
+		{
+			return _mouseInputManager;
+		}
+		
         /**
          * Returns the ObjectTypeManager instance. 
          * @return ObjectTypeManager instance.
