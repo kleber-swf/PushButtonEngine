@@ -19,12 +19,12 @@
 		<link>
 			<name>[source path] src</name>
 			<type>2</type>
-			<location>D:/Desktop/PushButtonEngine/src</location>
+			<location>D:/Projects/Personal/Flash/PushButtonEngine/src</location>
 		</link>
 		<link>
-			<name>bin-debug</name>
+			<name>bin</name>
 			<type>2</type>
-			<locationURI>PARENT-3-PROJECT_LOC/bin</locationURI>
+			<locationURI>PARENT-3-PROJECT_LOC../bin</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
