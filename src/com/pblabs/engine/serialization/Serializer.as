@@ -10,11 +10,11 @@ package com.pblabs.engine.serialization
 {
     import com.pblabs.engine.debug.Logger;
     import com.pblabs.engine.entity.IEntity;
-     import com.pblabs.engine.entity.IEntityComponent;
-     import flash.geom.Point;
-     import flash.utils.getQualifiedClassName;
+    import com.pblabs.engine.entity.IEntityComponent;
     
+    import flash.geom.Point;
     import flash.utils.Dictionary;
+    import flash.utils.getQualifiedClassName;
     
     /**
      * Singleton class for serializing and deserializing objects. This class 
@@ -129,8 +129,9 @@ package com.pblabs.engine.serialization
             
             // Normal case - determine type and call the right Serializer.
             var typeName:String = TypeUtility.getObjectClassName(object);
-            if (!_deserializers[typeName])
-                typeName = xml.hasSimpleContent() ? "::DefaultSimple" : "::DefaultComplex";
+            if (!_deserializers[typeName]) {
+				typeName = (object is Array) ? "Array" : (object is Dictionary ? "flash.utils.Dictionary" : (xml.hasSimpleContent() ? "::DefaultSimple" : "::DefaultComplex"));
+			}
             
             return _deserializers[typeName](object, xml, typeHint);
         }

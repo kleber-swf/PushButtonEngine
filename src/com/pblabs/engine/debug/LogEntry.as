@@ -19,37 +19,44 @@ package com.pblabs.engine.debug
    public class LogEntry
    {
       /**
+       * Entry type given to fatal errors.
+       * 
+       * @see Logger#fatal()
+       */
+      public static const FATAL:String = "FATAL";
+	  
+      /**
        * Entry type given to errors.
        * 
-       * @see Logger#printError()
+       * @see Logger#error()
        */
       public static const ERROR:String = "ERROR";
       
       /**
        * Entry type given to warnings.
        * 
-       * @see Logger#PrintWarning()
+       * @see Logger#warn()
        */
       public static const WARNING:String = "WARNING";
 	  
 	  /**
 	   * Entry type given to debug messages.
 	   * 
-	   * @see Logger#PrintDebug()
+	   * @see Logger#debug()
 	   */
 	  public static const DEBUG:String = "DEBUG";
 	  
 	  /**
 	   * Entry type given to warnings.
 	   * 
-	   * @see Logger#PrintInfo()
+	   * @see Logger#info()
 	   */
 	  public static const INFO:String = "INFO";
 	  
       /**
        * Entry type given to generic messages.
        * 
-       * @see Logger#Print()
+       * @see Logger#print()
        */
       public static const MESSAGE:String = "MESSAGE";
       

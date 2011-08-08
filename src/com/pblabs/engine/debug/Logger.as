@@ -204,6 +204,29 @@ package com.pblabs.engine.debug
         }
         
         /**
+         * Prints an error message to the log and stops its execution. Log entries created
+		 * with this method will have the FATAL type.
+         * 
+         * @param reporter The object that reported the error. This can be null.
+         * @param method The name of the method that the error was reported from.
+         * @param message The error to print to the log.
+         */
+        public static function fatal(reporter:*, method:String, message:String):void
+        {
+            // Early out if we are disabled.
+            if(disabled)
+                return;
+
+            var entry:LogEntry = new LogEntry();
+            entry.reporter = TypeUtility.getClass(reporter);
+            entry.method = method;
+            entry.message = method + " - " + message;
+            entry.type = LogEntry.FATAL;
+            processEntry(entry);
+			throw new Error(message);
+        }
+        
+        /**
          * Prints a message to the log. Log enthries created with this method will have
          * the type specified in the 'type' parameter.
          * 
