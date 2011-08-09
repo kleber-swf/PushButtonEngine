@@ -12,6 +12,8 @@ package com.ffcreations.ui.mouse.dnd
 		//   Fields 
 		//==========================================================
 		
+		private var _dropArea:DropAreaComponent;
+		
 		/**
 		 * If set, put the DraggableComponent in this position when the drop succeeds.
 		 */
@@ -21,8 +23,6 @@ package com.ffcreations.ui.mouse.dnd
 		 * If set, adds this offset to the DraggableComponent position.
 		 */
 		public var finalPositionOffset:Point = new Point();
-		
-		private var _dropArea:DropAreaComponent;
 		
 		
 		//==========================================================
@@ -75,6 +75,11 @@ package com.ffcreations.ui.mouse.dnd
 		public function getItemIndexAt(items:Vector.<DraggableComponent>, pos:Point):int
 		{
 			return -1;
+		}
+		
+		public function clear():void
+		{
+			_dropArea = null;
 		}
 	}
 }

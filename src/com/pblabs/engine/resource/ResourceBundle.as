@@ -46,7 +46,9 @@ package com.pblabs.engine.resource
             xml:"com.pblabs.engine.resource.XMLResource",
             pbelevel:"com.pblabs.engine.resource.XMLResource",
             swf:"com.pblabs.engine.resource.SWFResource",
-            mp3:"com.pblabs.engine.resource.MP3Resource"
+            mp3:"com.pblabs.engine.resource.MP3Resource",
+			txt:"com.pblabs.engine.resource.TextResource",
+			csv:"com.pblabs.engine.resource.TextResource"
         };
         
         /**
@@ -75,6 +77,7 @@ package com.pblabs.engine.resource
             new ImageResource();
             new XMLResource();
             new MP3Resource();
+			new TextResource();
             
             // Loop through each public variable in this class
             for each (var v:XML in desc.variable)

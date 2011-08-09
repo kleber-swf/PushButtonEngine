@@ -43,5 +43,10 @@ package com.ffcreations.ui.mouse.dnd
 		 * @return The index of the item that contains <code>pos</code>.
 		 */
 		function getItemIndexAt(items:Vector.<DraggableComponent>, pos:Point):int;
+		
+		/**
+		 * Called when the related DropAreaComponent is removed from its owner.
+		 */
+		function clear():void;
 	}
 }

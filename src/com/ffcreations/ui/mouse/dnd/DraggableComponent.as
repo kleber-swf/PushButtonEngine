@@ -44,6 +44,12 @@ package com.ffcreations.ui.mouse.dnd
 		//   Fields 
 		//==========================================================
 		
+		private var _resetPositionProperty:PropertyReference;
+		private var _resetPosition:Point;
+		private var _oldLayerIndex:int;
+		
+		internal var dropArea:DropAreaComponent;
+		
 		/**
 		 * Whether the drag component must lock the center of the dragged item in the mouse position.
 		 */
@@ -59,12 +65,6 @@ package com.ffcreations.ui.mouse.dnd
 		 * Whether the component resets the position when drop fails.
 		 */
 		public var resetPositionOnDropFails:Boolean = true;
-		
-		private var _resetPositionProperty:PropertyReference;
-		private var _resetPosition:Point;
-		private var _oldLayerIndex:int;
-		
-		internal var dropArea:DropAreaComponent;
 		
 		
 		//==========================================================
@@ -95,6 +95,12 @@ package com.ffcreations.ui.mouse.dnd
 		//==========================================================
 		//   Functions 
 		//==========================================================
+		
+		protected override function onRemove():void
+		{
+			super.onRemove();
+			dropArea = null;
+		}
 		
 		/**
 		 * @inheritDoc

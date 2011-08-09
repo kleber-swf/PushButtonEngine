@@ -1,7 +1,5 @@
 package com.ffcreations.ui.mouse.dnd
 {
-	import com.pblabs.engine.debug.Logger;
-	
 	import flash.geom.Point;
 	
 	/**
@@ -141,6 +139,11 @@ package com.ffcreations.ui.mouse.dnd
 				var col:int = (i % cols);
 				items[i].updatePosition(position.add(new Point(_offset.x * col, _offset.y * row)));
 			}
+		}
+		
+		public function clear():void
+		{
+			_dropArea = null;
 		}
 	}
 }

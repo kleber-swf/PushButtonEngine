@@ -7,8 +7,6 @@ package com.ffcreations.util
 	public dynamic class ArrayComponent extends Array implements IEntityComponent
 	{
 		
-		private var _comp:EntityComponent = new EntityComponent();
-		
 		private var _isRegistered:Boolean = false;
 		private var _owner:IEntity = null;
 		private var _name:String = null;
@@ -103,6 +101,7 @@ package com.ffcreations.util
 		 */
 		protected function onRemove():void
 		{
+			length = 0;
 		}
 		
 		/**

@@ -99,6 +99,10 @@ package com.ffcreations.ui.mouse.dnd
 		//==========================================================
 		
 		private var _items:Vector.<DraggableComponent> = new Vector.<DraggableComponent>();
+		private var _dropPositionController:IDropPositionController;
+		private var _dropOnEmptySpace:String = PUSH;
+		private var _dropOnOccupiedSpace:String = ADD_BEFORE;
+		private var _dropWhenFull:String = DENY;
 		
 		/**
 		 * What masks the DropArea acceps.
@@ -111,11 +115,6 @@ package com.ffcreations.ui.mouse.dnd
 		 * Maximum number of DraggableComponents. A value less than or equals to 0 indicates that the DropArea has no maximum items.
 		 */
 		public var maxItems:int = 0;
-		
-		private var _dropPositionController:IDropPositionController;
-		private var _dropOnEmptySpace:String = PUSH;
-		private var _dropOnOccupiedSpace:String = ADD_BEFORE;
-		private var _dropWhenFull:String = DENY;
 		
 		
 		//==========================================================
@@ -218,6 +217,17 @@ package com.ffcreations.ui.mouse.dnd
 		//   Functions 
 		//==========================================================
 		
+		protected override function onRemove():void
+		{
+			super.onRemove();
+			_items = null;
+			if (_dropPositionController)
+			{
+				_dropPositionController.clear();
+				_dropPositionController = null;
+			}
+		}
+		
 		/**
 		 * @inheritDoc
 		 */
@@ -240,29 +250,39 @@ package com.ffcreations.ui.mouse.dnd
 				switch (_dropOnOccupiedSpace)
 				{
 					case DENY:
+					{
 						comp.dropFail();
 						return false;
+					}
 					
 					case NONE:
+					{
 						addIndex = -1;
 						break;
+					}
 					
 					case ADD_BEFORE:
+					{
 						addIndex = getItemIndexAt(comp.scenePosition);
 						if (addIndex < 0)
 						{
 							addIndex = 0;
 						}
 						break;
+					}
 					
 					case ADD_AFTER:
+					{
 						addIndex = getItemIndexAt(comp.scenePosition);
 						addIndex = (addIndex < 0) ? -1 : addIndex + 1;
 						break;
+					}
 					
 					case REPLACE:
+					{
 						addIndex = removeIndex = getItemIndexAt(comp.scenePosition);
 						break;
+					}
 				}
 			}
 			
@@ -271,12 +291,16 @@ package com.ffcreations.ui.mouse.dnd
 				switch (_dropOnEmptySpace)
 				{
 					case DENY:
+					{
 						comp.dropFail();
 						return false;
+					}
 					
 					case SHIFT:
+					{
 						addIndex = 0;
 						break;
+					}
 					
 					case PUSH:
 						break;
@@ -295,16 +319,20 @@ package com.ffcreations.ui.mouse.dnd
 					switch (_dropWhenFull)
 					{
 						case REMOVE_FIRST:
+						{
 							removeIndex = 0;
 							if (addIndex > 0)
 							{
 								addIndex--;
 							}
 							break;
+						}
 						
 						case REMOVE_LAST:
+						{
 							removeIndex = _items.length - 1;
 							break;
+						}
 					}
 				}
 			}

@@ -255,7 +255,7 @@ package com.ffcreations.ui.textfield
 		/**
 		 * @inheritDoc
 		 **/
-		public override function updateTransform(updateProps:Boolean=false):void
+		public override function updateTransform(updateProps:Boolean = false):void
 		{
 			if (!displayObject)
 			{
@@ -321,6 +321,12 @@ package com.ffcreations.ui.textfield
 		public function appendText(text:String):void
 		{
 			_field.appendText(text);
+		}
+		
+		protected override function onRemove():void
+		{
+			super.onRemove();
+			_field = null;
 		}
 	}
 }
