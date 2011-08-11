@@ -1,10 +1,13 @@
 package com.ffcreations.ui.mouse
 {
+	import com.ffcreations.ffc_internal;
 	import com.ffcreations.ui.mouse.dnd.DraggableComponent;
 	import com.pblabs.engine.PBE;
 	
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
+	
+	use namespace ffc_internal;
 	
 	/**
 	 * <p>Manages the mouse input. Just mouse up, mouse down and mouse drag.</p>
@@ -34,9 +37,9 @@ package com.ffcreations.ui.mouse
 		
 		private var _components:Vector.<MouseInputComponent> = new Vector.<MouseInputComponent>();
 		private var _dragCorrection:Point;
-		private var _currentMouseDownComponent:MouseInputComponent;
-		private var _currentMouseDownPos:Point;
 		private var _dragComponent:DraggableComponent;
+		
+		private var _currentMouseData:MouseInputData = new MouseInputData();
 		
 		
 		//==========================================================
@@ -46,7 +49,7 @@ package com.ffcreations.ui.mouse
 		/**
 		 * Gets the current DraggableComponent.
 		 */
-		public function get dragComponent():MouseInputComponent
+		ffc_internal function get dragComponent():DraggableComponent
 		{
 			return _dragComponent;
 		}
@@ -107,16 +110,17 @@ package com.ffcreations.ui.mouse
 		 */
 		public function startDrag(component:DraggableComponent, lockCenter:Boolean):void
 		{
-			_dragComponent = component;
+			_currentMouseData._component = _dragComponent = component;
+			_currentMouseData._action = MouseInputData.MOUSE_DRAG;
 			component.setRendererLayerIndex(DragLayerIndex);
 			if (lockCenter)
 			{
 				_dragCorrection = new Point();
-				_dragComponent.updatePosition(_currentMouseDownPos);
+				component.updatePosition(_currentMouseData._scenePos);
 			}
 			else
 			{
-				_dragCorrection = component.scenePosition.subtract(_currentMouseDownPos);
+				_dragCorrection = component.scenePosition.subtract(_currentMouseData._scenePos);
 			}
 			PBE.mainStage.addEventListener(MouseEvent.MOUSE_MOVE, onDrag);
 		}
@@ -149,19 +153,22 @@ package com.ffcreations.ui.mouse
 		
 		private function onDrag(event:MouseEvent):void
 		{
-			_dragComponent.updatePosition(PBE.scene.transformScreenToScene(new Point(event.stageX, event.stageY)).add(_dragCorrection));
+			_currentMouseData._scenePos = PBE.scene.transformScreenToScene(new Point(event.stageX, event.stageY)).add(_dragCorrection);
+			_dragComponent.updatePosition(_currentMouseData._scenePos);
 		}
 		
 		private function onMouseDown(event:MouseEvent):void
 		{
-			_currentMouseDownPos = PBE.scene.transformScreenToScene(new Point(event.stageX, event.stageY));
+			_currentMouseData._scenePos = PBE.scene.transformScreenToScene(new Point(event.stageX, event.stageY))
+			_currentMouseData._action = MouseInputData.MOUSE_DOWN;
+			
 			for each (var component:MouseInputComponent in _components)
 			{
-				if (component.contains(_currentMouseDownPos))
+				if (component.contains(_currentMouseData._scenePos))
 				{
-					if (!component.mouseDown(event))
+					if (!component.mouseDown(_currentMouseData))
 					{
-						_currentMouseDownComponent = component;
+						_currentMouseData._component = component;
 						return;
 					}
 				}
@@ -172,28 +179,32 @@ package com.ffcreations.ui.mouse
 		{
 			var i:int = 0;
 			var scenePos:Point = PBE.scene.transformScreenToScene(new Point(event.stageX, event.stageY));
-			//			if (_currentMouseDownComponent)
-			//			{
-			//				if (_currentMouseDownComponent.contains(scenePos))
-			//				{
-			//					_currentMouseDownComponent._onMouseUp(event);
-			//					if (!_currentMouseDownComponent.passThroughOnMouseUp)
-			//					{
-			//						_currentMouseDownComponent = null;
-			//						_currentMouseDownPos = null;
-			//						return;
-			//					}
-			//					i = _components.indexOf(_currentMouseDownComponent) + 1;
-			//				}
-			//				_currentMouseDownComponent = null;
-			//			}
+			//if (_currentMouseDownComponent)
+			//{
+			//	if (_currentMouseDownComponent.contains(scenePos))
+			//	{
+			//		_currentMouseDownComponent._onMouseUp(_currentMouseData);
+			//		if (!_currentMouseDownComponent.passThroughOnMouseUp)
+			//		{
+			//			_currentMouseDownComponent = null;
+			//			_currentMouseDownPos = null;
+			//			return;
+			//		}
+			//		i = _components.indexOf(_currentMouseDownComponent) + 1;
+			//	}
+			//	_currentMouseDownComponent = null;
+			//}
+			_currentMouseData._scenePos = scenePos;
+			_currentMouseData._action = MouseInputData.MOUSE_UP;
+			
 			var component:MouseInputComponent;
 			for (var len:int = _components.length; i < len; i++)
 			{
 				component = _components[i];
 				if (component.contains(scenePos))
 				{
-					if (!component.mouseUp(event))
+					_currentMouseData._component = component;
+					if (!component.mouseUp(_currentMouseData))
 					{
 						return;
 					}

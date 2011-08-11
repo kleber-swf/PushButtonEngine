@@ -1,19 +1,22 @@
 package com.ffcreations.ui.mouse.dnd
 {
+	import com.ffcreations.ffc_internal;
+	import com.ffcreations.ui.mouse.MouseInputComponent;
+	import com.ffcreations.ui.mouse.MouseInputData;
 	import com.pblabs.engine.PBE;
 	import com.pblabs.engine.debug.Logger;
 	import com.pblabs.engine.entity.PropertyReference;
 	
-	import flash.events.MouseEvent;
 	import flash.geom.Point;
-	import com.ffcreations.ui.mouse.MouseInputComponent;
+	
+	use namespace ffc_internal;
 	
 	/**
 	 * <p>Component that controls the drag and drop action of an element.
 	 * You must set the positionProperty and renderer properties of this component, otherwise it'll not work.</p>
 	 *
 	 * <p><ul>
-	 * <li>When the mouse is pressed over a DraggableComponent, renderer.layerIndex is updated to DRAGGING_LAYER_INDEX and the drag action starts (onDragStart).</li>
+	 * <li>When the mouse is pressed over a DraggableComponent, renderer.layerIndex is updated to MouseInputManager.DragLayerIndex and the drag action starts (onDragStart).</li>
 	 * <li>While the mouse is down, this component updates its positionProperty by the mouse current position.</li>
 	 * <li>When the mouse is released over a DraggableComponent, the drop action fails (onDropFails) because no DropArea that acceps this component was found.</li>
 	 * </ul></p>
@@ -26,27 +29,13 @@ package com.ffcreations.ui.mouse.dnd
 		
 		
 		//==========================================================
-		//   Static 
-		//==========================================================
-		
-		/**
-		 * Layer index that will be set automatically to renderer when a drag action starts.
-		 * The old layer index will be restored on drop (when succeed or fails).
-		 * Default value is int.MAX_VALUE, making the renderer always on top when dragging.
-		 * @see #renderer
-		 * @see #resetLayerIndex
-		 * @default int.MAX_VALUE
-		 */
-		public static var DRAGGING_LAYER_INDEX:int = int.MAX_VALUE;
-		
-		
-		//==========================================================
 		//   Fields 
 		//==========================================================
 		
 		private var _resetPositionProperty:PropertyReference;
 		private var _resetPosition:Point;
 		private var _oldLayerIndex:int;
+		private var _oldLayerIndexProperty:PropertyReference;
 		
 		internal var dropArea:DropAreaComponent;
 		
@@ -65,6 +54,8 @@ package com.ffcreations.ui.mouse.dnd
 		 * Whether the component resets the position when drop fails.
 		 */
 		public var resetPositionOnDropFails:Boolean = true;
+		
+		public var finalPositionOffset:Point = new Point();
 		
 		
 		//==========================================================
@@ -140,7 +131,7 @@ package com.ffcreations.ui.mouse.dnd
 		 * @return Whether the mouse event execution should pass to other components (true) or stop here (false).
 		 * @see #onDropFail
 		 */
-		public final function dropFail():Boolean
+		ffc_internal final function dropFail():Boolean
 		{
 			PBE.mouseInputManager.stopDrag();
 			if (resetPositionOnDropFails)
@@ -162,17 +153,17 @@ package com.ffcreations.ui.mouse.dnd
 			return false;
 		}
 		
-		internal function dropSuccess(dropArea:DropAreaComponent):Boolean
+		ffc_internal final function dropSuccess(dropArea:DropAreaComponent):Boolean
 		{
 			this.dropArea = dropArea;
-			return onDropSuccess();
+			return onDropSuccess(dropArea);
 		}
 		
 		/**
 		 * Called when drop action succeeds.
 		 * @return Whether the mouse event execution should pass to other components (true) or stop here (false).
 		 */
-		protected function onDropSuccess():Boolean
+		protected function onDropSuccess(dropArea:DropAreaComponent):Boolean
 		{
 			return false
 		}
@@ -187,6 +178,8 @@ package com.ffcreations.ui.mouse.dnd
 			{
 				_oldLayerIndex = renderer.layerIndex;
 				renderer.layerIndex = value;
+				_oldLayerIndexProperty = renderer.layerIndexProperty;
+				renderer.layerIndexProperty = null;
 			}
 		}
 		
@@ -198,6 +191,11 @@ package com.ffcreations.ui.mouse.dnd
 			if (renderer)
 			{
 				renderer.layerIndex = _oldLayerIndex;
+				if (_oldLayerIndexProperty != null)
+				{
+					renderer.layerIndexProperty = _oldLayerIndexProperty;
+					_oldLayerIndexProperty = null;
+				}
 			}
 		}
 		
@@ -219,16 +217,22 @@ package com.ffcreations.ui.mouse.dnd
 			}
 		}
 		
-		//--------------------------------------
-		//   Event handlers 
-		//--------------------------------------
-		
 		/**
 		 * Whether the element can be dragged or not. This method is called when the dragging action is about to start.
-		 * @param event	The Flash MouseEvent associated (MouseEvent.MOUSE_DOWN).
+		 * @param data	Mouse data for this event.
 		 * @return True if the element can be dragged or false otherwise.
 		 */
-		protected function canDrag(event:MouseEvent):Boolean
+		protected function canDrag(data:MouseInputData):Boolean
+		{
+			return true;
+		}
+		
+		/**
+		 * Whether the element can be dropped or not. This method is called when the drop action is about to start.
+		 * @param data	Mouse data for this event.
+		 * @return True if the element can be dropped or false otherwise.
+		 */
+		public function canDrop(data:MouseInputData):Boolean
 		{
 			return true;
 		}
@@ -236,43 +240,50 @@ package com.ffcreations.ui.mouse.dnd
 		/**
 		 * @inheritDoc
 		 */
-		public override final function onMouseDown(event:MouseEvent):Boolean
+		protected override function onMouseDown(data:MouseInputData):Boolean
 		{
-			if (!canDrag(event))
+			if (!canDrag(data))
 			{
-				return false;
+				return onDragFail(data);
 			}
 			PBE.mouseInputManager.startDrag(this, lockCenter);
-			if (renderer)
-			{
-				_oldLayerIndex = layerIndex;
-			}
 			if (dropArea)
 			{
 				dropArea.itemDragStarted(this);
 			}
 			
-			return onStartDrag(event);
+			return onStartDrag(data);
+		}
+		
+		/**
+		 * Called when the drag action cannot be performed
+		 * @param data	Mouse data for this event.
+		 * @return Whether the event flow should pass through this component after its execution.
+		 * @default true
+		 */
+		protected function onDragFail(data:MouseInputData):Boolean
+		{
+			return true;
 		}
 		
 		/**
 		 * Called only when the component is dragged outside of a DropArea.
 		 * The default action is fail.
-		 * @param event	Flash MouseEvent (MouseEvent.MOUSE_UP).
+		 * @param data	Mouse data for this event.
 		 * @return Whether the mouse event execution should pass to other components (true) or stop here (false).
 		 * @see #dropFail
 		 */
-		public override function onMouseUp(event:MouseEvent):Boolean
+		protected override function onMouseUp(data:MouseInputData):Boolean
 		{
-			return dropFail();
+			return (PBE.mouseInputManager.dragComponent == this) ? dropFail() : true;
 		}
 		
 		/**
 		 * Called when the drag action just started.
-		 * @param event	Flash MouseEvent (MouseEvent.MOUSE_DOWN).
+		 * @param data	Mouse data for this event.
 		 * @return Whether the mouse event execution should pass to other components (true) or stop here (false).
 		 */
-		protected function onStartDrag(event:MouseEvent):Boolean
+		protected function onStartDrag(data:MouseInputData):Boolean
 		{
 			return false;
 		}

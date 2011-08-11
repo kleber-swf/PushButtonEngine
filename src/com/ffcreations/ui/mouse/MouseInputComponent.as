@@ -8,7 +8,6 @@ package com.ffcreations.ui.mouse
 	import com.pblabs.engine.entity.PropertyReference;
 	import com.pblabs.rendering2D.DisplayObjectRenderer;
 	
-	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
@@ -148,40 +147,36 @@ package com.ffcreations.ui.mouse
 			return scenePlace.contains(scenePoint.x, scenePoint.y);
 		}
 		
-		//--------------------------------------
-		//   Event handlers 
-		//--------------------------------------
-		
-		internal function mouseDown(event:MouseEvent):Boolean
+		internal function mouseDown(data:MouseInputData):Boolean
 		{
-			var f:Boolean = mouseDownFunction != null ? mouseDownFunction(event) : true;
-			return onMouseDown(event) && f;
+			var f:Boolean = mouseDownFunction != null ? mouseDownFunction(data) : true;
+			return onMouseDown(data) && f;
 		}
 		
-		internal function mouseUp(event:MouseEvent):Boolean
+		internal function mouseUp(data:MouseInputData):Boolean
 		{
-			var f:Boolean = mouseUpFunction != null ? mouseUpFunction(event) : true;
-			return onMouseUp(event) && f;
+			var f:Boolean = mouseUpFunction != null ? mouseUpFunction(data) : true;
+			return onMouseUp(data) && f;
 		}
 		
 		/**
 		 * Called when the mouse is just pressed. Overrite it to make specific implementations.
-		 * @param event The Flash Mouse Event (MouseEvent.MOUSE_DOWN);
+		 * @param data	Mouse data for this event.
 		 * @return Whether the event flow should pass through this component after its execution.
 		 * @see MouseInputManager
 		 */
-		public function onMouseDown(event:MouseEvent):Boolean
+		protected function onMouseDown(data:MouseInputData):Boolean
 		{
 			return true;
 		}
 		
 		/**
 		 * Called when the mouse is just released. Overrite it to make specific implementations.
-		 * @param event The Flash Mouse Event (MouseEvent.MOUSE_UP);
+		 * @param data	Mouse data for this event.
 		 * @return Whether the event flow should pass through this component after its execution.
 		 * @see MouseInputManager
 		 */
-		public function onMouseUp(event:MouseEvent):Boolean
+		protected function onMouseUp(data:MouseInputData):Boolean
 		{
 			return true;
 		}

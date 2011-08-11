@@ -19,11 +19,6 @@ package com.ffcreations.ui.mouse.dnd
 		 */
 		public var finalPositionProperty:PropertyReference;
 		
-		/**
-		 * If set, adds this offset to the DraggableComponent position.
-		 */
-		public var finalPositionOffset:Point = new Point();
-		
 		
 		//==========================================================
 		//   Properties 
@@ -58,7 +53,7 @@ package com.ffcreations.ui.mouse.dnd
 				{
 					pos = _dropArea.scenePosition;
 				}
-				items[i].updatePosition(pos.add(finalPositionOffset));
+				items[i].updatePosition(pos.add(items[i].finalPositionOffset));
 			}
 		}
 		

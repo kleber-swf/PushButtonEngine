@@ -1,12 +1,15 @@
 
 package com.ffcreations.ui.mouse.dnd
 {
+	import com.ffcreations.ffc_internal;
+	import com.ffcreations.ui.mouse.MouseInputComponent;
+	import com.ffcreations.ui.mouse.MouseInputData;
 	import com.pblabs.engine.PBE;
 	import com.pblabs.engine.debug.Logger;
 	
-	import flash.events.MouseEvent;
 	import flash.geom.Point;
-	import com.ffcreations.ui.mouse.MouseInputComponent;
+	
+	use namespace ffc_internal;
 	
 	/**
 	 * <p>An area to drop DraggableItems.</p>
@@ -175,6 +178,14 @@ package com.ffcreations.ui.mouse.dnd
 		 * Controlls the position of the items.
 		 * @default DefaultDropPositionController
 		 */
+		public function get dropPositionController():IDropPositionController
+		{
+			return _dropPositionController;
+		}
+		
+		/**
+		 * @private
+		 */
 		public function set dropPositionController(value:IDropPositionController):void
 		{
 			_dropPositionController = value;
@@ -241,7 +252,7 @@ package com.ffcreations.ui.mouse.dnd
 			super.onAdd();
 		}
 		
-		private function dropItem(comp:DraggableComponent):Boolean
+		private final function dropItem(comp:DraggableComponent):Boolean
 		{
 			var addIndex:int = addIndex = getItemIndexAt(comp.scenePosition);
 			var removeIndex:int = -1;
@@ -357,6 +368,10 @@ package com.ffcreations.ui.mouse.dnd
 			return a || b;
 		}
 		
+		public function addItem(comp:DraggableComponent):void {
+			dropItem(comp);
+		}
+		
 		private function getItemIndexAt(pos:Point):int
 		{
 			return _dropPositionController.getItemIndexAt(items, pos);
@@ -377,8 +392,7 @@ package com.ffcreations.ui.mouse.dnd
 			var index:int = _items.indexOf(comp);
 			if (index < 0)
 			{
-				Logger.error(this, "dragStated", "Component [" + comp.name + "] is not in drag area [" + name + "].");
-				throw new Error();
+				Logger.fatal(this, "dragStated", "Component [" + comp.name + "] is not in drag area [" + name + "].");
 			}
 			_items.splice(index, 1)[0].dropArea = null;
 			_dropPositionController.dragItem(_items, index);
@@ -394,22 +408,18 @@ package com.ffcreations.ui.mouse.dnd
 			return true;
 		}
 		
-		//--------------------------------------
-		//   Event handlers 
-		//--------------------------------------
-		
 		/**
 		 * @inheritDoc
 		 */
-		public override function onMouseUp(e:MouseEvent):Boolean
+		protected override function onMouseUp(data:MouseInputData):Boolean
 		{
-			var comp:DraggableComponent = PBE.mouseInputManager.dragComponent as DraggableComponent;
+			var comp:DraggableComponent = PBE.mouseInputManager.dragComponent;
 			if (comp == null)
 			{
 				return true;
 			}
 			
-			if (!canDrop(comp))
+			if (!canDrop(comp) || !comp.canDrop(data))
 			{
 				return true;
 			}
