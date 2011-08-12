@@ -28,7 +28,7 @@ package com.ffcreations.ui.mouse
 		//   Static 
 		//==========================================================
 		
-		public static var DragLayerIndex:int = 100;
+		public static var DragLayerIndex:uint = 100;
 		
 		
 		//==========================================================
@@ -40,6 +40,8 @@ package com.ffcreations.ui.mouse
 		private var _dragComponent:DraggableComponent;
 		
 		private var _currentMouseData:MouseInputData = new MouseInputData();
+		private var _pixelsToStartDrag:uint;
+		private var _positionBeforeDrag:Point;
 		
 		
 		//==========================================================
@@ -105,62 +107,79 @@ package com.ffcreations.ui.mouse
 		
 		/**
 		 * Starts drag the given component.
-		 * @param component		The component to drag.
-		 * @param lockCenter	Whether to lock the center of the component to the mouse position.
+		 * @param component			The component to drag.
+		 * @param lockCenter		Whether to lock the center of the component to the mouse position.
+		 * @param pixelsToStartDrag	Amout of pixels that the user should drag before the drag actually starts.
 		 */
-		public function startDrag(component:DraggableComponent, lockCenter:Boolean):void
+		ffc_internal function startDrag(component:DraggableComponent, lockCenter:Boolean, pixelsToStartDrag:uint):void
 		{
 			_currentMouseData._component = _dragComponent = component;
-			_currentMouseData._action = MouseInputData.MOUSE_DRAG;
-			component.setRendererLayerIndex(DragLayerIndex);
-			if (lockCenter)
-			{
-				_dragCorrection = new Point();
-				component.updatePosition(_currentMouseData._scenePos);
-			}
-			else
-			{
-				_dragCorrection = component.scenePosition.subtract(_currentMouseData._scenePos);
-			}
-			PBE.mainStage.addEventListener(MouseEvent.MOUSE_MOVE, onDrag);
+			_currentMouseData._action = MouseInputData.MOUSE_DOWN;
+			_currentMouseData.lockCenter = lockCenter;
+			_positionBeforeDrag = new Point(_currentMouseData._event.stageX, _currentMouseData._event.stageY);
+			_pixelsToStartDrag = pixelsToStartDrag;
+			PBE.mainStage.addEventListener(MouseEvent.MOUSE_MOVE, onBeforeDrag);
 		}
+		
 		
 		private function dropFail():void
 		{
 			if (_dragComponent)
 			{
 				_dragComponent.dropFail();
-			}
-			stopDrag();
-		}
-		
-		/**
-		 * Stops the dragging on the current dragging component.
-		 */
-		public function stopDrag():void
-		{
-			if (_dragComponent)
-			{
-				_dragComponent.resetLayerIndex();
 				_dragComponent = null;
 			}
 			PBE.mainStage.removeEventListener(MouseEvent.MOUSE_MOVE, onDrag);
+			PBE.mainStage.removeEventListener(MouseEvent.MOUSE_MOVE, onBeforeDrag);
+		}
+		
+		ffc_internal function stopDrag():void
+		{
+			if (_dragComponent)
+			{
+				_dragComponent.stopDrag();
+				_dragComponent = null;
+			}
+			PBE.mainStage.removeEventListener(MouseEvent.MOUSE_MOVE, onDrag);
+			PBE.mainStage.removeEventListener(MouseEvent.MOUSE_MOVE, onBeforeDrag);
 		}
 		
 		//--------------------------------------
 		//   Event handlers 
 		//--------------------------------------
 		
-		private function onDrag(event:MouseEvent):void
+		private final function onBeforeDrag(event:MouseEvent = null):void
 		{
-			_currentMouseData._scenePos = PBE.scene.transformScreenToScene(new Point(event.stageX, event.stageY)).add(_dragCorrection);
-			_dragComponent.updatePosition(_currentMouseData._scenePos);
+			if (_positionBeforeDrag.subtract(new Point(event.stageX, event.stageY)).length < _pixelsToStartDrag)
+			{
+				return;
+			}
+			PBE.mainStage.removeEventListener(MouseEvent.MOUSE_MOVE, onBeforeDrag);
+			PBE.mainStage.addEventListener(MouseEvent.MOUSE_MOVE, onDrag);
+			_currentMouseData._action = MouseInputData.MOUSE_DRAG;
+			_dragComponent.startDrag(_currentMouseData, DragLayerIndex);
+			if (_currentMouseData.lockCenter)
+			{
+				_dragCorrection = new Point();
+				_dragComponent.drag(_currentMouseData);
+			}
+			else
+			{
+				_dragCorrection = _dragComponent.scenePosition.subtract(_currentMouseData._scenePos);
+			}
 		}
 		
-		private function onMouseDown(event:MouseEvent):void
+		private final function onDrag(event:MouseEvent):void
+		{
+			_currentMouseData._scenePos = PBE.scene.transformScreenToScene(new Point(event.stageX, event.stageY)).add(_dragCorrection);
+			_dragComponent.drag(_currentMouseData);
+		}
+		
+		private final function onMouseDown(event:MouseEvent):void
 		{
 			_currentMouseData._scenePos = PBE.scene.transformScreenToScene(new Point(event.stageX, event.stageY))
 			_currentMouseData._action = MouseInputData.MOUSE_DOWN;
+			_currentMouseData._event = event;
 			
 			for each (var component:MouseInputComponent in _components)
 			{

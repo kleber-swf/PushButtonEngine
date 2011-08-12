@@ -24,6 +24,7 @@ package com.ffcreations.ui.mouse
 		internal var _scenePos:Point;
 		internal var _component:MouseInputComponent;
 		internal var _action:int;
+		internal var lockCenter:Boolean;
 		
 		
 		//==========================================================

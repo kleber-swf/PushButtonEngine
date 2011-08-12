@@ -38,6 +38,7 @@ package com.ffcreations.ui.mouse.dnd
 		private var _oldLayerIndexProperty:PropertyReference;
 		
 		internal var dropArea:DropAreaComponent;
+		protected var _dragging:Boolean;
 		
 		/**
 		 * Whether the drag component must lock the center of the dragged item in the mouse position.
@@ -57,10 +58,17 @@ package com.ffcreations.ui.mouse.dnd
 		
 		public var finalPositionOffset:Point = new Point();
 		
+		public var pixelsToStartDrag:uint = 10;
+		
 		
 		//==========================================================
 		//   Properties 
 		//==========================================================
+		
+		protected function get dragging():Boolean
+		{
+			return _dragging;
+		}
 		
 		/**
 		 * Position where to put the component when drop fails.
@@ -138,7 +146,7 @@ package com.ffcreations.ui.mouse.dnd
 			{
 				owner.setProperty(positionProperty, _resetPosition);
 			}
-			resetLayerIndex();
+			stopDrag();
 			var passThrough:Boolean = onDropFail();
 			dropArea = null;
 			return passThrough;
@@ -168,36 +176,6 @@ package com.ffcreations.ui.mouse.dnd
 			return false
 		}
 		
-		/**
-		 * Sets renderer.layerIndex. Saves the old layerIndex to reset.
-		 * @param value Layer index to set.
-		 */
-		public function setRendererLayerIndex(value:int):void
-		{
-			if (renderer)
-			{
-				_oldLayerIndex = renderer.layerIndex;
-				renderer.layerIndex = value;
-				_oldLayerIndexProperty = renderer.layerIndexProperty;
-				renderer.layerIndexProperty = null;
-			}
-		}
-		
-		/**
-		 * Resets the renderer layerIndex.
-		 */
-		public function resetLayerIndex():void
-		{
-			if (renderer)
-			{
-				renderer.layerIndex = _oldLayerIndex;
-				if (_oldLayerIndexProperty != null)
-				{
-					renderer.layerIndexProperty = _oldLayerIndexProperty;
-					_oldLayerIndexProperty = null;
-				}
-			}
-		}
 		
 		/**
 		 * Updates the position of this element.
@@ -246,13 +224,13 @@ package com.ffcreations.ui.mouse.dnd
 			{
 				return onDragFail(data);
 			}
-			PBE.mouseInputManager.startDrag(this, lockCenter);
+			PBE.mouseInputManager.startDrag(this, lockCenter, pixelsToStartDrag);
 			if (dropArea)
 			{
 				dropArea.itemDragStarted(this);
 			}
 			
-			return onStartDrag(data);
+			return super.onMouseDown(data);
 		}
 		
 		/**
@@ -273,9 +251,14 @@ package com.ffcreations.ui.mouse.dnd
 		 * @return Whether the mouse event execution should pass to other components (true) or stop here (false).
 		 * @see #dropFail
 		 */
-		protected override function onMouseUp(data:MouseInputData):Boolean
+		protected final override function onMouseUp(data:MouseInputData):Boolean
 		{
-			return (PBE.mouseInputManager.dragComponent == this) ? dropFail() : true;
+			return (dragging && PBE.mouseInputManager.dragComponent == this) ? dropFail() : onClick(data);
+		}
+		
+		protected function onClick(data:MouseInputData):Boolean
+		{
+			return false;
 		}
 		
 		/**
@@ -283,9 +266,40 @@ package com.ffcreations.ui.mouse.dnd
 		 * @param data	Mouse data for this event.
 		 * @return Whether the mouse event execution should pass to other components (true) or stop here (false).
 		 */
-		protected function onStartDrag(data:MouseInputData):Boolean
+		protected function onStartDrag(data:MouseInputData):void
 		{
-			return false;
+		}
+		
+		ffc_internal function startDrag(data:MouseInputData, dragLayerIndex:uint):void
+		{
+			if (renderer)
+			{
+				_oldLayerIndex = renderer.layerIndex;
+				renderer.layerIndex = dragLayerIndex;
+				_oldLayerIndexProperty = renderer.layerIndexProperty;
+				renderer.layerIndexProperty = null;
+			}
+			_dragging = true;
+			onStartDrag(data);
+		}
+		
+		ffc_internal function stopDrag():void
+		{
+			if (renderer)
+			{
+				renderer.layerIndex = _oldLayerIndex;
+				if (_oldLayerIndexProperty != null)
+				{
+					renderer.layerIndexProperty = _oldLayerIndexProperty;
+					_oldLayerIndexProperty = null;
+				}
+			}
+			_dragging = false;
+		}
+		
+		ffc_internal function drag(_currentMouseData:MouseInputData):void
+		{
+			updatePosition(_currentMouseData.scenePos);
 		}
 	}
 }
