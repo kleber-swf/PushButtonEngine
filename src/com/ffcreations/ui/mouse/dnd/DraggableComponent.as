@@ -36,9 +36,9 @@ package com.ffcreations.ui.mouse.dnd
 		private var _resetPosition:Point;
 		private var _oldLayerIndex:int;
 		private var _oldLayerIndexProperty:PropertyReference;
+		private var _dragging:Boolean;
 		
 		internal var dropArea:DropAreaComponent;
-		protected var _dragging:Boolean;
 		
 		/**
 		 * Whether the drag component must lock the center of the dragged item in the mouse position.
@@ -56,8 +56,15 @@ package com.ffcreations.ui.mouse.dnd
 		 */
 		public var resetPositionOnDropFails:Boolean = true;
 		
+		/**
+		 * Final position offset when dropped inside a DropArea (depends on drop position controller configured).
+		 * @see DropAreaComponent#dropPositionController
+		 */
 		public var finalPositionOffset:Point = new Point();
 		
+		/**
+		 * Amount of pixels that the user should drag to the drag action actually start.
+		 */
 		public var pixelsToStartDrag:uint = 10;
 		
 		
@@ -68,6 +75,31 @@ package com.ffcreations.ui.mouse.dnd
 		protected function get dragging():Boolean
 		{
 			return _dragging;
+		}
+		
+		private function set rendererLayerIndex(value:int):void
+		{
+			if (!renderer || value == renderer.layerIndex)
+			{
+				return;
+			}
+			if (value < 0)
+			{
+				renderer.layerIndex = _oldLayerIndex;
+				if (_oldLayerIndexProperty != null)
+				{
+					renderer.layerIndexProperty = _oldLayerIndexProperty;
+					_oldLayerIndexProperty = null;
+				}
+			}
+			else
+			{
+				_oldLayerIndex = renderer.layerIndex;
+				renderer.layerIndex = value;
+				_oldLayerIndexProperty = renderer.layerIndexProperty;
+				renderer.layerIndexProperty = null;
+			}
+		
 		}
 		
 		/**
@@ -95,6 +127,9 @@ package com.ffcreations.ui.mouse.dnd
 		//   Functions 
 		//==========================================================
 		
+		/**
+		 * @inheritDoc
+		 */
 		protected override function onRemove():void
 		{
 			super.onRemove();
@@ -146,7 +181,6 @@ package com.ffcreations.ui.mouse.dnd
 			{
 				owner.setProperty(positionProperty, _resetPosition);
 			}
-			stopDrag();
 			var passThrough:Boolean = onDropFail();
 			dropArea = null;
 			return passThrough;
@@ -230,33 +264,16 @@ package com.ffcreations.ui.mouse.dnd
 				dropArea.itemDragStarted(this);
 			}
 			
-			return super.onMouseDown(data);
+			return false;
 		}
 		
 		/**
 		 * Called when the drag action cannot be performed
 		 * @param data	Mouse data for this event.
 		 * @return Whether the event flow should pass through this component after its execution.
-		 * @default true
+		 * @default false
 		 */
 		protected function onDragFail(data:MouseInputData):Boolean
-		{
-			return true;
-		}
-		
-		/**
-		 * Called only when the component is dragged outside of a DropArea.
-		 * The default action is fail.
-		 * @param data	Mouse data for this event.
-		 * @return Whether the mouse event execution should pass to other components (true) or stop here (false).
-		 * @see #dropFail
-		 */
-		protected final override function onMouseUp(data:MouseInputData):Boolean
-		{
-			return (dragging && PBE.mouseInputManager.dragComponent == this) ? dropFail() : onClick(data);
-		}
-		
-		protected function onClick(data:MouseInputData):Boolean
 		{
 			return false;
 		}
@@ -272,29 +289,21 @@ package com.ffcreations.ui.mouse.dnd
 		
 		ffc_internal function startDrag(data:MouseInputData, dragLayerIndex:uint):void
 		{
-			if (renderer)
-			{
-				_oldLayerIndex = renderer.layerIndex;
-				renderer.layerIndex = dragLayerIndex;
-				_oldLayerIndexProperty = renderer.layerIndexProperty;
-				renderer.layerIndexProperty = null;
-			}
 			_dragging = true;
 			onStartDrag(data);
+			rendererLayerIndex = dragLayerIndex;
 		}
 		
 		ffc_internal function stopDrag():void
 		{
-			if (renderer)
-			{
-				renderer.layerIndex = _oldLayerIndex;
-				if (_oldLayerIndexProperty != null)
-				{
-					renderer.layerIndexProperty = _oldLayerIndexProperty;
-					_oldLayerIndexProperty = null;
-				}
-			}
 			_dragging = false;
+			onStopDrag();
+			rendererLayerIndex = -1;
+		}
+		
+		protected function onStopDrag():void
+		{
+		
 		}
 		
 		ffc_internal function drag(_currentMouseData:MouseInputData):void

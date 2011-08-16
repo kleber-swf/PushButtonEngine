@@ -2,6 +2,7 @@ package com.ffcreations.ui.mouse
 {
 	import com.ffcreations.ffc_internal;
 	import com.ffcreations.ui.mouse.dnd.DraggableComponent;
+	import com.ffcreations.ui.mouse.dnd.DropAreaComponent;
 	import com.pblabs.engine.PBE;
 	
 	import flash.events.MouseEvent;
@@ -41,7 +42,8 @@ package com.ffcreations.ui.mouse
 		
 		private var _currentMouseData:MouseInputData = new MouseInputData();
 		private var _pixelsToStartDrag:uint;
-		private var _positionBeforeDrag:Point;
+		private var _positionBeforeDrag:Point = new Point();
+		private var _bufferPoint:Point = new Point();
 		
 		
 		//==========================================================
@@ -113,10 +115,11 @@ package com.ffcreations.ui.mouse
 		 */
 		ffc_internal function startDrag(component:DraggableComponent, lockCenter:Boolean, pixelsToStartDrag:uint):void
 		{
-			_currentMouseData._component = _dragComponent = component;
+			_currentMouseData._component = component;
 			_currentMouseData._action = MouseInputData.MOUSE_DOWN;
 			_currentMouseData.lockCenter = lockCenter;
-			_positionBeforeDrag = new Point(_currentMouseData._event.stageX, _currentMouseData._event.stageY);
+			_positionBeforeDrag.x = _currentMouseData._event.stageX;
+			_positionBeforeDrag.y = _currentMouseData._event.stageY;
 			_pixelsToStartDrag = pixelsToStartDrag;
 			PBE.mainStage.addEventListener(MouseEvent.MOUSE_MOVE, onBeforeDrag);
 		}
@@ -148,15 +151,18 @@ package com.ffcreations.ui.mouse
 		//   Event handlers 
 		//--------------------------------------
 		
-		private final function onBeforeDrag(event:MouseEvent = null):void
+		private final function onBeforeDrag(event:MouseEvent):void
 		{
-			if (_positionBeforeDrag.subtract(new Point(event.stageX, event.stageY)).length < _pixelsToStartDrag)
+			_bufferPoint.x = event.stageX;
+			_bufferPoint.y = event.stageY;
+			if (_positionBeforeDrag.subtract(_bufferPoint).length < _pixelsToStartDrag)
 			{
 				return;
 			}
 			PBE.mainStage.removeEventListener(MouseEvent.MOUSE_MOVE, onBeforeDrag);
 			PBE.mainStage.addEventListener(MouseEvent.MOUSE_MOVE, onDrag);
 			_currentMouseData._action = MouseInputData.MOUSE_DRAG;
+			_dragComponent = _currentMouseData._component as DraggableComponent;
 			_dragComponent.startDrag(_currentMouseData, DragLayerIndex);
 			if (_currentMouseData.lockCenter)
 			{
@@ -171,13 +177,17 @@ package com.ffcreations.ui.mouse
 		
 		private final function onDrag(event:MouseEvent):void
 		{
-			_currentMouseData._scenePos = PBE.scene.transformScreenToScene(new Point(event.stageX, event.stageY)).add(_dragCorrection);
+			_bufferPoint.x = event.stageX;
+			_bufferPoint.y = event.stageY;
+			_currentMouseData._scenePos = PBE.scene.transformScreenToScene(_bufferPoint).add(_dragCorrection);
 			_dragComponent.drag(_currentMouseData);
 		}
 		
 		private final function onMouseDown(event:MouseEvent):void
 		{
-			_currentMouseData._scenePos = PBE.scene.transformScreenToScene(new Point(event.stageX, event.stageY))
+			_bufferPoint.x = event.stageX;
+			_bufferPoint.y = event.stageY;
+			_currentMouseData._scenePos = PBE.scene.transformScreenToScene(_bufferPoint);
 			_currentMouseData._action = MouseInputData.MOUSE_DOWN;
 			_currentMouseData._event = event;
 			
@@ -197,27 +207,39 @@ package com.ffcreations.ui.mouse
 		private function onMouseUp(event:MouseEvent):void
 		{
 			var i:int = 0;
-			var scenePos:Point = PBE.scene.transformScreenToScene(new Point(event.stageX, event.stageY));
-			//if (_currentMouseDownComponent)
-			//{
-			//	if (_currentMouseDownComponent.contains(scenePos))
-			//	{
-			//		_currentMouseDownComponent._onMouseUp(_currentMouseData);
-			//		if (!_currentMouseDownComponent.passThroughOnMouseUp)
-			//		{
-			//			_currentMouseDownComponent = null;
-			//			_currentMouseDownPos = null;
-			//			return;
-			//		}
-			//		i = _components.indexOf(_currentMouseDownComponent) + 1;
-			//	}
-			//	_currentMouseDownComponent = null;
-			//}
+			var len:int;
+			var component:MouseInputComponent;
+			_bufferPoint.x = event.stageX;
+			_bufferPoint.y = event.stageY;
+			var scenePos:Point = PBE.scene.transformScreenToScene(_bufferPoint);
+			
 			_currentMouseData._scenePos = scenePos;
 			_currentMouseData._action = MouseInputData.MOUSE_UP;
 			
-			var component:MouseInputComponent;
-			for (var len:int = _components.length; i < len; i++)
+			// Handle drop
+			if (_dragComponent != null)
+			{
+				_currentMouseData._component = _dragComponent;
+				for (len = _components.length; i < len; i++)
+				{
+					component = _components[i];
+					if (component is DropAreaComponent && component.contains(scenePos))
+					{
+						if (!component.mouseUp(_currentMouseData))
+						{
+							return;
+						}
+					}
+				}
+				dropFail();
+				return;
+			}
+			
+			PBE.mainStage.removeEventListener(MouseEvent.MOUSE_MOVE, onDrag);
+			PBE.mainStage.removeEventListener(MouseEvent.MOUSE_MOVE, onBeforeDrag);
+			
+			i = 0;
+			for (len = _components.length; i < len; i++)
 			{
 				component = _components[i];
 				if (component.contains(scenePos))
@@ -229,7 +251,6 @@ package com.ffcreations.ui.mouse
 					}
 				}
 			}
-			dropFail();
 		}
 	}
 }

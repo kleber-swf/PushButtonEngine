@@ -244,7 +244,6 @@ package com.ffcreations.ui.mouse.dnd
 		 */
 		protected override function onAdd():void
 		{
-			layerIndex = int.MAX_VALUE;
 			if (_dropPositionController == null)
 			{
 				dropPositionController = new DefaultDropPositionController();
@@ -368,7 +367,8 @@ package com.ffcreations.ui.mouse.dnd
 			return a || b;
 		}
 		
-		public function addItem(comp:DraggableComponent):void {
+		public function addItem(comp:DraggableComponent):void
+		{
 			dropItem(comp);
 		}
 		
@@ -421,7 +421,7 @@ package com.ffcreations.ui.mouse.dnd
 			
 			if (!canDrop(comp) || !comp.canDrop(data))
 			{
-				return true;
+				return comp.dropFail();
 			}
 			
 			if (accepts != null)

@@ -64,18 +64,6 @@ package com.ffcreations.ui.mouse
 		 */
 		public var sizeProperty:PropertyReference;
 		
-		/**
-		 * Called when the mouse is just pressed.
-		 * Set this to make a specific mouse down behaviour without extending <code>MouseInputComponent</code> class.
-		 */
-		public var mouseDownFunction:Function;
-		
-		/**
-		 * Called when the mouse is just released.
-		 * Set this to make a specific mouse up behaviour without extending <code>MouseInputComponent</code> class.
-		 */
-		public var mouseUpFunction:Function;
-		
 		
 		//==========================================================
 		//   Properties 
@@ -129,8 +117,6 @@ package com.ffcreations.ui.mouse
 			super.onRemove();
 			PBE.mouseInputManager.removeComponent(this);
 			renderer = null;
-			mouseDownFunction = null;
-			mouseUpFunction = null;
 		}
 		
 		/**
@@ -149,14 +135,12 @@ package com.ffcreations.ui.mouse
 		
 		internal function mouseDown(data:MouseInputData):Boolean
 		{
-			var f:Boolean = mouseDownFunction != null ? mouseDownFunction(data) : true;
-			return onMouseDown(data) && f;
+			return onMouseDown(data);
 		}
 		
 		internal function mouseUp(data:MouseInputData):Boolean
 		{
-			var f:Boolean = mouseUpFunction != null ? mouseUpFunction(data) : true;
-			return onMouseUp(data) && f;
+			return onMouseUp(data);
 		}
 		
 		/**
