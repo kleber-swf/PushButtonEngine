@@ -23,6 +23,10 @@ package com.ffcreations.ui.mouse
 		//   Fields 
 		//==========================================================
 		
+		protected var _visible:Boolean = true;
+		
+		protected var _enabled:Boolean = true;
+		
 		/**
 		 * Higher values makes the component handle the mouse event before another components under the same mouse position.
 		 */
@@ -64,10 +68,36 @@ package com.ffcreations.ui.mouse
 		 */
 		public var sizeProperty:PropertyReference;
 		
+		/**
+		 * A function that will be called when the mouse is just pressed.
+		 * This is special for cases when you don't want to extend the MouseInputComponent class.
+		 * The signature for the function must be function(data:MouseInputData):Boolean
+		 * @see MouseInputData
+		 */
+		public var mouseDownFunction:Function;
+		
+		/**
+		 * A function that will be called when the mouse is just pressed.
+		 * This is special for cases when you don't want to extend the MouseInputComponent class.
+		 * The signature for the function must be function(data:MouseInputData):Boolean
+		 * @see MouseInputData
+		 */
+		public var mouseUpFunction:Function;
+		
 		
 		//==========================================================
 		//   Properties 
 		//==========================================================
+		
+		public function get enabled():Boolean
+		{
+			return _enabled;
+		}
+		
+		public function set enabled(value:Boolean):void
+		{
+			_enabled = value;
+		}
 		
 		private function get scenePlace():Rectangle
 		{
@@ -92,6 +122,20 @@ package com.ffcreations.ui.mouse
 				pos = pos.add(offset);
 			}
 			return pos;
+		}
+		
+		public function get visible():Boolean
+		{
+			return renderer && renderer.displayObject ? renderer.displayObject.visible : _visible;
+		}
+		
+		public function set visible(value:Boolean):void
+		{
+			_visible = value;
+			if (renderer)
+			{
+				renderer.alpha = value ? 1 : 0;
+			}
 		}
 		
 		
@@ -135,12 +179,16 @@ package com.ffcreations.ui.mouse
 		
 		internal function mouseDown(data:MouseInputData):Boolean
 		{
-			return onMouseDown(data);
+			var a:Boolean = mouseDownFunction != null ? (mouseDownFunction(data)) : true;
+			var b:Boolean = onMouseDown(data);
+			return a && b;
 		}
 		
 		internal function mouseUp(data:MouseInputData):Boolean
 		{
-			return onMouseUp(data);
+			var a:Boolean = mouseUpFunction != null ? (mouseUpFunction(data)) : true;
+			var b:Boolean = onMouseUp(data);
+			return a && b;
 		}
 		
 		/**

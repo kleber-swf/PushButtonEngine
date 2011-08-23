@@ -187,13 +187,13 @@ package com.ffcreations.ui.mouse
 		{
 			_bufferPoint.x = event.stageX;
 			_bufferPoint.y = event.stageY;
-			_currentMouseData._scenePos = PBE.scene.transformScreenToScene(_bufferPoint);
+			var scenePos:Point = _currentMouseData._scenePos = PBE.scene.transformScreenToScene(_bufferPoint);
 			_currentMouseData._action = MouseInputData.MOUSE_DOWN;
 			_currentMouseData._event = event;
 			
 			for each (var component:MouseInputComponent in _components)
 			{
-				if (component.contains(_currentMouseData._scenePos))
+				if (component.enabled && component.visible && component.contains(scenePos))
 				{
 					if (!component.mouseDown(_currentMouseData))
 					{
@@ -211,9 +211,7 @@ package com.ffcreations.ui.mouse
 			var component:MouseInputComponent;
 			_bufferPoint.x = event.stageX;
 			_bufferPoint.y = event.stageY;
-			var scenePos:Point = PBE.scene.transformScreenToScene(_bufferPoint);
-			
-			_currentMouseData._scenePos = scenePos;
+			var scenePos:Point = _currentMouseData._scenePos = PBE.scene.transformScreenToScene(_bufferPoint); 
 			_currentMouseData._action = MouseInputData.MOUSE_UP;
 			
 			// Handle drop
@@ -223,7 +221,7 @@ package com.ffcreations.ui.mouse
 				for (len = _components.length; i < len; i++)
 				{
 					component = _components[i];
-					if (component is DropAreaComponent && component.contains(scenePos))
+					if (component is DropAreaComponent && component.enabled && component.visible && component.contains(scenePos))
 					{
 						if (!component.mouseUp(_currentMouseData))
 						{
@@ -242,7 +240,8 @@ package com.ffcreations.ui.mouse
 			for (len = _components.length; i < len; i++)
 			{
 				component = _components[i];
-				if (component.contains(scenePos))
+				
+				if (component.enabled && component.visible && component.contains(scenePos))
 				{
 					_currentMouseData._component = component;
 					if (!component.mouseUp(_currentMouseData))

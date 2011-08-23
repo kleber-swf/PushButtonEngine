@@ -130,6 +130,26 @@ package com.ffcreations.ui.textfield
 		}
 		
 		/**
+		 * The html text for this component.
+		 */
+		public function get htmlText():String
+		{
+			return _field.htmlText;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set htmlText(value:String):void
+		{
+			_field.htmlText = value;
+			if (_autoHeight)
+			{
+				_transformDirty = true;
+			}
+		}
+		
+		/**
 		 * Whether the field text is multiline.
 		 * @see flash.text.TextField#multiline
 		 * @see flash.text.TextField#wordWrap
