@@ -10,9 +10,9 @@ package com.ffcreations.ui.textfield
 	import flash.text.TextField;
 	import flash.text.TextFieldType;
 	import flash.text.TextFormat;
+	import flash.text.TextLineMetrics;
 	
 	import spark.primitives.Line;
-	import flash.text.TextLineMetrics;
 	
 	/**
 	 * Component to create and handle a <code>TextField</code>.
@@ -241,7 +241,7 @@ package com.ffcreations.ui.textfield
 		 */
 		public function set text(value:String):void
 		{
-			_field.text = value;
+			_field.text = value ? value : "";
 			if (_autoHeight)
 			{
 				_transformDirty = true;
