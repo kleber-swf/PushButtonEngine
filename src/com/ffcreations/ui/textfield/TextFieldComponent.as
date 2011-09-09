@@ -6,13 +6,9 @@ package com.ffcreations.ui.textfield
 	import com.pblabs.rendering2D.DisplayObjectRenderer;
 	
 	import flash.geom.Point;
-	import flash.text.AntiAliasType;
 	import flash.text.TextField;
 	import flash.text.TextFieldType;
 	import flash.text.TextFormat;
-	import flash.text.TextLineMetrics;
-	
-	import spark.primitives.Line;
 	
 	/**
 	 * Component to create and handle a <code>TextField</code>.
@@ -241,6 +237,10 @@ package com.ffcreations.ui.textfield
 		 */
 		public function set text(value:String):void
 		{
+			if (text == value)
+			{
+				return;
+			}
 			_field.text = value ? value : "";
 			if (_autoHeight)
 			{
@@ -333,7 +333,7 @@ package com.ffcreations.ui.textfield
 				}
 				if (_autoHeight)
 				{
-					height = (_field.defaultTextFormat && _field.defaultTextFormat.size ? _field.defaultTextFormat.size as Number : 12) * _field.numLines + 4; // 4: gutter
+					height = int(_field.getLineMetrics(0).height + (1 - Number.MIN_VALUE)) * _field.numLines + 4; // 4:gutter
 				}
 			}
 			if (_field.border)
