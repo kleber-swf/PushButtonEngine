@@ -117,9 +117,18 @@ package com.pblabs.rendering2D
 			registrationPoint = new Point(res.image.bitmapData.width*0.5,res.image.bitmapData.height*0.5);				
 			// set the bitmapData of this render object
 			bitmapData = res.image.bitmapData;	
+			onImageLoadComplete();
 		}
-
-        protected function onResourceUpdated(event:ResourceEvent):void
+		
+		/**
+		 * Called when the image is ready and the _displayObject is set.
+		 */
+		protected function onImageLoadComplete():void
+		{
+			
+		}
+		
+        protected function onResourceUpdated(event:ResourceEvent=null):void
         {
             imageLoadCompleted(_resource);
         }

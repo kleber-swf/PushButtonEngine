@@ -44,6 +44,7 @@ package com.ffcreations.ui.mouse
 		private var _pixelsToStartDrag:uint;
 		private var _positionBeforeDrag:Point = new Point();
 		private var _bufferPoint:Point = new Point();
+		private var _lockLayer:int = 0;
 		
 		
 		//==========================================================
@@ -77,9 +78,14 @@ package com.ffcreations.ui.mouse
 		//   Functions 
 		//==========================================================
 		
+		public function lockLayersUnder(layer:int):void
+		{
+			_lockLayer = layer;
+		}
+		
 		internal function addComponent(component:MouseInputComponent):void
 		{
-			// TODO improve this linear search (maybe bimary search?)
+			// TODO improve this linear search (maybe binary search?)
 			var index:int = component.layerIndex;
 			for (var i:int = 0, len:int = _components.length; i < len; i++)
 			{
@@ -123,7 +129,6 @@ package com.ffcreations.ui.mouse
 			_pixelsToStartDrag = pixelsToStartDrag;
 			PBE.mainStage.addEventListener(MouseEvent.MOUSE_MOVE, onBeforeDrag);
 		}
-		
 		
 		private function dropFail():void
 		{
@@ -193,6 +198,10 @@ package com.ffcreations.ui.mouse
 			
 			for each (var component:MouseInputComponent in _components)
 			{
+				if (_lockLayer > component.layerIndex)
+				{
+					break;
+				}
 				if (component.enabled && component.visible && component.contains(scenePos))
 				{
 					if (!component.mouseDown(_currentMouseData))
@@ -211,7 +220,7 @@ package com.ffcreations.ui.mouse
 			var component:MouseInputComponent;
 			_bufferPoint.x = event.stageX;
 			_bufferPoint.y = event.stageY;
-			var scenePos:Point = _currentMouseData._scenePos = PBE.scene.transformScreenToScene(_bufferPoint); 
+			var scenePos:Point = _currentMouseData._scenePos = PBE.scene.transformScreenToScene(_bufferPoint);
 			_currentMouseData._action = MouseInputData.MOUSE_UP;
 			
 			// Handle drop
@@ -233,6 +242,7 @@ package com.ffcreations.ui.mouse
 				return;
 			}
 			
+			//TODO this shouldn't be inside the "Handle drop" statement?
 			PBE.mainStage.removeEventListener(MouseEvent.MOUSE_MOVE, onDrag);
 			PBE.mainStage.removeEventListener(MouseEvent.MOUSE_MOVE, onBeforeDrag);
 			
@@ -240,7 +250,10 @@ package com.ffcreations.ui.mouse
 			for (len = _components.length; i < len; i++)
 			{
 				component = _components[i];
-				
+				if (_lockLayer > component.layerIndex)
+				{
+					break;
+				}
 				if (component.enabled && component.visible && component.contains(scenePos))
 				{
 					_currentMouseData._component = component;

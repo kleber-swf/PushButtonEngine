@@ -4,6 +4,8 @@ package com.ffcreations.util
 	import com.pblabs.engine.entity.EntityComponent;
 	import com.pblabs.engine.resource.TextResource;
 	
+	import flash.utils.Dictionary;
+	
 	import mx.utils.StringUtil;
 	
 	/**
@@ -24,7 +26,18 @@ package com.ffcreations.util
 		private var _loading:Boolean;
 		private var _failed:Boolean;
 		private var _loaded:Boolean;
-		private var _data:Array;
+		private var _data:*;
+		
+		/**
+		 * If set to true, the first column is considered titles to a map, <code>data</code> is a Dictionary and all column indexes decrease by 1.
+		 */
+		public var mapByFirstColumn:Boolean;
+		
+		/**
+		 * Separator between columns.
+		 * @default ;
+		 */
+		public var separator:String = ";";
 		
 		
 		//==========================================================
@@ -33,9 +46,10 @@ package com.ffcreations.util
 		
 		/**
 		 * The table entire data.
-		 * @return
+		 * If <code>mapByFirstColumn</code> is set to true, data is a <code>Dictionary<code>, otherwise is an <code>Array</code>.
+		 * @see #mapByFirstColumn
 		 */
-		public function get data():Array
+		public function get data():*
 		{
 			return _data;
 		}
@@ -92,6 +106,11 @@ package com.ffcreations.util
 			return _loading;
 		}
 		
+		public function get numRows():int
+		{
+			return _data.length;
+		}
+		
 		
 		//==========================================================
 		//   Functions 
@@ -106,11 +125,51 @@ package com.ffcreations.util
 			const text:String = _resource.data;
 			const buffer:Array = text.split("\r\n");
 			const length:int = (!buffer[buffer.length - 1]) ? buffer.length - 1 : buffer.length;
-			_data = new Array(length);
+			
+			if (mapByFirstColumn)
+			{
+				_mapToDictionary(buffer, length);
+			}
+			else
+			{
+				_mapToArray(buffer, length);
+			}
+			
+			onLoadComplete();
+		}
+		
+		protected function onLoadComplete():void
+		{
+		
+		}
+		
+		private function _mapToDictionary(buffer:Array, length:int):void
+		{
+			_data = new Dictionary();
+			
 			var tmp:Array;
 			for (var i:int = 0; i < length; i++)
 			{
-				tmp = buffer[i].split(";");
+				tmp = buffer[i].split(separator);
+				if (!StringUtil.trim(tmp[tmp.length - 1]))
+				{
+					tmp.pop();
+				}
+				if (tmp.length > 1)
+				{
+					_data[tmp[0]] = tmp.slice(1);
+				}
+			}
+		}
+		
+		private function _mapToArray(buffer:Array, length:int):void
+		{
+			_data = new Array(length);
+			
+			var tmp:Array;
+			for (var i:int = 0; i < length; i++)
+			{
+				tmp = buffer[i].split(separator);
 				if (!StringUtil.trim(tmp[tmp.length - 1]))
 				{
 					tmp.pop();
@@ -127,23 +186,35 @@ package com.ffcreations.util
 		
 		/**
 		 * Gets a cell from the table.
-		 * @param row	Cell row.
+		 * @param row	Cell row. A <code>String</code> if <code>mapByFirstColumn</code> is <code>true</code> or an <code>int</code> if not
 		 * @param col	Cell column.
 		 * @return 		The cell data as String.
+		 * @see			#mapByFirstColumn
+		 * @see			#data
 		 */
-		public function getCell(row:int, col:int):String
+		public function getCell(row:*, col:int):String
 		{
-			return (row < _data.length && col < _data[row].length) ? _data[row][col] : null;
+			if (data is Array && row is int)
+			{
+				return (row < _data.length && col < _data[row].length) ? _data[row][col] : null;
+			}
+			else if (data is Dictionary && row is String)
+			{
+				return (col < _data[row].length) ? _data[row][col] : null;
+			}
+			return null;
 		}
 		
 		/**
 		 * Gets an entire row from the table.
-		 * @param row	Row index.
+		 * @param row	Row index. A <code>String</code> if <code>mapByFirstColumn</code> is <code>true</code> or an <code>int</code> if not
 		 * @return 		An Array with all columns in the specified row.
+		 * @see			#mapByFirstColumn
+		 * @see			#data
 		 */
-		public function getRow(row:int):Array
+		public function getRow(row:*):Array
 		{
-			return (row < _data.length) ? _data[row] : null;
+			return (_data is Dictionary || row < _data.length) ? _data[row] : null;
 		}
 		
 		/**
@@ -151,18 +222,33 @@ package com.ffcreations.util
 		 * If some row has no value for the (row,col) cell, an empty String is placed.
 		 * @param col	Column index.
 		 * @return 		An Array with all rows in the specified row.
+		 * @see			#mapByFirstColumn
+		 * @see			#data
 		 */
 		public function getColumn(col:int):Array
 		{
 			const length:int = _data.length;
 			const result:Array = new Array(length);
-			for (var i:int = 0; i < length; i++)
+			if (mapByFirstColumn)
 			{
-				result[i] = (col < _data[i].length ? _data[i][col] : "");
+				for (var s:String in _data)
+				{
+					result[i] = (col < _data[i].length ? _data[i][col] : "");
+				}
+			}
+			else
+			{
+				for (var i:int = 0; i < length; i++)
+				{
+					result[i] = (col < _data[i].length ? _data[i][col] : "");
+				}
 			}
 			return result;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		protected override function onRemove():void
 		{
 			super.onRemove();

@@ -2,6 +2,7 @@
 
 package com.ffcreations.ui.mouse
 {
+	import com.ffcreations.util.Delegate;
 	import com.pblabs.engine.PBE;
 	import com.pblabs.engine.debug.Logger;
 	import com.pblabs.engine.entity.EntityComponent;
@@ -27,15 +28,13 @@ package com.ffcreations.ui.mouse
 		
 		protected var _enabled:Boolean = true;
 		
+		protected var _renderer:DisplayObjectRenderer;
+		
 		/**
 		 * Higher values makes the component handle the mouse event before another components under the same mouse position.
 		 */
 		public var layerIndex:int = 0;
 		
-		/**
-		 * Renderer which boundaries are verified on events. If set, ignores <code>position</code>, <code>positionProperty</code>, <code>positionOffset</code>, <code>positionOffsetProperty</code>, <code>size</code> and <code>sizeProperty</code> for contains checks.
-		 */
-		public var renderer:DisplayObjectRenderer;
 		
 		/**
 		 * Component position. Ignored when <code>renderer</code> is set.
@@ -69,20 +68,20 @@ package com.ffcreations.ui.mouse
 		public var sizeProperty:PropertyReference;
 		
 		/**
-		 * A function that will be called when the mouse is just pressed.
+		 * A set of functions that will be called when the mouse is just pressed.
 		 * This is special for cases when you don't want to extend the MouseInputComponent class.
-		 * The signature for the function must be function(data:MouseInputData):Boolean
+		 * The signature for the function must be function(data:MouseInputData):void
 		 * @see MouseInputData
 		 */
-		public var mouseDownFunction:Function;
+		public var mouseDownFunction:Delegate = new Delegate();
 		
 		/**
-		 * A function that will be called when the mouse is just pressed.
+		 * A set of functions that will be called when the mouse is just pressed.
 		 * This is special for cases when you don't want to extend the MouseInputComponent class.
-		 * The signature for the function must be function(data:MouseInputData):Boolean
+		 * The signature for the function must be function(data:MouseInputData):void
 		 * @see MouseInputData
 		 */
-		public var mouseUpFunction:Function;
+		public var mouseUpFunction:Delegate = new Delegate();
 		
 		
 		//==========================================================
@@ -99,6 +98,22 @@ package com.ffcreations.ui.mouse
 			_enabled = value;
 		}
 		
+		/**
+		 * Renderer which boundaries are verified on events. If set, ignores <code>position</code>, <code>positionProperty</code>, <code>positionOffset</code>, <code>positionOffsetProperty</code>, <code>size</code> and <code>sizeProperty</code> for contains checks.
+		 */
+		public function get renderer():DisplayObjectRenderer
+		{
+			return _renderer;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set renderer(value:DisplayObjectRenderer):void
+		{
+			_renderer = value;
+		}
+		
 		private function get scenePlace():Rectangle
 		{
 			var pos:Point = scenePosition;
@@ -111,9 +126,9 @@ package com.ffcreations.ui.mouse
 		 */
 		public function get scenePosition():Point
 		{
-			if (renderer)
+			if (_renderer)
 			{
-				return renderer.position;
+				return _renderer.position;
 			}
 			var pos:Point = owner.getProperty(positionProperty, position) as Point;
 			var offset:Point = owner.getProperty(positionOffsetProperty, positionOffset) as Point;
@@ -126,15 +141,15 @@ package com.ffcreations.ui.mouse
 		
 		public function get visible():Boolean
 		{
-			return renderer && renderer.displayObject ? renderer.displayObject.visible : _visible;
+			return _renderer && _renderer.displayObject ? _renderer.displayObject.visible : _visible;
 		}
 		
 		public function set visible(value:Boolean):void
 		{
 			_visible = value;
-			if (renderer)
+			if (_renderer)
 			{
-				renderer.alpha = value ? 1 : 0;
+				_renderer.alpha = value ? 1 : 0;
 			}
 		}
 		
@@ -150,7 +165,7 @@ package com.ffcreations.ui.mouse
 				return;
 			}
 			PBE.mouseInputManager.addComponent(this);
-			if (!(renderer || sizeProperty || size))
+			if (!(_renderer || sizeProperty || size))
 			{
 				Logger.fatal(this, "onAdd", "Mouse component on [" + owner.name + " -> " + this.name + "] without place for check. Set renderer, sizeProperty or size on this component.");
 			}
@@ -160,7 +175,17 @@ package com.ffcreations.ui.mouse
 		{
 			super.onRemove();
 			PBE.mouseInputManager.removeComponent(this);
-			renderer = null;
+			_renderer = null;
+			mouseDownFunction.clear();
+			mouseDownFunction = null;
+			mouseUpFunction.clear();
+			mouseUpFunction = null;
+			position = null;
+			positionProperty = null;
+			positionOffset = null;
+			positionOffsetProperty = null;
+			size = null;
+			sizeProperty = null;
 		}
 		
 		/**
@@ -170,25 +195,30 @@ package com.ffcreations.ui.mouse
 		 */
 		public function contains(scenePoint:Point):Boolean
 		{
-			if (renderer)
+			if (_renderer)
 			{
-				return renderer.pointOccupied(scenePoint, null);
+				return _renderer.pointOccupied(scenePoint, null);
 			}
 			return scenePlace.contains(scenePoint.x, scenePoint.y);
 		}
 		
 		internal function mouseDown(data:MouseInputData):Boolean
 		{
-			var a:Boolean = mouseDownFunction != null ? (mouseDownFunction(data)) : true;
-			var b:Boolean = onMouseDown(data);
-			return a && b;
+			if (mouseDownFunction)
+			{
+				mouseDownFunction.call(data);
+			}
+			return onMouseDown(data);
 		}
 		
 		internal function mouseUp(data:MouseInputData):Boolean
 		{
-			var a:Boolean = mouseUpFunction != null ? (mouseUpFunction(data)) : true;
-			var b:Boolean = onMouseUp(data);
-			return a && b;
+			var passThrough:Boolean = onMouseUp(data);
+			if (mouseUpFunction)
+			{
+				mouseUpFunction.call(data);
+			}
+			return passThrough;
 		}
 		
 		/**

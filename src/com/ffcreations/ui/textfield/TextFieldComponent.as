@@ -1,20 +1,25 @@
 package com.ffcreations.ui.textfield
 {
+	import com.pblabs.engine.PBE;
 	import com.pblabs.engine.PBUtil;
 	import com.pblabs.engine.entity.PropertyReference;
 	import com.pblabs.rendering2D.DisplayObjectRenderer;
 	
 	import flash.geom.Point;
+	import flash.text.AntiAliasType;
 	import flash.text.TextField;
 	import flash.text.TextFieldType;
 	import flash.text.TextFormat;
+	
+	import spark.primitives.Line;
+	import flash.text.TextLineMetrics;
 	
 	/**
 	 * Component to create and handle a <code>TextField</code>.
 	 * @see flash.text.TextField
 	 * @author	Kleber Lopes da Silva (kleber.swf)
 	 */
-	public final class TextFieldComponent extends DisplayObjectRenderer
+	public class TextFieldComponent extends DisplayObjectRenderer
 	{
 		
 		
@@ -22,14 +27,8 @@ package com.ffcreations.ui.textfield
 		//   Fields 
 		//==========================================================
 		
-		private var _field:TextField = new TextField();
-		private var _autoHeight:Boolean;
-		
-		/**
-		 * Modifier to sum to the height when the <code>autoHeight</code> property is set.
-		 * @see #autoHeight
-		 */
-		public var autoHeightModifier:Number = 0;
+		protected var _field:TextField = new TextField();
+		protected var _autoHeight:Boolean;
 		
 		/**
 		 * Property where to get the text for this component.
@@ -56,8 +55,8 @@ package com.ffcreations.ui.textfield
 		 */
 		public function set autoHeight(value:Boolean):void
 		{
-			size.y = value ? 0 : _field.textHeight;
 			_autoHeight = value;
+			_transformDirty = true;
 		}
 		
 		/**
@@ -116,6 +115,14 @@ package com.ffcreations.ui.textfield
 		 * Whether the field is editable.
 		 * @see flash.text.TextField#type
 		 */
+		public function get editable():Boolean
+		{
+			return _field.type == TextFieldType.INPUT;
+		}
+		
+		/**
+		 * @private
+		 */
 		public function set editable(value:Boolean):void
 		{
 			_field.type = value ? TextFieldType.INPUT : TextFieldType.DYNAMIC;
@@ -150,6 +157,15 @@ package com.ffcreations.ui.textfield
 		}
 		
 		/**
+		 * The maximum number of characters that the field accepts.
+		 * @see flash.text.TextField#maxChars
+		 */
+		public function set maxChars(value:int):void
+		{
+			_field.maxChars = value;
+		}
+		
+		/**
 		 * Whether the field text is multiline.
 		 * @see flash.text.TextField#multiline
 		 * @see flash.text.TextField#wordWrap
@@ -157,6 +173,15 @@ package com.ffcreations.ui.textfield
 		public function set multiline(value:Boolean):void
 		{
 			_field.multiline = _field.wordWrap = value;
+		}
+		
+		/**
+		 * Whether the field is for password input.
+		 * @see flash.text.TextField#displayAsPassword
+		 */
+		public function set password(value:Boolean):void
+		{
+			_field.displayAsPassword = value;
 		}
 		
 		/**
@@ -240,6 +265,7 @@ package com.ffcreations.ui.textfield
 		{
 			_field.defaultTextFormat = value;
 			_field.text = _field.text;
+			_transformDirty = true;
 		}
 		
 		
@@ -268,7 +294,7 @@ package com.ffcreations.ui.textfield
 			super.updateProperties();
 			if (textProperty)
 			{
-				text = owner.getProperty(textProperty, "").toString();
+				text = owner.getProperty(textProperty, "");
 			}
 		}
 		
@@ -305,9 +331,9 @@ package com.ffcreations.ui.textfield
 				{
 					width = _field.textWidth;
 				}
-				if (height <= 0)
+				if (_autoHeight)
 				{
-					height = _field.textHeight + autoHeightModifier;
+					height = (_field.defaultTextFormat && _field.defaultTextFormat.size ? _field.defaultTextFormat.size as Number : 12) * _field.numLines + 4; // 4: gutter
 				}
 			}
 			if (_field.border)
@@ -343,6 +369,14 @@ package com.ffcreations.ui.textfield
 			_field.appendText(text);
 		}
 		
+		public function focus():void
+		{
+			PBE.mainStage.focus = _field;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
 		protected override function onRemove():void
 		{
 			super.onRemove();

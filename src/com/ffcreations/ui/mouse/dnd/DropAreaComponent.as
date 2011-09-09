@@ -188,8 +188,8 @@ package com.ffcreations.ui.mouse.dnd
 		 */
 		public function set dropPositionController(value:IDropPositionController):void
 		{
-			_dropPositionController = value;
 			value.dropArea = this;
+			_dropPositionController = value;
 		}
 		
 		/**
@@ -372,6 +372,12 @@ package com.ffcreations.ui.mouse.dnd
 			dropItem(comp);
 		}
 		
+		public function removeItem(comp:DraggableComponent):void
+		{
+			itemDragStarted(comp);
+			comp.dropFail();
+		}
+		
 		private function getItemIndexAt(pos:Point):int
 		{
 			return _dropPositionController.getItemIndexAt(items, pos);
@@ -394,7 +400,7 @@ package com.ffcreations.ui.mouse.dnd
 			{
 				Logger.fatal(this, "dragStated", "Component [" + comp.name + "] is not in drag area [" + name + "].");
 			}
-			_items.splice(index, 1)[0].dropArea = null;
+			_items.splice(index, 1)[0]._dropArea = null;
 			_dropPositionController.dragItem(_items, index);
 		}
 		

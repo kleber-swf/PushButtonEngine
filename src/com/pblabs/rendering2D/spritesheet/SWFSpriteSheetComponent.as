@@ -195,7 +195,7 @@ package com.pblabs.rendering2D.spritesheet
 
             _frames = onRasterize(_clip);
             //_bounds = _clip.getBounds(_clip);
-            center = new Point(-_bounds.x, -_bounds.y);
+			//center = new Point(-_bounds.x*0.5, -_bounds.y*0.5);
             setCachedFrames(new CachedFramesData(_frames, _bounds, _clip));
         }
 

@@ -33,12 +33,13 @@ package com.ffcreations.ui.mouse.dnd
 		//==========================================================
 		
 		private var _resetPositionProperty:PropertyReference;
-		private var _resetPosition:Point;
 		private var _oldLayerIndex:int;
 		private var _oldLayerIndexProperty:PropertyReference;
 		private var _dragging:Boolean;
 		
-		internal var dropArea:DropAreaComponent;
+		protected var _resetPosition:Point;
+		
+		internal var _dropArea:DropAreaComponent;
 		
 		/**
 		 * Whether the drag component must lock the center of the dragged item in the mouse position.
@@ -71,6 +72,16 @@ package com.ffcreations.ui.mouse.dnd
 		//==========================================================
 		//   Properties 
 		//==========================================================
+		
+		protected function get dropArea():DropAreaComponent
+		{
+			return _dropArea;
+		}
+		
+		protected function set dropArea(value:DropAreaComponent):void
+		{
+			_dropArea = value;
+		}
 		
 		protected function get dragging():Boolean
 		{
@@ -133,7 +144,7 @@ package com.ffcreations.ui.mouse.dnd
 		protected override function onRemove():void
 		{
 			super.onRemove();
-			dropArea = null;
+			_dropArea = null;
 		}
 		
 		/**
@@ -179,10 +190,17 @@ package com.ffcreations.ui.mouse.dnd
 			PBE.mouseInputManager.stopDrag();
 			if (resetPositionOnDropFails)
 			{
-				owner.setProperty(positionProperty, _resetPosition);
+				if (positionProperty)
+				{
+					owner.setProperty(positionProperty, _resetPosition);
+				}
+				else
+				{
+					position = _resetPosition;
+				}
 			}
 			var passThrough:Boolean = onDropFail();
-			dropArea = null;
+			_dropArea = null;
 			return passThrough;
 		}
 		
@@ -197,7 +215,7 @@ package com.ffcreations.ui.mouse.dnd
 		
 		ffc_internal final function dropSuccess(dropArea:DropAreaComponent):Boolean
 		{
-			this.dropArea = dropArea;
+			this._dropArea = dropArea;
 			return onDropSuccess(dropArea);
 		}
 		
@@ -259,9 +277,9 @@ package com.ffcreations.ui.mouse.dnd
 				return onDragFail(data);
 			}
 			PBE.mouseInputManager.startDrag(this, lockCenter, pixelsToStartDrag);
-			if (dropArea)
+			if (_dropArea)
 			{
-				dropArea.itemDragStarted(this);
+				_dropArea.itemDragStarted(this);
 			}
 			
 			return false;

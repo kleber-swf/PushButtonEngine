@@ -117,10 +117,10 @@ package com.pblabs.rendering2D
 		        return;
 		    
             if (!clip)
+			{
                 clip = getClipInstance();
-                
-            if (!clip)
-                return;
+                if (!clip) return;
+			}
 
             if(_clipDirty)
             {

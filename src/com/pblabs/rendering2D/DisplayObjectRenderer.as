@@ -50,6 +50,11 @@ package com.pblabs.rendering2D
         public var positionProperty:PropertyReference;
         
         /**
+         * If set, position offset is gotten from this property every frame.
+         */
+        public var positionOffsetProperty:PropertyReference;
+        
+        /**
          * if set this to false, positions will be handeled with numbers insteed of integers
          * makes slow movement smoother for example
          */
@@ -692,6 +697,11 @@ package com.pblabs.rendering2D
                 else
                     position = pos;
             }
+			
+			var offset:Point = owner.getProperty(positionOffsetProperty) as Point;
+			if (offset) {
+				positionOffset = offset;
+			}
             
             // Scale.
             var scale:Point = owner.getProperty(scaleProperty) as Point;

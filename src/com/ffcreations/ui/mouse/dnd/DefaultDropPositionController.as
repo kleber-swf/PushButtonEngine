@@ -23,6 +23,8 @@ package com.ffcreations.ui.mouse.dnd
 		//==========================================================
 		//   Properties 
 		//==========================================================
+		public var finalPositionOffset:Point;
+		public var finalPositionOffsetProperty:PropertyReference;
 		
 		/**
 		 * @inheritDoc
@@ -52,6 +54,11 @@ package com.ffcreations.ui.mouse.dnd
 				else
 				{
 					pos = _dropArea.scenePosition;
+				}
+				var offset:Point = _dropArea.owner.getProperty(finalPositionOffsetProperty, finalPositionOffset);
+				if (offset)
+				{
+					pos = pos.add(offset);
 				}
 				items[i].updatePosition(pos.add(items[i].finalPositionOffset));
 			}

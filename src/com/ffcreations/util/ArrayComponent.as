@@ -1,15 +1,24 @@
 package com.ffcreations.util
 {
-	import com.pblabs.engine.entity.EntityComponent;
 	import com.pblabs.engine.entity.IEntity;
 	import com.pblabs.engine.entity.IEntityComponent;
 	
 	public dynamic class ArrayComponent extends Array implements IEntityComponent
 	{
 		
+		
+		//==========================================================
+		//   Fields 
+		//==========================================================
+		
 		private var _isRegistered:Boolean = false;
 		private var _owner:IEntity = null;
 		private var _name:String = null;
+		
+		
+		//==========================================================
+		//   Properties 
+		//==========================================================
 		
 		/**
 		 * @inheritDoc
@@ -42,6 +51,11 @@ package com.ffcreations.util
 		{
 			_owner = value;
 		}
+		
+		
+		//==========================================================
+		//   Functions 
+		//==========================================================
 		
 		/**
 		 * @inheritDoc

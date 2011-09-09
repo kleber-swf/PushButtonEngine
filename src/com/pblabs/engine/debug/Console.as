@@ -167,8 +167,12 @@ package com.pblabs.engine.debug
                 ensureCommandsOrdered();
                 
                 Logger.print(Console, "Keyboard shortcuts: ");
-                Logger.print(Console, "[SHIFT]-TAB - Cycle through autocompleted commands.");
-                Logger.print(Console, "PGUP/PGDN   - Page log view up/down a page.");
+                Logger.print(Console, "[SHIFT]-TAB      - Cycle through autocompleted commands.");
+                Logger.print(Console, "PGUP/PGDN        - Page log view up/down a page.");
+                Logger.print(Console, "CTRL-[PGUP/PGDN] - Decrease/increase console window height.");
+                Logger.print(Console, "CTRL-[NUMPAD+/-] - Decrease/increase console alpha.");
+                Logger.print(Console, "F11              - Cycle through console states (minimized/normal/maximized).");
+                Logger.print(Console, "F12              - Toggle console bottom layout.");
                 Logger.print(Console, "");
                 
                 // Display results.
@@ -236,6 +240,9 @@ package com.pblabs.engine.debug
             
             registerCommand("setPoint", _setPointProperty,
                 "Sets a point property reference. usage: set #entity.component.property 100 -200");
+            
+            registerCommand("setString", _setStringProperty,
+                "Sets a string property reference. usage: set #entity.component.property \"text\"");
             
             registerCommand("get", _getProperty,
                 "Gets a property reference. usage: get #entity.component.property");
@@ -306,6 +313,20 @@ package com.pblabs.engine.debug
             var value:Point = new Point(x, y);
             
             entity.setProperty(pr, value);
+        }
+        
+        protected static function _setStringProperty(reference:String, ...args):void
+        {
+            if (reference.substr(0, 1) != "#" && reference.substr(0, 1) != "!")
+            {
+                Logger.warn(Console, "setString", "set can only be used on named entites or templates. " +
+                    "The PropertyReference must start with # or !.");
+                return;
+            }
+            
+            var entity:IEntity = PBE.lookupEntity("console");
+            var pr:PropertyReference = new PropertyReference(reference);
+            entity.setProperty(pr, args.join(" "));
         }
         
         protected static function _getProperty(reference:String):void
