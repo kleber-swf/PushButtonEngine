@@ -13,6 +13,7 @@ package com.ffcreations.rendering2D
 	
 	/**
 	 * Draws a shape filled with a bitmap. A mix of SpriteRenderer and ShapeRenderer.
+	 * Does not use scale to resize itself.
 	 *
 	 * @see com.pblabs.rendering2D.SimpleShapeRenderer
 	 * @see com.pblabs.rendering2D.SpriteRenderer
@@ -45,6 +46,7 @@ package com.ffcreations.rendering2D
 		/**
 		 * Transform matrix to the bitmap.
 		 * @see flash.geom.Matrix
+		 * @default null
 		 */
 		public function get bitmapTransformMatrix():Matrix
 		{
@@ -264,7 +266,7 @@ package com.ffcreations.rendering2D
 			// Draw one or both shapes.
 			if (isSquare)
 			{
-				g.drawRect(-radius, -radius, radius * 2, radius * 2);
+				g.drawRect(position.x - size.x * 0.5, position.y - size.y * 0.5, size.x, size.y);
 			}
 			
 			if (isCircle)
@@ -279,6 +281,27 @@ package com.ffcreations.rendering2D
 			{
 				Logger.error(this, "redraw", "Neither square nor circle, what am I?");
 			}
+		}
+		
+		/**
+		 * Updates the transform but without scaling the object.
+		 */
+		public override function updateTransform(updateProps:Boolean = false):void
+		{
+			if (!displayObject)
+			{
+				return;
+			}
+			
+			if (updateProps)
+			{
+				updateProperties();
+			}
+			displayObject.alpha = _alpha;
+			displayObject.blendMode = _blendMode;
+			displayObject.visible = (alpha > 0);
+			
+			_transformDirty = false;
 		}
 		
 		//--------------------------------------
