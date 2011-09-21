@@ -672,6 +672,17 @@ package com.pblabs.rendering2D
         {
             if(!owner)
                 return;
+			
+			// Alpha.
+			if (alphaProperty)
+			{
+				this.alpha = owner.getProperty(alphaProperty) as Number;
+			}
+			
+			if (alpha == 0)
+			{
+				return;
+			}
             
             // Sync our zIndex.
             if (zIndexProperty)
@@ -720,22 +731,13 @@ package com.pblabs.rendering2D
             // Rotation.
             if (rotationProperty)
             {
-                var rot:Number = owner.getProperty(rotationProperty) as Number;
-                this.rotation = rot;
-            }
-            
-            // Alpha.
-            if (alphaProperty)
-            {
-                var alpha:Number = owner.getProperty(alphaProperty) as Number;
-                this.alpha = alpha;
+                this.rotation = owner.getProperty(rotationProperty) as Number;
             }
 
 			// Blend Mode.
 			if (blendModeProperty)
 			{
-				var blendMode:String = owner.getProperty(blendModeProperty) as String;
-				this.blendMode = blendMode;
+				this.blendMode = owner.getProperty(blendModeProperty) as String;
 			}			
 			
             // Registration Point.

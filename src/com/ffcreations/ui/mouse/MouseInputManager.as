@@ -69,8 +69,10 @@ package com.ffcreations.ui.mouse
 		 */
 		public function MouseInputManager()
 		{
-			PBE.mainStage.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
-			PBE.mainStage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+			//			PBE.mainStage.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+			//			PBE.mainStage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+			PBE.inputManager.addDelegateCallback(MouseEvent.MOUSE_DOWN, onMouseDown);
+			PBE.inputManager.addDelegateCallback(MouseEvent.MOUSE_UP, onMouseUp);
 		}
 		
 		

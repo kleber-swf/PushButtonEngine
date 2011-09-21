@@ -9,11 +9,8 @@
 package com.pblabs.engine.debug
 {
 	import com.pblabs.engine.PBE;
-	import com.pblabs.engine.core.InputKey;
-	import com.pblabs.engine.core.InputManager;
 	
 	import flash.events.KeyboardEvent;
-	import flash.ui.Keyboard;
 
 	/**
 	 * LogAppender for displaying log messages in a LogViewer. The LogViewer will be
@@ -26,7 +23,7 @@ package com.pblabs.engine.debug
 	   
 		public function UIAppender()
 		{
-			PBE.inputManager.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			PBE.mainStage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 			
 			_logViewer = new LogViewer();
 		}

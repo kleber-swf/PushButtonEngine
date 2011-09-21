@@ -213,7 +213,7 @@ package com.pblabs.engine.core
 		/**
 		 * instantiates all templates or entities referenced by the specified group.
 		 *
-		 * @param name The name of the group to instantiate. This correspands to the
+		 * @param name The name of the group to instantiate. This corresponds to the
 		 * name attribute on the group tag in the XML.
 		 *
 		 * @return An array containing all the instantiated objects. If the group

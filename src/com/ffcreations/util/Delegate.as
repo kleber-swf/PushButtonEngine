@@ -61,7 +61,8 @@ package com.ffcreations.util
 			{
 				return;
 			}
-			for each (var f:Function in _functions)
+			var funcs:Array = _functions.slice();
+			for each (var f:Function in funcs)
 			{
 				f.apply(null, params);
 			}

@@ -217,6 +217,7 @@ package com.ffcreations.ui.mouse
 			if (mouseUpFunction)
 			{
 				mouseUpFunction.call(data);
+				return false;
 			}
 			return passThrough;
 		}
