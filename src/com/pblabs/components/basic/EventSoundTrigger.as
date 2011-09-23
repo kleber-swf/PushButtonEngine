@@ -39,7 +39,7 @@ package com.pblabs.components.basic
             // Register events.
             var ed:IEventDispatcher=owner.eventDispatcher;
             for (var key:String in events)
-                ed.addEventListener(key, soundEventHandler);
+                ed.addEventListener(key, soundEventHandler, false, 0, true);
             
             if (!_firedStartSound && startSound)
             {

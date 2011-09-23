@@ -191,6 +191,7 @@ package com.ffcreations.rendering2D
 		{
 			if (_resource)
 			{
+				_resource.removeEventListener(ResourceEvent.LOADED_EVENT, onResourceUpdated);
 				PBE.resourceManager.unload(_resource.filename, ImageResource);
 				_resource = null;
 				_loaded = false;

@@ -145,7 +145,7 @@ package com.pblabs.sound
 				playing = true;
 				
 				// notify when this sound is done (all loops completed)
-				channel.addEventListener(Event.SOUND_COMPLETE, onSoundComplete);
+				channel.addEventListener(Event.SOUND_COMPLETE, onSoundComplete, false, 0, true);
 			}
 			catch (e:Error)
 			{

@@ -155,8 +155,8 @@ package com.pblabs.engine.core
             return;
          }
          
-         PBE.templateManager.addEventListener(TemplateManager.LOADED_EVENT, onFileLoaded);
-         PBE.templateManager.addEventListener(TemplateManager.FAILED_EVENT, onFileLoadFailed);
+         PBE.templateManager.addEventListener(TemplateManager.LOADED_EVENT, onFileLoaded, false, 0, true);
+         PBE.templateManager.addEventListener(TemplateManager.FAILED_EVENT, onFileLoadFailed, false, 0, true);
          
          _isReady = true;
          dispatchEvent(new LevelEvent(LevelEvent.READY_EVENT, -1));
@@ -291,7 +291,7 @@ package com.pblabs.engine.core
             return null;
          }
          
-         entity.eventDispatcher.addEventListener("EntityDestroyed", onEntityDestroyed);
+         entity.eventDispatcher.addEventListener("EntityDestroyed", onEntityDestroyed, false, 0, true);
          _loadedEntities.push(entity);
          
          return entity;

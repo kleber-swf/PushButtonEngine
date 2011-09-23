@@ -100,7 +100,7 @@ package com.pblabs.engine.core
             return;
          
          _connection = new LocalConnection();
-         _connection.addEventListener(StatusEvent.STATUS, onConnectionStatus);
+         _connection.addEventListener(StatusEvent.STATUS, onConnectionStatus, false, 0, true);
          _connection.send("_SchemaConnection", "OnSchemaReceived", "START", "");
          
          _failed = false;

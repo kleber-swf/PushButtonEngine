@@ -69,8 +69,8 @@ package com.ffcreations.ui.mouse
 		 */
 		public function MouseInputManager()
 		{
-			//			PBE.mainStage.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
-			//			PBE.mainStage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+			//			PBE.mainStage.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown, false, 0, true);
+			//			PBE.mainStage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp, false, 0, true);
 			PBE.inputManager.addDelegateCallback(MouseEvent.MOUSE_DOWN, onMouseDown);
 			PBE.inputManager.addDelegateCallback(MouseEvent.MOUSE_UP, onMouseUp);
 		}
@@ -129,7 +129,7 @@ package com.ffcreations.ui.mouse
 			_positionBeforeDrag.x = _currentMouseData._event.stageX;
 			_positionBeforeDrag.y = _currentMouseData._event.stageY;
 			_pixelsToStartDrag = pixelsToStartDrag;
-			PBE.mainStage.addEventListener(MouseEvent.MOUSE_MOVE, onBeforeDrag);
+			PBE.inputManager.addDelegateCallback(MouseEvent.MOUSE_MOVE, onBeforeDrag);
 		}
 		
 		private function dropFail():void
@@ -139,8 +139,8 @@ package com.ffcreations.ui.mouse
 				_dragComponent.dropFail();
 				_dragComponent = null;
 			}
-			PBE.mainStage.removeEventListener(MouseEvent.MOUSE_MOVE, onDrag);
-			PBE.mainStage.removeEventListener(MouseEvent.MOUSE_MOVE, onBeforeDrag);
+			PBE.inputManager.removeDelegateCallback(MouseEvent.MOUSE_MOVE, onDrag);
+			PBE.inputManager.removeDelegateCallback(MouseEvent.MOUSE_MOVE, onBeforeDrag);
 		}
 		
 		ffc_internal function stopDrag():void
@@ -150,8 +150,8 @@ package com.ffcreations.ui.mouse
 				_dragComponent.stopDrag();
 				_dragComponent = null;
 			}
-			PBE.mainStage.removeEventListener(MouseEvent.MOUSE_MOVE, onDrag);
-			PBE.mainStage.removeEventListener(MouseEvent.MOUSE_MOVE, onBeforeDrag);
+			PBE.inputManager.removeDelegateCallback(MouseEvent.MOUSE_MOVE, onDrag);
+			PBE.inputManager.removeDelegateCallback(MouseEvent.MOUSE_MOVE, onBeforeDrag);
 		}
 		
 		//--------------------------------------
@@ -166,8 +166,8 @@ package com.ffcreations.ui.mouse
 			{
 				return;
 			}
-			PBE.mainStage.removeEventListener(MouseEvent.MOUSE_MOVE, onBeforeDrag);
-			PBE.mainStage.addEventListener(MouseEvent.MOUSE_MOVE, onDrag);
+			PBE.inputManager.removeDelegateCallback(MouseEvent.MOUSE_MOVE, onBeforeDrag);
+			PBE.inputManager.removeDelegateCallback(MouseEvent.MOUSE_MOVE, onDrag);
 			_currentMouseData._action = MouseInputData.MOUSE_DRAG;
 			_dragComponent = _currentMouseData._component as DraggableComponent;
 			_dragComponent.startDrag(_currentMouseData, DragLayerIndex);
@@ -245,8 +245,8 @@ package com.ffcreations.ui.mouse
 			}
 			
 			//TODO this shouldn't be inside the "Handle drop" statement?
-			PBE.mainStage.removeEventListener(MouseEvent.MOUSE_MOVE, onDrag);
-			PBE.mainStage.removeEventListener(MouseEvent.MOUSE_MOVE, onBeforeDrag);
+			PBE.inputManager.removeDelegateCallback(MouseEvent.MOUSE_MOVE, onDrag);
+			PBE.inputManager.removeDelegateCallback(MouseEvent.MOUSE_MOVE, onBeforeDrag);
 			
 			i = 0;
 			for (len = _components.length; i < len; i++)

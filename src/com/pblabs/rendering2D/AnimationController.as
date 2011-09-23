@@ -342,7 +342,7 @@ package com.pblabs.rendering2D
 			
 			if (owner.eventDispatcher && changeAnimationEvent)
 			{
-				owner.eventDispatcher.addEventListener(changeAnimationEvent, animationChangedHandler);
+				owner.eventDispatcher.addEventListener(changeAnimationEvent, animationChangedHandler, false, 0, true);
 			}
 		}
 		

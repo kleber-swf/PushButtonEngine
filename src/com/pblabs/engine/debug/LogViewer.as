@@ -90,8 +90,8 @@ package com.pblabs.engine.debug
 			if (!contains(_outputBitmap))
 			{
 				_outputBitmap.name = "ConsoleOutput";
-				addEventListener(MouseEvent.CLICK, onBitmapClick);
-				addEventListener(MouseEvent.DOUBLE_CLICK, onBitmapDoubleClick);
+				addEventListener(MouseEvent.CLICK, onBitmapClick, false, 0, true);
+				addEventListener(MouseEvent.DOUBLE_CLICK, onBitmapDoubleClick, false, 0, true);
 				
 				addChild(_outputBitmap);
 				addChild(_input);

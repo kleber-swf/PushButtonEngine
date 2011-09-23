@@ -147,7 +147,7 @@ package com.pblabs.engine.core
             
             lastTime = -1.0;
             elapsed = 0.0;
-            PBE.mainStage.addEventListener(Event.ENTER_FRAME, onFrame);
+            PBE.mainStage.addEventListener(Event.ENTER_FRAME, onFrame, false, 0, true);
             started = true;
         }
         

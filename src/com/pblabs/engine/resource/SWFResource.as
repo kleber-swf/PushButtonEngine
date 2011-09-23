@@ -118,7 +118,7 @@ package com.pblabs.engine.resource
 			{
 				// a mock to make contentLoaderInfo for embedded swf
 				var assetLoader:Loader = new Loader();
-				assetLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onAssetLoaderComplete);
+				assetLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onAssetLoaderComplete, false, 0, true);
 				assetLoader.loadBytes(data.movieClipData as ByteArray, new LoaderContext(false, ApplicationDomain.currentDomain));
 				return;
 			}

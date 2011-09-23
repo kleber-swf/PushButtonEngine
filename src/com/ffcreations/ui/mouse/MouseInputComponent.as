@@ -167,7 +167,7 @@ package com.ffcreations.ui.mouse
 			PBE.mouseInputManager.addComponent(this);
 			if (!(_renderer || sizeProperty || size))
 			{
-				Logger.fatal(this, "onAdd", "Mouse component on [" + owner.name + " -> " + this.name + "] without place for check. Set renderer, sizeProperty or size on this component.");
+				Logger.warn(this, "onAdd", "Mouse component on [" + owner.name + " -> " + this.name + "] without place for check. Set renderer, sizeProperty or size on this component.");
 			}
 		}
 		

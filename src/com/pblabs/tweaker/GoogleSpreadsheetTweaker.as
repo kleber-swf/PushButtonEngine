@@ -122,12 +122,12 @@ package com.pblabs.tweaker
          ur.data["_url"] = spreadsheetUrl;
 
          var loader:URLLoader = new URLLoader();
-         loader.addEventListener(Event.COMPLETE, onLoadComplete);
-         loader.addEventListener(IOErrorEvent.IO_ERROR, onLoadFail);
-         loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onLoadFail);
+         loader.addEventListener(Event.COMPLETE, onLoadComplete, false, 0, true);
+         loader.addEventListener(IOErrorEvent.IO_ERROR, onLoadFail, false, 0, true);
+         loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onLoadFail, false, 0, true);
          loader.addEventListener(HTTPStatusEvent.HTTP_STATUS, 
                function(event:HTTPStatusEvent):void { Logger.print(this, "Got status back: " + event.toString()); }
-               );
+			   , false, 0, true);
          loader.load(ur);
          
          Logger.print(this, "Requesting spreadsheet " + spreadsheetUrl);

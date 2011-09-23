@@ -23,7 +23,7 @@ package com.pblabs.engine.debug
 	   
 		public function UIAppender()
 		{
-			PBE.mainStage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			PBE.mainStage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 0, true);
 			
 			_logViewer = new LogViewer();
 		}

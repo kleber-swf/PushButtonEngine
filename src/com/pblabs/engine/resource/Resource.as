@@ -121,9 +121,9 @@ package com.pblabs.engine.resource
 
             var loader:URLLoader = new URLLoader();
             loader.dataFormat = URLLoaderDataFormat.BINARY;
-            loader.addEventListener(Event.COMPLETE, onDownloadComplete);
-            loader.addEventListener(IOErrorEvent.IO_ERROR, onDownloadError);
-            loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onDownloadSecurityError);
+            loader.addEventListener(Event.COMPLETE, onDownloadComplete, false, 0, true);
+            loader.addEventListener(IOErrorEvent.IO_ERROR, onDownloadError, false, 0, true);
+            loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onDownloadSecurityError, false, 0, true);
 
             var request:URLRequest = new URLRequest();
             request.url = filename;
@@ -148,9 +148,9 @@ package com.pblabs.engine.resource
                 throw new Error("Default Resource can only process ByteArrays!");
 
             var loader:Loader = new Loader();
-            loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onLoadComplete);
-            loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onDownloadError);
-            loader.contentLoaderInfo.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onDownloadSecurityError);
+            loader.contentLoaderInfo.addEventListener(Event.COMPLETE, onLoadComplete, false, 0, true);
+            loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onDownloadError, false, 0, true);
+            loader.contentLoaderInfo.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onDownloadSecurityError, false, 0, true);
             loader.loadBytes(data);
 
             // Keep reference so the Loader isn't GC'ed.

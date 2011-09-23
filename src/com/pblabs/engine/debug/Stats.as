@@ -39,7 +39,7 @@ package com.pblabs.engine.debug
     {
         public function Stats()
         {
-            addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+            addEventListener(Event.ADDED_TO_STAGE, onAddedToStage, false, 0, true);
         }
 
         private var fps:int, timer:int, ms:int, msPrev:int = 0;
@@ -106,10 +106,10 @@ package com.pblabs.engine.debug
 
             rectangle = new Rectangle(0, 0, 1, graph.height);
 
-            addEventListener(MouseEvent.CLICK, onClick);
-            addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
-            addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
-            addEventListener(Event.ENTER_FRAME, update);
+            addEventListener(MouseEvent.CLICK, onClick, false, 0, true);
+            addEventListener(MouseEvent.MOUSE_OVER, onMouseOver, false, 0, true);
+            addEventListener(MouseEvent.MOUSE_OUT, onMouseOut, false, 0, true);
+            addEventListener(Event.ENTER_FRAME, update, false, 0, true);
         }
 
         private function onClick(event:MouseEvent):void

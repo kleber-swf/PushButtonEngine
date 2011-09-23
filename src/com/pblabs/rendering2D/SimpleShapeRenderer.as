@@ -173,7 +173,10 @@ package com.pblabs.rendering2D
 			{
             	g.lineStyle(_lineSize, _lineColor, _lineAlpha);
 			}
-            g.beginFill(_fillColor, _fillAlpha);
+			if (_fillAlpha > 0)
+			{
+            	g.beginFill(_fillColor, _fillAlpha);
+			}
 
             // Draw one or both shapes.
             if(isSquare)

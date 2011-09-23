@@ -147,10 +147,10 @@ package com.pblabs.engine.resource
             {
                 // Still in process, so just hook up to its events.
                 if (onLoaded != null)
-                    resource.addEventListener(ResourceEvent.LOADED_EVENT, function (event:Event):void { onLoaded(resource); } );
+                    resource.addEventListener(ResourceEvent.LOADED_EVENT, function (event:Event):void { onLoaded(resource); } , false, 0, true);
                 
                 if (onFailed != null)
-                    resource.addEventListener(ResourceEvent.FAILED_EVENT, function (event:Event):void { onFailed(resource); } );
+                    resource.addEventListener(ResourceEvent.FAILED_EVENT, function (event:Event):void { onFailed(resource); } , false, 0, true);
             }
             
             // Don't forget to bump its ref count.

@@ -55,7 +55,7 @@ package com.ffcreations.util
 		 * Calls all installed function in order that was intalled.
 		 * @param params Params to pass directly to the functions. Attempt to the signature.
 		 */
-		public function call(... params):void
+		public function call(... params):*
 		{
 			if (_functions.length == 0)
 			{
@@ -64,8 +64,13 @@ package com.ffcreations.util
 			var funcs:Array = _functions.slice();
 			for each (var f:Function in funcs)
 			{
-				f.apply(null, params);
+				var r:* = f.apply(null, params);
+				if (r)
+				{
+					return r;
+				}
 			}
+			return null;
 		}
 	}
 }

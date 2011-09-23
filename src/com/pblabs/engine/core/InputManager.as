@@ -46,19 +46,92 @@ package com.pblabs.engine.core
 		
 		
 		//==========================================================
+		//   Properties 
+		//==========================================================
+		
+		public function get mouseMoveEnabled():Boolean
+		{
+			return PBE.mainClass.parent.hasEventListener(MouseEvent.MOUSE_MOVE);
+		}
+		
+		public function set mouseMoveEnabled(value:Boolean):void
+		{
+			if (value)
+			{
+				PBE.mainClass.parent.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove, false, 0, true);
+			}
+			else
+			{
+				PBE.mainClass.parent.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
+			}
+		}
+		
+		public function get mouseOutEnabled():Boolean
+		{
+			return PBE.mainClass.parent.hasEventListener(MouseEvent.MOUSE_OUT);
+		}
+		
+		public function set mouseOutEnabled(value:Boolean):void
+		{
+			if (value)
+			{
+				PBE.mainClass.parent.addEventListener(MouseEvent.MOUSE_OUT, onMouseOut, false, 0, true);
+			}
+			else
+			{
+				PBE.mainClass.parent.removeEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
+			}
+		}
+		
+		public function get mouseOverEnabled():Boolean
+		{
+			return PBE.mainClass.parent.hasEventListener(MouseEvent.MOUSE_OVER);
+		}
+		
+		public function set mouseOverEnabled(value:Boolean):void
+		{
+			if (value)
+			{
+				PBE.mainClass.parent.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver, false, 0, true);
+			}
+			else
+			{
+				PBE.mainClass.parent.removeEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
+			}
+		}
+		
+		public function get mouseWheelEnabled():Boolean
+		{
+			return PBE.mainClass.parent.hasEventListener(MouseEvent.MOUSE_WHEEL);
+		}
+		
+		public function set mouseWheelEnabled(value:Boolean):void
+		{
+			if (value)
+			{
+				PBE.mainClass.parent.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel, false, 0, true);
+			}
+			else
+			{
+				PBE.mainClass.parent.removeEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
+			}
+		}
+		
+		
+		//==========================================================
 		//   Constructor 
 		//==========================================================
 		
 		public function InputManager()
 		{
-			PBE.mainStage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-			PBE.mainStage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
-			PBE.mainClass.parent.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
-			PBE.mainClass.parent.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
-			PBE.mainClass.parent.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
-			PBE.mainClass.parent.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
-			PBE.mainClass.parent.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
-			PBE.mainClass.parent.addEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
+			PBE.mainStage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 0, true);
+			PBE.mainStage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp, false, 0, true);
+			PBE.mainClass.parent.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown, false, 0, true);
+			PBE.mainClass.parent.addEventListener(MouseEvent.MOUSE_UP, onMouseUp, false, 0, true);
+			PBE.mainClass.parent.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove, false, 0, true);
+			PBE.mainClass.parent.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel, false, 0, true);
+			PBE.mainClass.parent.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver, false, 0, true);
+			PBE.mainClass.parent.addEventListener(MouseEvent.MOUSE_OUT, onMouseOut, false, 0, true);
 			
 			// Add ourselves with the highest priority, so that our update happens at the beginning of the next tick.
 			// This will keep objects processing afterwards as up-to-date as possible when using keyJustPressed() or keyJustReleased()

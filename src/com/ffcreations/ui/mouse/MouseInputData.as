@@ -50,5 +50,15 @@ package com.ffcreations.ui.mouse
 		{
 			return _scenePos;
 		}
+		
+		
+		//==========================================================
+		//   Functions 
+		//==========================================================
+		
+		public function toString():String
+		{
+			return "EventType:" + _event.type + ", ScenePos:" + _scenePos.toString() + ", Component:" + _component.name + ", Action:" + _action + ", LockCenter:" + lockCenter;
+		}
 	}
 }

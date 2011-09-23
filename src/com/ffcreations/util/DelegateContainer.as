@@ -3,6 +3,7 @@ package com.ffcreations.util
 	import flash.events.Event;
 	import flash.utils.Dictionary;
 	
+	
 	public class DelegateContainer
 	{
 		
@@ -27,7 +28,6 @@ package com.ffcreations.util
 		//==========================================================
 		//   Functions 
 		//==========================================================
-		
 		public function addDelegateCallback(type:String, callback:Function):void
 		{
 			if (!_delegates.hasOwnProperty(type))
@@ -55,13 +55,13 @@ package com.ffcreations.util
 			return _delegates.hasOwnProperty(type);
 		}
 		
-		public function callDelegate(data:Event):void
+		public function callDelegate(data:Event):*
 		{
 			if (!_delegates.hasOwnProperty(data.type))
 			{
 				return;
 			}
-			_delegates[data.type].call(data);
+			return _delegates[data.type].call(data);
 		}
 	}
 }

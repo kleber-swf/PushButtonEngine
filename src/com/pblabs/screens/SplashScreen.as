@@ -40,7 +40,7 @@ package com.pblabs.screens
                 {
                     ScreenManager.instance.goto(next);
                 }
-            );
+				, false, 0, true);
  		}
         
         public var next:String = "";

@@ -3,13 +3,28 @@ package com.ffcreations.rendering2D
 	import com.pblabs.engine.entity.PropertyReference;
 	import com.pblabs.rendering2D.SpriteRenderer;
 	
+	import flash.display.Graphics;
 	import flash.display.Sprite;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
+	import spark.primitives.Graphic;
+	
 	/**
 	 * A Renderer with a mask.
+	 * This component can be particularly confusing because of <code>maskPosition<code>
+	 * and <code>maskRegistrationPoint<code> properties, so, here is an example:
+	 * @example Suppose you want to create a volume bar. Set the parameters as follow:
+	 * <pre>
+	 * // position the mask on the left border of the texture
+	 * maskRenderer.maskPostion = new Point(-0.5, 0);
+	 * // position the mask registration point on its left border
+	 * maskRenderer.maskRegistrationPoint = new Point(-0.5, 0);
+	 * </pre>
+	 * This will make the mask be resized (through the <code>maskScale</code> property)
+	 * only in the right side. Just like a volume bar should be.
+	 *
 	 * @author Kleber Lopes da Silva (kleber.swf)
 	 */
 	public class MaskRenderer extends SpriteRenderer
@@ -20,14 +35,14 @@ package com.ffcreations.rendering2D
 		//   Fields 
 		//==========================================================
 		
-		protected var _maskSize:Point = new Point();
+		protected var _maskScale:Point = new Point(1, 1);
 		protected var _maskPosition:Point = new Point();
-		protected var _maskRegistrationPoint:Point = new Point(0.5, 0.5);
+		protected var _maskRegistrationPoint:Point = new Point();
 		
 		/**
-		 * Where to get the mask size property.
+		 * Where to get the mask scale property.
 		 */
-		public var maskSizeProperty:PropertyReference;
+		public var maskScaleProperty:PropertyReference;
 		
 		/**
 		 * Where to get the mask offset property.
@@ -40,24 +55,8 @@ package com.ffcreations.rendering2D
 		//==========================================================
 		
 		/**
-		 * Mask registration point. Keep the value beetween 0 and 1 to get an inner point.
-		 */
-		public function get maskRegistrationPoint():Point
-		{
-			return _maskRegistrationPoint;
-		}
-		
-		/**
-		 * @private
-		 */
-		public function set maskRegistrationPoint(value:Point):void
-		{
-			_maskRegistrationPoint = value;
-			_transformDirty = true;
-		}
-		
-		/**
 		 * Mask position relative to the displayObject center.
+		 * Keep the values between -0.5 and 0.5 to get an inner texture position.
 		 */
 		public function get maskPosition():Point
 		{
@@ -74,20 +73,38 @@ package com.ffcreations.rendering2D
 		}
 		
 		/**
-		 * Mask size.
+		 * Mask registration point.
+		 * Keep the values beetween -0.5 and 0.5 to get an inner mask point.
 		 */
-		public function get maskSize():Point
+		public function get maskRegistrationPoint():Point
 		{
-			return _maskSize;
+			return _maskRegistrationPoint;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set maskRegistrationPoint(value:Point):void
+		{
+			_maskRegistrationPoint = value;
+			_transformDirty = true;
+		}
+		
+		/**
+		 * Mask scale.
+		 */
+		public function get maskScale():Point
+		{
+			return _maskScale;
 		}
 		
 		
 		/**
 		 * @private
 		 */
-		public function set maskSize(value:Point):void
+		public function set maskScale(value:Point):void
 		{
-			_maskSize = value;
+			_maskScale = value;
 			_transformDirty = true;
 		}
 		
@@ -111,12 +128,12 @@ package com.ffcreations.rendering2D
 					_transformDirty = true;
 				}
 			}
-			if (maskSizeProperty)
+			if (maskScaleProperty)
 			{
-				var size:Point = owner.getProperty(maskSizeProperty);
-				if (!(size.x == _maskSize.x && size.y == _maskSize.y))
+				var size:Point = owner.getProperty(maskScaleProperty);
+				if (!(size.x == _maskScale.x && size.y == _maskScale.y))
 				{
-					_maskSize = size;
+					_maskScale = size;
 					_transformDirty = true;
 				}
 			}
@@ -135,22 +152,24 @@ package com.ffcreations.rendering2D
 			}
 			var mask:Sprite = _displayObject.mask as Sprite;
 			
-			with (mask.graphics)
-			{
-				clear();
-				beginFill(0, 1);
-				drawRect(0, 0, 1, 1);
-				endFill();
-			}
+			var g:Graphics = mask.graphics;
+			g.clear();
+			g.beginFill(0, 1);
+			g.drawRect(0, 0, 1, 1);
+			g.endFill();
 			
-			var maskScaleX:Number = _scale.x * _maskSize.x;
-			var maskScaleY:Number = _scale.y * _maskSize.y;
+			var w:Number = bitmapData.width;
+			var h:Number = bitmapData.height;
 			
-			//TODO make the transformation relative to the displayObject registrationPoint
+			var maskScaleX:Number = _scale.x * w * _maskScale.x;
+			var maskScaleY:Number = _scale.y * h * _maskScale.y;
+			
 			var matrix:Matrix = mask.transform.matrix;
 			matrix.identity();
 			matrix.scale(maskScaleX, maskScaleY);
-			matrix.translate(-_maskRegistrationPoint.x * maskScaleX + maskPosition.x + (bitmapData.width) * 0.5, -_maskRegistrationPoint.y * maskScaleY + maskPosition.y + (bitmapData.height) * 0.5);
+			matrix.translate(
+				-maskScaleX * (_maskRegistrationPoint.x + _registrationPoint.x / w) + (maskPosition.x + 0.5) * w,
+				-maskScaleY * (_maskRegistrationPoint.y + _registrationPoint.y / h) + (maskPosition.y + 0.5) * h);
 			mask.transform.matrix = matrix;
 		}
 		

@@ -73,8 +73,8 @@ package com.pblabs.engine.resource.provider
             
             // let BulkLoader give a notification when this resource has been
             // load so we can initialize it.
-            loader.get(resourceIdentifier).addEventListener(Event.COMPLETE,resourceLoaded)
-            loader.get(resourceIdentifier).addEventListener(BulkLoader.ERROR,resourceError)
+            loader.get(resourceIdentifier).addEventListener(Event.COMPLETE,resourceLoaded, false, 0, true)
+            loader.get(resourceIdentifier).addEventListener(BulkLoader.ERROR,resourceError, false, 0, true)
             
 			//If force reload, delete old resource first:
             if (resources[resourceIdentifier] && forceReload)
@@ -142,10 +142,10 @@ package com.pblabs.engine.resource.provider
             
             // attach processed and progress events to BulkLoader
             if (!loader.hasEventListener(BulkProgressEvent.COMPLETE))
-                loader.addEventListener(BulkProgressEvent.COMPLETE, resourcesLoaded)
+                loader.addEventListener(BulkProgressEvent.COMPLETE, resourcesLoaded, false, 0, true)
             
             if (!loader.hasEventListener(BulkProgressEvent.PROGRESS))
-                loader.addEventListener(BulkProgressEvent.PROGRESS, resourcesProgress)			
+                loader.addEventListener(BulkProgressEvent.PROGRESS, resourcesProgress, false, 0, true)			
             
             // load resources from first phase
             loadResources();				 			
@@ -230,7 +230,7 @@ package com.pblabs.engine.resource.provider
         private function resourcesProgress(event:BulkProgressEvent):void
         {
             // call the onProgress event/function if one was provided 
-            if (onProgress!=null) onProgress(phase,int(event.percentLoaded*100));
+            if (onProgress!=null) onProgress(phase,Math.round(event.percentLoaded*100));
         }
         
         /**
