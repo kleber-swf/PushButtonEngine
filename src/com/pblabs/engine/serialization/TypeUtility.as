@@ -212,6 +212,9 @@ package com.pblabs.engine.serialization
                         */
                     }
                 }
+				// if the field is already found, it doesn't need to continue to search
+				// event if the metadata is not found
+				return null;
             }
             
             return null;

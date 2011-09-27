@@ -151,7 +151,7 @@ package com.pblabs.rendering2D
 		protected override function onAdd():void
 		{
 			super.onAdd();
-			if (!_resource && fileName!=null && fileName!="" && !loading)
+			if (!loading && !_resource && fileName!=null && fileName!="")
 			{
 				_loading = true;
 				// Tell the ResourceManager to load the ImageResource

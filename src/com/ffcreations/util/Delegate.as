@@ -17,6 +17,16 @@ package com.ffcreations.util
 		
 		
 		//==========================================================
+		//   Properties 
+		//==========================================================
+		
+		public function get length():int
+		{
+			return _functions.length;
+		}
+		
+		
+		//==========================================================
 		//   Functions 
 		//==========================================================
 		
@@ -54,8 +64,33 @@ package com.ffcreations.util
 		/**
 		 * Calls all installed function in order that was intalled.
 		 * @param params Params to pass directly to the functions. Attempt to the signature.
+		 * @see Function#call
 		 */
 		public function call(... params):*
+		{
+			if (_functions.length == 0)
+			{
+				return;
+			}
+			var funcs:Array = _functions.slice();
+			for each (var f:Function in funcs)
+			{
+				var r:* = f.apply(null, params);
+				if (r)
+				{
+					return r;
+				}
+			}
+			return null;
+		}
+		
+		/**
+		 * Calls all installed function in order that was intalled.
+		 * Call this method when you hava an array of arguments.
+		 * @param params Params to pass directly to the functions. Attempt to the signature.
+		 * @see Function#apply
+		 */
+		public function apply(params:Array):*
 		{
 			if (_functions.length == 0)
 			{

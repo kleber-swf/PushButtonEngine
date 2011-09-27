@@ -9,31 +9,31 @@
 package com.pblabs.engine
 {
 	import com.ffcreations.ui.mouse.MouseInputManager;
-    import com.pblabs.engine.core.*;
-    import com.pblabs.engine.debug.*;
-    import com.pblabs.engine.entity.*;
-    import com.pblabs.engine.resource.ResourceBundle;
-    import com.pblabs.engine.resource.ResourceManager;
-    import com.pblabs.engine.serialization.TypeUtility;
-    import com.pblabs.engine.version.VersionDetails;
-    import com.pblabs.engine.version.VersionUtil;
-    import com.pblabs.rendering2D.*;
-    import com.pblabs.rendering2D.ui.*;
-    import com.pblabs.screens.ScreenManager;
-    import com.pblabs.sound.ISoundManager;
-    import com.pblabs.sound.SoundManager;
-    
-    import flash.display.DisplayObject;
-    import flash.display.DisplayObjectContainer;
-    import flash.display.LoaderInfo;
-    import flash.display.Sprite;
-    import flash.display.Stage;
-    import flash.display.StageAlign;
-    import flash.display.StageScaleMode;
-    import flash.geom.*;
-    import flash.net.registerClassAlias;
-    import flash.utils.Dictionary;
-    import flash.utils.getQualifiedClassName;
+	import com.pblabs.engine.core.*;
+	import com.pblabs.engine.debug.*;
+	import com.pblabs.engine.entity.*;
+	import com.pblabs.engine.resource.ResourceBundle;
+	import com.pblabs.engine.resource.ResourceManager;
+	import com.pblabs.engine.serialization.TypeUtility;
+	import com.pblabs.engine.version.VersionDetails;
+	import com.pblabs.engine.version.VersionUtil;
+	import com.pblabs.rendering2D.*;
+	import com.pblabs.rendering2D.ui.*;
+	import com.pblabs.screens.ScreenManager;
+	import com.pblabs.sound.ISoundManager;
+	import com.pblabs.sound.SoundManager;
+	
+	import flash.display.DisplayObject;
+	import flash.display.DisplayObjectContainer;
+	import flash.display.LoaderInfo;
+	import flash.display.Sprite;
+	import flash.display.Stage;
+	import flash.display.StageAlign;
+	import flash.display.StageScaleMode;
+	import flash.geom.*;
+	import flash.net.registerClassAlias;
+	import flash.utils.Dictionary;
+	import flash.utils.getQualifiedClassName;
     
     /**
      * Utility class to simplify working with PushButton Engine.
@@ -493,6 +493,11 @@ package com.pblabs.engine
 		{
 			return _mouseInputManager;
 		}
+        
+//		public static function get mouseInputManager2():com.ffcreations.ui.mouse.MouseInputManager
+//		{
+//			return _mouseInputManager2;
+//		}
 		
         /**
          * Returns the ObjectTypeManager instance. 

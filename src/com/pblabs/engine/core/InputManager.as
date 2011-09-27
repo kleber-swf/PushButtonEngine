@@ -8,14 +8,11 @@
  ******************************************************************************/
 package com.pblabs.engine.core
 {
-	import com.ffcreations.util.Delegate;
 	import com.ffcreations.util.DelegateContainer;
 	import com.pblabs.engine.PBE;
 	
-	import flash.events.EventDispatcher;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
-	import flash.utils.Dictionary;
 	
 	/**
 	 * The input manager wraps the default input events produced by Flash to make
@@ -304,7 +301,7 @@ package com.pblabs.engine.core
 			}
 			
 			_keyState[event.keyCode] = true;
-			callDelegate(event);
+			callDelegate(event.type, event);
 		}
 		
 		private function onKeyUp(event:KeyboardEvent):void
@@ -314,7 +311,7 @@ package com.pblabs.engine.core
 				return;
 			}
 			_keyState[event.keyCode] = false;
-			callDelegate(event);
+			callDelegate(event.type, event);
 		}
 		
 		private function onMouseDown(event:MouseEvent):void
@@ -323,8 +320,7 @@ package com.pblabs.engine.core
 			{
 				return;
 			}
-			//TODO transform coordinates
-			callDelegate(event);
+			callDelegate(event.type, event);
 		}
 		
 		private function onMouseMove(event:MouseEvent):void
@@ -333,7 +329,7 @@ package com.pblabs.engine.core
 			{
 				return;
 			}
-			callDelegate(event);
+			callDelegate(event.type, event);
 		}
 		
 		private function onMouseOut(event:MouseEvent):void
@@ -342,7 +338,7 @@ package com.pblabs.engine.core
 			{
 				return;
 			}
-			callDelegate(event);
+			callDelegate(event.type, event);
 		}
 		
 		private function onMouseOver(event:MouseEvent):void
@@ -351,7 +347,7 @@ package com.pblabs.engine.core
 			{
 				return;
 			}
-			callDelegate(event);
+			callDelegate(event.type, event);
 		}
 		
 		private function onMouseUp(event:MouseEvent):void
@@ -360,8 +356,7 @@ package com.pblabs.engine.core
 			{
 				return;
 			}
-			//TODO transform coordinates
-			callDelegate(event);
+			callDelegate(event.type, event);
 		}
 		
 		private function onMouseWheel(event:MouseEvent):void
@@ -370,7 +365,7 @@ package com.pblabs.engine.core
 			{
 				return;
 			}
-			callDelegate(event);
+			callDelegate(event.type, event);
 		}
 	}
 }

@@ -124,8 +124,7 @@ package com.ffcreations.rendering2D
 				var offset:Point = owner.getProperty(maskPositionProperty);
 				if (!(offset.x == _maskPosition.x && offset.y == _maskPosition.y))
 				{
-					_maskPosition = offset;
-					_transformDirty = true;
+					maskPosition = offset;
 				}
 			}
 			if (maskScaleProperty)
@@ -133,8 +132,7 @@ package com.ffcreations.rendering2D
 				var size:Point = owner.getProperty(maskScaleProperty);
 				if (!(size.x == _maskScale.x && size.y == _maskScale.y))
 				{
-					_maskScale = size;
-					_transformDirty = true;
+					maskScale = size;
 				}
 			}
 		}

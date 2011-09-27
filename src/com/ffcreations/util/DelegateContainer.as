@@ -1,8 +1,6 @@
 package com.ffcreations.util
 {
-	import flash.events.Event;
 	import flash.utils.Dictionary;
-	
 	
 	public class DelegateContainer
 	{
@@ -28,6 +26,7 @@ package com.ffcreations.util
 		//==========================================================
 		//   Functions 
 		//==========================================================
+		
 		public function addDelegateCallback(type:String, callback:Function):void
 		{
 			if (!_delegates.hasOwnProperty(type))
@@ -44,7 +43,7 @@ package com.ffcreations.util
 				return;
 			}
 			_delegates[type].uninstall(callback);
-			if (_delegates.length == 0)
+			if (_delegates[type].length == 0)
 			{
 				delete _delegates[type];
 			}
@@ -55,13 +54,22 @@ package com.ffcreations.util
 			return _delegates.hasOwnProperty(type);
 		}
 		
-		public function callDelegate(data:Event):*
+		public function callDelegate(type:String, ... data):*
 		{
-			if (!_delegates.hasOwnProperty(data.type))
+			if (!_delegates.hasOwnProperty(type))
 			{
 				return;
 			}
-			return _delegates[data.type].call(data);
+			return _delegates[type].apply(data);
+		}
+		
+		public function clear():void
+		{
+			for (var s:String in _delegates)
+			{
+				_delegates[s].clear();
+				delete _delegates[s];
+			}
 		}
 	}
 }
