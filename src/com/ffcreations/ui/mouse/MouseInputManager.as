@@ -2,11 +2,8 @@ package com.ffcreations.ui.mouse
 {
 	import com.pblabs.engine.PBE;
 	
-	import flash.display.Graphics;
 	import flash.events.MouseEvent;
-	import flash.events.TimerEvent;
 	import flash.geom.Point;
-	import flash.utils.Timer;
 	
 	public class MouseInputManager
 	{
@@ -50,20 +47,20 @@ package com.ffcreations.ui.mouse
 		
 		public function MouseInputManager()
 		{
-			PBE.inputManager.addDelegateCallback(MouseEvent.MOUSE_DOWN, onMouseDown);
-			PBE.inputManager.addDelegateCallback(MouseEvent.MOUSE_UP, onMouseUp);
-			PBE.inputManager.addDelegateCallback(MouseEvent.MOUSE_MOVE, onMouseMove);
-			
+			PBE.inputManager.addCallback(MouseEvent.MOUSE_DOWN, onMouseDown);
+			PBE.inputManager.addCallback(MouseEvent.MOUSE_UP, onMouseUp);
+			PBE.inputManager.addCallback(MouseEvent.MOUSE_MOVE, onMouseMove);
+		
 			//TEMP
-//			var t:Timer = new Timer(200, 0);
-//			t.addEventListener(TimerEvent.TIMER, function tt(e:TimerEvent):void {
-//				t.removeEventListener(TimerEvent.TIMER, tt);
-//				t.stop();
-//				t = null;
-//				redraw();
-//			});
-//			
-//			t.start();
+			//			var t:Timer = new Timer(200, 0);
+			//			t.addEventListener(TimerEvent.TIMER, function tt(e:TimerEvent):void {
+			//				t.removeEventListener(TimerEvent.TIMER, tt);
+			//				t.stop();
+			//				t = null;
+			//				redraw();
+			//			});
+			//			
+			//			t.start();
 		}
 		
 		
@@ -71,21 +68,21 @@ package com.ffcreations.ui.mouse
 		//   Functions 
 		//==========================================================
 		
-//		/** TEMP */
-//		public function redraw():void
-//		{
-//			var g:Graphics = PBE.mainClass.graphics;
-//			g.clear();
-//			for (var i:int = _components.length - 1; i >= 0; i--)
-//			{
-//				var c:MouseInputComponent = _components[i];
-//				var a:Point = PBE.scene.transformSceneToScreen(new Point(c.sceneBounds.x, c.sceneBounds.y));
-//				g.lineStyle(1, c.fc, 1);
-//				g.beginFill(c.fc, 1);
-//				g.drawRect(a.x, a.y, c.sceneBounds.width, c.sceneBounds.height);
-//				g.endFill();
-//			}
-//		}
+		//		/** TEMP */
+		//		public function redraw():void
+		//		{
+		//			var g:Graphics = PBE.mainClass.graphics;
+		//			g.clear();
+		//			for (var i:int = _components.length - 1; i >= 0; i--)
+		//			{
+		//				var c:MouseInputComponent = _components[i] as MouseInputComponent;
+		//				var a:Point = PBE.scene.transformSceneToScreen(new Point(c.sceneBounds.x, c.sceneBounds.y));
+		//				g.lineStyle(1, c.fc, 1);
+		//				g.beginFill(c.fc, 1);
+		//				g.drawRect(a.x, a.y, c.sceneBounds.width, c.sceneBounds.height);
+		//				g.endFill();
+		//			}
+		//		}
 		
 		public function lockInputUnderPriority(value:int):void
 		{
@@ -115,7 +112,8 @@ package com.ffcreations.ui.mouse
 				_components.splice(index, 1);
 			}
 			index = _mouseMoveOldList.indexOf(component);
-			if (index >= 0) {
+			if (index >= 0)
+			{
 				_mouseMoveOldList.splice(index, 1);
 			}
 		}
@@ -150,7 +148,7 @@ package com.ffcreations.ui.mouse
 				for each (component in _mouseMoveOldList)
 				{
 					setupComponentData(component, MouseEvent.MOUSE_OUT);
-					component.delegateContainer.callDelegate(_mouseData.type, _mouseData);
+					component.delegateContainer.call(_mouseData.type, _mouseData);
 				}
 				_mouseMoveOldList.length = 0;
 				_mouseMoveNewList.length = 0;
@@ -166,13 +164,13 @@ package com.ffcreations.ui.mouse
 				if (index < 0)
 				{
 					setupComponentData(component, MouseEvent.MOUSE_OVER);
-					component.delegateContainer.callDelegate(_mouseData.type, _mouseData);
+					component.delegateContainer.call(_mouseData.type, _mouseData);
 				}
 				// if it's on the old list, then mouse is moving inside it
 				else if (callMouseMove)
 				{
 					setupComponentData(component, MouseEvent.MOUSE_MOVE);
-					callMouseMove = !component.delegateContainer.callDelegate(_mouseData.type, _mouseData);
+					callMouseMove = !component.delegateContainer.call(_mouseData.type, _mouseData);
 				}
 			}
 			
@@ -183,7 +181,7 @@ package com.ffcreations.ui.mouse
 				if (_mouseMoveNewList.indexOf(component) < 0)
 				{
 					setupComponentData(component, MouseEvent.MOUSE_OUT);
-					component.delegateContainer.callDelegate(_mouseData.type, _mouseData);
+					component.delegateContainer.call(_mouseData.type, _mouseData);
 				}
 			}
 			_mouseMoveOldList = _mouseMoveNewList.slice();
@@ -202,7 +200,7 @@ package com.ffcreations.ui.mouse
 				_mouseData.component = _mouseDownComponent;
 				_mouseData.type = DRAG_MOVE;
 				_mouseDownComponent.position = _mouseData.scenePosition.subtract(_initialDownLocalPosition);
-				_mouseDownComponent.delegateContainer.callDelegate(_mouseData.type, _mouseData);
+				_mouseDownComponent.delegateContainer.call(_mouseData.type, _mouseData);
 			}
 			else
 			{
@@ -215,13 +213,13 @@ package com.ffcreations.ui.mouse
 					{
 						_dragStarted = true;
 						_mouseData.type = DRAG_START;
-						_mouseDownComponent.delegateContainer.callDelegate(_mouseData.type, _mouseData);
+						_mouseDownComponent.delegateContainer.call(_mouseData.type, _mouseData);
 					}
 				}
 			}
 		}
 		
-		private function drop():Boolean
+		private function drop():void
 		{
 			var dropSuccess:Boolean = false;
 			for each (var component:IMouseInputComponent in _components)
@@ -234,11 +232,11 @@ package com.ffcreations.ui.mouse
 					if (component.canDrop(_mouseData))
 					{
 						dropSuccess = true;
-						var r:Boolean = component.delegateContainer.callDelegate(_mouseData.type, _mouseData);
+						component.delegateContainer.call(_mouseData.type, _mouseData);
 						_mouseData.component = component;
 						_mouseData.type = DRAG_STOP;
-						_mouseDownComponent.delegateContainer.callDelegate(_mouseData.type, _mouseData);
-						if (r)
+						_mouseDownComponent.delegateContainer.call(_mouseData.type, _mouseData);
+						if (_mouseData._propagationStopped)
 						{
 							break;
 						}
@@ -249,11 +247,11 @@ package com.ffcreations.ui.mouse
 			{
 				setupComponentData(_mouseDownComponent, DRAG_STOP);
 				_mouseData.component = null;
-				_mouseDownComponent.delegateContainer.callDelegate(_mouseData.type, _mouseData);
+				_mouseDownComponent.delegateContainer.call(_mouseData.type, _mouseData);
 			}
+			_mouseData._propagationStopped = true;
 			_dragStarted = false;
 			_mouseDownComponent = null;
-			return true;
 		}
 		
 		//--------------------------------------
@@ -284,7 +282,8 @@ package com.ffcreations.ui.mouse
 						_initialDownScenePosition = _mouseData.scenePosition;
 						_initialDownLocalPosition = _mouseData.localPosition;
 					}
-					if (component.delegateContainer.callDelegate(_mouseData.type, _mouseData))
+					component.delegateContainer.call(_mouseData.type, _mouseData);
+					if (_mouseData._propagationStopped)
 					{
 						return;
 					}
@@ -314,7 +313,9 @@ package com.ffcreations.ui.mouse
 			if (_dragStarted)
 			{
 				drop();
+				return;
 			}
+			
 			_mouseDownComponent = null;
 			
 			for each (var component:IMouseInputComponent in _components)
@@ -326,7 +327,9 @@ package com.ffcreations.ui.mouse
 				if (component.enabled && component.contains(_mouseData.scenePosition))
 				{
 					setupComponentData(component, event.type);
-					if (component.delegateContainer.callDelegate(_mouseData.type, _mouseData))
+					_mouseMoveOldList.push(component);
+					component.delegateContainer.call(_mouseData.type, _mouseData);
+					if (_mouseData._propagationStopped)
 					{
 						return;
 					}
@@ -339,7 +342,7 @@ package com.ffcreations.ui.mouse
 		{
 			_point.x = event.stageX;
 			_point.y = event.stageY;
-			
+			_mouseData._propagationStopped = false;
 			//_mouseData.event = event;
 			_mouseData.scenePosition = PBE.scene.transformScreenToScene(_point);
 		}

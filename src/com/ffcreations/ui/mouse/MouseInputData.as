@@ -10,6 +10,8 @@ package com.ffcreations.ui.mouse
 		//   Fields 
 		//==========================================================
 		
+		internal var _propagationStopped:Boolean;
+		
 		public var type:String;
 		//public var event:MouseEvent;
 		public var scenePosition:Point;
@@ -20,6 +22,11 @@ package com.ffcreations.ui.mouse
 		//==========================================================
 		//   Functions 
 		//==========================================================
+		
+		public function stopPropagation():void
+		{
+			_propagationStopped = true;
+		}
 		
 		public function toString():String
 		{

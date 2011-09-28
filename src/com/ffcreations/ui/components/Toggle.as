@@ -14,18 +14,18 @@ package com.ffcreations.ui.components
 		
 		internal function group():void
 		{
-			_delegateContainer.removeDelegateCallback(MouseEvent.MOUSE_UP, onMouseUp);
+			_delegateContainer.removeCallback(MouseEvent.MOUSE_UP, onMouseUp);
 		}
 		
 		protected override function onAdd():void
 		{
 			super.onAdd();
-			_delegateContainer.addDelegateCallback(MouseEvent.MOUSE_UP, onMouseUp);
+			_delegateContainer.addCallback(MouseEvent.MOUSE_UP, onMouseUp);
 		}
 		
 		protected override function onRemove():void
 		{
-			_delegateContainer.removeDelegateCallback(MouseEvent.MOUSE_UP, onMouseUp);
+			_delegateContainer.removeCallback(MouseEvent.MOUSE_UP, onMouseUp);
 			_delegateContainer = null;
 		}
 		

@@ -29,6 +29,7 @@ package com.ffcreations.rendering2D
 		private var _resource:ImageResource;
 		private var _failed:Boolean;
 		
+		protected var _scaleDirty:Boolean;
 		protected var _scale9Grid:Rectangle;
 		protected var _source:BitmapData;
 		
@@ -116,6 +117,7 @@ package com.ffcreations.rendering2D
 		{
 			_scale9Grid = value;
 			_transformDirty = true;
+			_scaleDirty = true;
 		}
 		
 		
@@ -225,15 +227,19 @@ package com.ffcreations.rendering2D
 				left = gridX[i];
 			}
 			_displayObject.scale9Grid = _scale9Grid;
+			_scaleDirty = true;
 		}
 		
 		/**
 		 * @inheritDoc
 		 */
-		public override function updateTransform(updateProps:Boolean = false):void
+		public override function onFrame(elapsed:Number):void
 		{
-			super.updateTransform(updateProps);
-			redraw();
+			super.onFrame(elapsed);
+			if (_scaleDirty)
+			{
+				redraw();
+			}
 		}
 		
 		//--------------------------------------

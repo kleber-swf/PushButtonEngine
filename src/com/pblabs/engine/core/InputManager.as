@@ -301,7 +301,7 @@ package com.pblabs.engine.core
 			}
 			
 			_keyState[event.keyCode] = true;
-			callDelegate(event.type, event);
+			call(event.type, event);
 		}
 		
 		private function onKeyUp(event:KeyboardEvent):void
@@ -311,7 +311,7 @@ package com.pblabs.engine.core
 				return;
 			}
 			_keyState[event.keyCode] = false;
-			callDelegate(event.type, event);
+			call(event.type, event);
 		}
 		
 		private function onMouseDown(event:MouseEvent):void
@@ -320,7 +320,7 @@ package com.pblabs.engine.core
 			{
 				return;
 			}
-			callDelegate(event.type, event);
+			call(event.type, event);
 		}
 		
 		private function onMouseMove(event:MouseEvent):void
@@ -329,7 +329,7 @@ package com.pblabs.engine.core
 			{
 				return;
 			}
-			callDelegate(event.type, event);
+			call(event.type, event);
 		}
 		
 		private function onMouseOut(event:MouseEvent):void
@@ -338,7 +338,7 @@ package com.pblabs.engine.core
 			{
 				return;
 			}
-			callDelegate(event.type, event);
+			call(event.type, event);
 		}
 		
 		private function onMouseOver(event:MouseEvent):void
@@ -347,7 +347,7 @@ package com.pblabs.engine.core
 			{
 				return;
 			}
-			callDelegate(event.type, event);
+			call(event.type, event);
 		}
 		
 		private function onMouseUp(event:MouseEvent):void
@@ -356,7 +356,7 @@ package com.pblabs.engine.core
 			{
 				return;
 			}
-			callDelegate(event.type, event);
+			call(event.type, event);
 		}
 		
 		private function onMouseWheel(event:MouseEvent):void
@@ -365,7 +365,7 @@ package com.pblabs.engine.core
 			{
 				return;
 			}
-			callDelegate(event.type, event);
+			call(event.type, event);
 		}
 	}
 }

@@ -105,7 +105,7 @@ package com.ffcreations.ui.components
 				return;
 			}
 			_selected = value;
-			_delegateContainer.callDelegate(SELECTED, value);
+			_delegateContainer.call(SELECTED, value);
 			_stateDirty = true;
 		}
 		
@@ -118,10 +118,10 @@ package com.ffcreations.ui.components
 		{
 			super.onAdd();
 			PBE.mouseInputManager.addComponent(this);
-			_delegateContainer.addDelegateCallback(MouseEvent.MOUSE_OVER, onMouse);
-			_delegateContainer.addDelegateCallback(MouseEvent.MOUSE_OUT, onMouse);
-			_delegateContainer.addDelegateCallback(MouseEvent.MOUSE_DOWN, onMouse);
-			_delegateContainer.addDelegateCallback(MouseEvent.MOUSE_UP, onMouse);
+			_delegateContainer.addCallback(MouseEvent.MOUSE_OVER, onMouse);
+			_delegateContainer.addCallback(MouseEvent.MOUSE_OUT, onMouse);
+			_delegateContainer.addCallback(MouseEvent.MOUSE_DOWN, onMouse);
+			_delegateContainer.addCallback(MouseEvent.MOUSE_UP, onMouse);
 		}
 		
 		protected override function onRemove():void
@@ -140,6 +140,7 @@ package com.ffcreations.ui.components
 		{
 			_state = data.type;
 			_stateDirty = true;
+			data.stopPropagation();
 		}
 		
 		protected function updateState():void
@@ -159,13 +160,14 @@ package com.ffcreations.ui.components
 			_sourceRect.y = _target.height * (_selected ? 1 : 0);
 			_stateDirty = false;
 			_transformDirty = true;
+			_scaleDirty = true;
 		}
 		
 		protected override function onImageLoadComplete():void
 		{
-			_target = new BitmapData(_source.width * 0.25, _source.height * 0.5, true, 0);
-			_registrationPoint = new Point(_target.width * 0.5, _target.height * 0.5);
-			_sourceRect = new Rectangle(0, 0, _target.width, _target.height);
+			_sourceRect = new Rectangle(0, 0, int(_source.width * 0.25), int(_source.height * 0.5));
+			_target = new BitmapData(_sourceRect.width, _sourceRect.height, true, 0);
+			_registrationPoint = new Point(_sourceRect.width * 0.5, _sourceRect.height * 0.5);
 			_state = MouseEvent.MOUSE_OUT;
 			_stateDirty = true;
 		}
@@ -190,6 +192,7 @@ package com.ffcreations.ui.components
 				_displayObject.scale9Grid = null;
 				return;
 			}
+			trace(owner.name, "redraw", _state);
 			
 			_target.copyPixels(_source, _sourceRect, zeroPoint);
 			
@@ -214,6 +217,7 @@ package com.ffcreations.ui.components
 				left = gridX[i];
 			}
 			_displayObject.scale9Grid = _scale9Grid;
+			_scaleDirty = false;
 		}
 		
 		public function canDrag(data:MouseInputData):Boolean
@@ -228,7 +232,7 @@ package com.ffcreations.ui.components
 		
 		public function contains(point:Point):Boolean
 		{
-			return pointOccupied(point, null);
+			return isRegistered ? pointOccupied(point, null) : false;
 		}
 	}
 
