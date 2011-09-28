@@ -1,11 +1,12 @@
 package com.ffcreations.ui.components
 {
-	import com.ffcreations.ui.mouse.MouseInputData;
-	import com.ffcreations.util.DelegateContainer;
+	import com.ffcreations.ui.mouse.MouseInputEvent;
 	import com.pblabs.engine.components.TickedComponent;
-	import com.pblabs.engine.entity.EntityComponent;
 	import com.pblabs.engine.entity.PropertyReference;
 	
+	import flash.events.Event;
+	import flash.events.EventDispatcher;
+	import flash.events.IEventDispatcher;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	
@@ -27,12 +28,13 @@ package com.ffcreations.ui.components
 		private var _options:Array;
 		private var _maxSelection:int = -1;
 		private var _selectedIndex:int = -1;
-		private var _delegateContainer:DelegateContainer = new DelegateContainer();
 		private var _layerIndex:int = 0;
 		private var _position:Point = new Point();
 		private var _pos:Point = new Point();
 		public var positionOffset:Point = new Point();
 		public var positionProperty:PropertyReference;
+		
+		private var _eventDispatcher:IEventDispatcher = new EventDispatcher();
 		
 		
 		//==========================================================
@@ -65,7 +67,7 @@ package com.ffcreations.ui.components
 			{
 				for (i = 0, length = _options.length; i < length; i++)
 				{
-					_options.pop().delegateContainer.removeDelegateCallback(MouseEvent.MOUSE_UP, onSelect);
+					_options.pop().eventDispatcher.removeEventListener(MouseEvent.MOUSE_UP, onSelect);
 				}
 				_options = null;
 			}
@@ -81,8 +83,8 @@ package com.ffcreations.ui.components
 			for (i = 0; i < length; i++)
 			{
 				opt = value[i];
-				opt.delegateContainer.addCallback(MouseEvent.MOUSE_UP, onSelect);
 				opt.group();
+				opt.eventDispatcher.addEventListener(MouseEvent.MOUSE_UP, onSelect, false, 0, true);
 				_options[i] = opt;
 			}
 		}
@@ -113,7 +115,8 @@ package com.ffcreations.ui.components
 				_options[i].selected = i == value;
 			}
 			_selectedIndex = value;
-			_delegateContainer.call(SELECTION_CHANGED, value);
+			_eventDispatcher.dispatchEvent(new Event(SELECTION_CHANGED));
+			//TODO pass selectedIndex to the event
 		}
 		
 		
@@ -125,17 +128,10 @@ package com.ffcreations.ui.components
 		{
 			for (var i:int = 0, length:int = _options.length; i < length; i++)
 			{
-				_options.pop().delegateContainer.removeDelegateCallback(MouseEvent.MOUSE_UP, onSelect);
+				_options.pop().eventDispatcher.removeEventListener(MouseEvent.MOUSE_UP, onSelect);
 			}
 			_options = null;
-			_delegateContainer.clear();
-			_delegateContainer = null;
 			super.onRemove();
-		}
-		
-		private function onSelect(data:MouseInputData):void
-		{
-			selectedIndex = _options.indexOf(data.component);
 		}
 		
 		public override function onTick(deltaTime:Number):void
@@ -154,6 +150,15 @@ package com.ffcreations.ui.components
 					_position = pos.add(positionOffset);
 				}
 			}
+		}
+		
+		//--------------------------------------
+		//   Event handlers 
+		//--------------------------------------
+		
+		private function onSelect(data:MouseInputEvent):void
+		{
+			selectedIndex = _options.indexOf(data.component);
 		}
 	}
 }

@@ -23,11 +23,11 @@ package com.ffcreations.rendering2D
 		//   Fields 
 		//==========================================================
 		
-		private var _fileName:String;
-		private var _loading:Boolean;
-		private var _loaded:Boolean;
-		private var _resource:ImageResource;
-		private var _failed:Boolean;
+		protected var _fileName:String;
+		protected var _loading:Boolean;
+		protected var _loaded:Boolean;
+		protected var _resource:ImageResource;
+		protected var _failed:Boolean;
 		
 		protected var _scaleDirty:Boolean;
 		protected var _scale9Grid:Rectangle;
@@ -138,10 +138,9 @@ package com.ffcreations.rendering2D
 			// set the registration (alignment) point to the sprite's center
 			registrationPoint = new Point(res.image.bitmapData.width * 0.5, res.image.bitmapData.height * 0.5);
 			// set the bitmapData of this render object
-			_source = res.image.bitmapData;
-			onImageLoadComplete();
-			
+			_source = res.image.bitmapData;			
 			_displayObject = new Sprite();
+			onImageLoadComplete();
 			redraw();
 		}
 		

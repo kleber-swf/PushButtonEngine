@@ -1,11 +1,12 @@
 package com.ffcreations.ui.mouse
 {
-	import com.ffcreations.util.DelegateContainer;
 	import com.pblabs.engine.PBE;
 	import com.pblabs.engine.components.TickedComponent;
 	import com.pblabs.engine.entity.PropertyReference;
 	import com.pblabs.rendering2D.DisplayObjectRenderer;
 	
+	import flash.events.EventDispatcher;
+	import flash.events.IEventDispatcher;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
@@ -25,8 +26,8 @@ package com.ffcreations.ui.mouse
 		private var _acceptDrop:Boolean = false;
 		
 		private var _dirty:Boolean;
-		private var _delegateContainer:DelegateContainer = new DelegateContainer();
 		private var _renderer:DisplayObjectRenderer;
+		protected var _eventDispatcher:IEventDispatcher = new EventDispatcher();
 		
 		protected var _priority:int = 0;
 		protected var _enabled:Boolean = true;
@@ -52,11 +53,6 @@ package com.ffcreations.ui.mouse
 			_acceptDrop = value;
 		}
 		
-		public function get delegateContainer():DelegateContainer
-		{
-			return _delegateContainer;
-		}
-		
 		public function get draggable():Boolean
 		{
 			return _draggable;
@@ -75,6 +71,11 @@ package com.ffcreations.ui.mouse
 		public function set enabled(value:Boolean):void
 		{
 			_enabled = value;
+		}
+		
+		public function get eventDispatcher():IEventDispatcher
+		{
+			return _eventDispatcher;
 		}
 		
 		public function get position():Point
@@ -152,8 +153,6 @@ package com.ffcreations.ui.mouse
 			_sceneBounds = null;
 			_position = null;
 			_size = null;
-			_delegateContainer.clear();
-			_delegateContainer = null;
 			_renderer = null;
 			PBE.mouseInputManager.removeComponent(this);
 		}
@@ -213,12 +212,12 @@ package com.ffcreations.ui.mouse
 			}
 		}
 		
-		public function canDrop(data:MouseInputData):Boolean
+		public function canDrop(data:IMouseInputComponent):Boolean
 		{
 			return _acceptDrop;
 		}
 		
-		public function canDrag(data:MouseInputData):Boolean
+		public function canDrag(data:IMouseInputComponent):Boolean
 		{
 			return _draggable;
 		}

@@ -2,13 +2,15 @@ package com.ffcreations.ui.components
 {
 	import com.ffcreations.rendering2D.ScaleSpriteRenderer;
 	import com.ffcreations.ui.mouse.IMouseInputComponent;
-	import com.ffcreations.ui.mouse.MouseInputData;
-	import com.ffcreations.util.DelegateContainer;
+	import com.ffcreations.ui.mouse.MouseInputEvent;
 	import com.pblabs.engine.PBE;
 	
 	import flash.display.BitmapData;
 	import flash.display.Graphics;
 	import flash.display.Sprite;
+	import flash.events.Event;
+	import flash.events.EventDispatcher;
+	import flash.events.IEventDispatcher;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
@@ -38,9 +40,9 @@ package com.ffcreations.ui.components
 		protected var _enabled:Boolean = true;
 		protected var _selected:Boolean = false;
 		protected var _acceptDrop:Boolean;
-		protected var _delegateContainer:DelegateContainer = new DelegateContainer();
 		protected var _draggable:Boolean;
 		protected var _priority:int;
+		protected var _eventDispatcher:IEventDispatcher = new EventDispatcher();
 		
 		
 		//==========================================================
@@ -55,11 +57,6 @@ package com.ffcreations.ui.components
 		public function set acceptDrop(value:Boolean):void
 		{
 			_acceptDrop = value;
-		}
-		
-		public function get delegateContainer():DelegateContainer
-		{
-			return _delegateContainer;
 		}
 		
 		public function get draggable():Boolean
@@ -81,6 +78,11 @@ package com.ffcreations.ui.components
 		{
 			_enabled = value;
 			_stateDirty = true;
+		}
+		
+		public function get eventDispatcher():IEventDispatcher
+		{
+			return _eventDispatcher;
 		}
 		
 		public function get priority():int
@@ -105,7 +107,8 @@ package com.ffcreations.ui.components
 				return;
 			}
 			_selected = value;
-			_delegateContainer.call(SELECTED, value);
+			_eventDispatcher.dispatchEvent(new Event(SELECTED));
+			// TODO pass value to the event
 			_stateDirty = true;
 		}
 		
@@ -118,10 +121,10 @@ package com.ffcreations.ui.components
 		{
 			super.onAdd();
 			PBE.mouseInputManager.addComponent(this);
-			_delegateContainer.addCallback(MouseEvent.MOUSE_OVER, onMouse);
-			_delegateContainer.addCallback(MouseEvent.MOUSE_OUT, onMouse);
-			_delegateContainer.addCallback(MouseEvent.MOUSE_DOWN, onMouse);
-			_delegateContainer.addCallback(MouseEvent.MOUSE_UP, onMouse);
+			_eventDispatcher.addEventListener(MouseEvent.MOUSE_OVER, onMouse, false, int.MIN_VALUE, true);
+			_eventDispatcher.addEventListener(MouseEvent.MOUSE_OUT, onMouse, false, int.MIN_VALUE, true);
+			_eventDispatcher.addEventListener(MouseEvent.MOUSE_DOWN, onMouse, false, int.MIN_VALUE, true);
+			_eventDispatcher.addEventListener(MouseEvent.MOUSE_UP, onMouse, false, int.MIN_VALUE, true);
 		}
 		
 		protected override function onRemove():void
@@ -129,18 +132,12 @@ package com.ffcreations.ui.components
 			_target = null;
 			_sourceRect = null;
 			_state = null;
-			_delegateContainer = null;
-			_delegateContainer.clear();
-			_delegateContainer = null;
+			_eventDispatcher.removeEventListener(MouseEvent.MOUSE_OVER, onMouse);
+			_eventDispatcher.removeEventListener(MouseEvent.MOUSE_OUT, onMouse);
+			_eventDispatcher.removeEventListener(MouseEvent.MOUSE_DOWN, onMouse);
+			_eventDispatcher.removeEventListener(MouseEvent.MOUSE_UP, onMouse);
 			PBE.mouseInputManager.removeComponent(this);
 			super.onRemove();
-		}
-		
-		private function onMouse(data:MouseInputData):void
-		{
-			_state = data.type;
-			_stateDirty = true;
-			data.stopPropagation();
 		}
 		
 		protected function updateState():void
@@ -183,7 +180,7 @@ package com.ffcreations.ui.components
 		
 		protected override function redraw():void
 		{
-			if (!_source)
+			if (!isRegistered || !_source)
 			{
 				return;
 			}
@@ -192,7 +189,6 @@ package com.ffcreations.ui.components
 				_displayObject.scale9Grid = null;
 				return;
 			}
-			trace(owner.name, "redraw", _state);
 			
 			_target.copyPixels(_source, _sourceRect, zeroPoint);
 			
@@ -220,12 +216,12 @@ package com.ffcreations.ui.components
 			_scaleDirty = false;
 		}
 		
-		public function canDrag(data:MouseInputData):Boolean
+		public function canDrag(component:IMouseInputComponent):Boolean
 		{
 			return _draggable;
 		}
 		
-		public function canDrop(data:MouseInputData):Boolean
+		public function canDrop(component:IMouseInputComponent):Boolean
 		{
 			return false;
 		}
@@ -233,6 +229,18 @@ package com.ffcreations.ui.components
 		public function contains(point:Point):Boolean
 		{
 			return isRegistered ? pointOccupied(point, null) : false;
+		}
+		
+		//--------------------------------------
+		//   Event handlers 
+		//--------------------------------------
+		
+		private function onMouse(data:MouseInputEvent):void
+		{
+			_state = data.type;
+			_stateDirty = true;
+			//			data.stopPropagation();
+			data.stopImmediatePropagation();
 		}
 	}
 

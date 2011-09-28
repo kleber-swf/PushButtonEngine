@@ -1,8 +1,8 @@
 package com.ffcreations.ui.mouse
 {
-	import com.ffcreations.util.DelegateContainer;
 	import com.pblabs.engine.entity.IEntityComponent;
 	
+	import flash.events.IEventDispatcher;
 	import flash.geom.Point;
 	
 	public interface IMouseInputComponent extends IEntityComponent
@@ -10,13 +10,13 @@ package com.ffcreations.ui.mouse
 		function get acceptDrop():Boolean;
 		function set acceptDrop(value:Boolean):void;
 		
-		function get delegateContainer():DelegateContainer;
-		
 		function get draggable():Boolean;
 		function set draggable(value:Boolean):void;
 		
 		function get enabled():Boolean;
 		function set enabled(value:Boolean):void;
+		
+		function get eventDispatcher():IEventDispatcher;
 		
 		function get position():Point;
 		function set position(value:Point):void;
@@ -24,7 +24,7 @@ package com.ffcreations.ui.mouse
 		function set priority(value:int):void;
 		
 		function contains(point:Point):Boolean;
-		function canDrag(data:MouseInputData):Boolean;
-		function canDrop(data:MouseInputData):Boolean;
+		function canDrag(data:IMouseInputComponent):Boolean;
+		function canDrop(data:IMouseInputComponent):Boolean;
 	}
 }

@@ -8,9 +8,9 @@
  ******************************************************************************/
 package com.pblabs.engine.core
 {
-	import com.ffcreations.util.DelegateContainer;
 	import com.pblabs.engine.PBE;
 	
+	import flash.events.EventDispatcher;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	
@@ -26,7 +26,7 @@ package com.pblabs.engine.core
 	 *
 	 * @see InputMap
 	 */
-	public class InputManager extends DelegateContainer implements ITickedObject
+	public class InputManager extends EventDispatcher implements ITickedObject
 	{
 		
 		
@@ -225,8 +225,6 @@ package com.pblabs.engine.core
 		public function simulateKeyDown(keyCode:int):void
 		{
 			onKeyDown(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, false, 0, keyCode));
-			//			callDelegate(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, false, 0, keyCode));
-			//            _keyState[keyCode] = true;
 		}
 		
 		/**
@@ -240,8 +238,6 @@ package com.pblabs.engine.core
 		public function simulateKeyUp(keyCode:int):void
 		{
 			onKeyUp(new KeyboardEvent(KeyboardEvent.KEY_UP, true, false, 0, keyCode));
-			//			callDelegate(new KeyboardEvent(KeyboardEvent.KEY_UP, true, false, 0, keyCode));
-			//            _keyState[keyCode] = false;
 		}
 		
 		/**
@@ -301,7 +297,7 @@ package com.pblabs.engine.core
 			}
 			
 			_keyState[event.keyCode] = true;
-			call(event.type, event);
+			dispatchEvent(event);
 		}
 		
 		private function onKeyUp(event:KeyboardEvent):void
@@ -311,7 +307,7 @@ package com.pblabs.engine.core
 				return;
 			}
 			_keyState[event.keyCode] = false;
-			call(event.type, event);
+			dispatchEvent(event);
 		}
 		
 		private function onMouseDown(event:MouseEvent):void
@@ -320,7 +316,9 @@ package com.pblabs.engine.core
 			{
 				return;
 			}
-			call(event.type, event);
+			event.localX = event.stageX;
+			event.localY = event.stageY;
+			dispatchEvent(event);
 		}
 		
 		private function onMouseMove(event:MouseEvent):void
@@ -329,7 +327,9 @@ package com.pblabs.engine.core
 			{
 				return;
 			}
-			call(event.type, event);
+			event.localX = event.stageX;
+			event.localY = event.stageY;
+			dispatchEvent(event);
 		}
 		
 		private function onMouseOut(event:MouseEvent):void
@@ -338,7 +338,9 @@ package com.pblabs.engine.core
 			{
 				return;
 			}
-			call(event.type, event);
+			event.localX = event.stageX;
+			event.localY = event.stageY;
+			dispatchEvent(event);
 		}
 		
 		private function onMouseOver(event:MouseEvent):void
@@ -347,7 +349,9 @@ package com.pblabs.engine.core
 			{
 				return;
 			}
-			call(event.type, event);
+			event.localX = event.stageX;
+			event.localY = event.stageY;
+			dispatchEvent(event);
 		}
 		
 		private function onMouseUp(event:MouseEvent):void
@@ -356,7 +360,9 @@ package com.pblabs.engine.core
 			{
 				return;
 			}
-			call(event.type, event);
+			event.localX = event.stageX;
+			event.localY = event.stageY;
+			dispatchEvent(event);
 		}
 		
 		private function onMouseWheel(event:MouseEvent):void
@@ -365,7 +371,9 @@ package com.pblabs.engine.core
 			{
 				return;
 			}
-			call(event.type, event);
+			event.localX = event.stageX;
+			event.localY = event.stageY;
+			dispatchEvent(event);
 		}
 	}
 }
