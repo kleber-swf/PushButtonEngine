@@ -12,7 +12,7 @@ package com.ffcreations.ui.textfield
 	
 	/**
 	 * Component to create and handle a <code>TextField</code>.
-	 * @see flash.text.TextField
+	 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/TextField.html flash.text.TextField
 	 * @author	Kleber Lopes da Silva (kleber.swf)
 	 */
 	public class TextFieldComponent extends DisplayObjectRenderer
@@ -38,8 +38,15 @@ package com.ffcreations.ui.textfield
 		
 		/**
 		 * Font anti-alias. Possible values: normal, advanced.
-		 * @see flash.text.AntiAliasType
-		 * @see flash.text.TextField#antiAliasType
+		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/TextField.html#antiAliasType flash.text.TextField.antiAliasType
+		 */
+		public function get antiAlias():String
+		{
+			return _field.antiAliasType;
+		}
+		
+		/**
+		 * @private
 		 */
 		public function set antiAlias(value:String):void
 		{
@@ -49,6 +56,14 @@ package com.ffcreations.ui.textfield
 		/**
 		 * Whether this component sets its height automatically or not.
 		 */
+		public function get autoHeight():Boolean
+		{
+			return _autoHeight;
+		}
+		
+		/**
+		 * @private
+		 */
 		public function set autoHeight(value:Boolean):void
 		{
 			_autoHeight = value;
@@ -57,8 +72,15 @@ package com.ffcreations.ui.textfield
 		
 		/**
 		 * Set the autoSize property. Possible values: left, right, center and none.
-		 * @see flash.text.TextFieldAutoSize
-		 * @see flash.text.TextField#autoSize
+		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/TextField.html#autoSize flash.text.TextField.autoSize
+		 */
+		public function get autoSize():String
+		{
+			return _field.autoSize;
+		}
+		
+		/**
+		 * @private
 		 */
 		public function set autoSize(value:String):void
 		{
@@ -68,7 +90,15 @@ package com.ffcreations.ui.textfield
 		/**
 		 * Whether the field has background or not.
 		 * @see #backgroundColor
-		 * @see flash.text.TextField#background
+		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/TextField.html#background flash.text.TextField.background
+		 */
+		public function get background():Boolean
+		{
+			return _field.background;
+		}
+		
+		/**
+		 * @private
 		 */
 		public function set background(value:Boolean):void
 		{
@@ -78,7 +108,15 @@ package com.ffcreations.ui.textfield
 		/**
 		 * Set the background color. Inplies on <code>background = true</code>.
 		 * @see #background
-		 * @see flash.text.TextField#backgroundColor
+		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/TextField.html#backgroundColor flash.text.TextField.backgroundColor
+		 */
+		public function get backgroundColor():uint
+		{
+			return _field.backgroundColor;
+		}
+		
+		/**
+		 * @private
 		 */
 		public function set backgroundColor(value:uint):void
 		{
@@ -89,7 +127,15 @@ package com.ffcreations.ui.textfield
 		/**
 		 * Whether the field has border.
 		 * @see #borderColor
-		 * @see flash.text.TextField#border
+		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/TextField.html#border flash.text.TextField.border
+		 */
+		public function get border():Boolean
+		{
+			return _field.border;
+		}
+		
+		/**
+		 * @private
 		 */
 		public function set border(value:Boolean):void
 		{
@@ -99,7 +145,15 @@ package com.ffcreations.ui.textfield
 		/**
 		 * Set the border color. <code>Inplies border = true</code>.
 		 * @see #border
-		 * @see flash.text.TextField#borderColor
+		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/TextField.html#borderColor flash.text.TextField.borderColor
+		 */
+		public function get borderColor():uint
+		{
+			return _field.borderColor;
+		}
+		
+		/**
+		 * @private
 		 */
 		public function set borderColor(value:uint):void
 		{
@@ -109,7 +163,7 @@ package com.ffcreations.ui.textfield
 		
 		/**
 		 * Whether the field is editable.
-		 * @see flash.text.TextField#type
+		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/TextField.html#type flash.text.TextField.type
 		 */
 		public function get editable():Boolean
 		{
@@ -126,6 +180,15 @@ package com.ffcreations.ui.textfield
 		
 		/**
 		 * Whether the fonts used to the field are embedded.
+		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/TextField.html#embedFonts flash.text.TextField.embedFonts
+		 */
+		public function get embedFonts():Boolean
+		{
+			return _field.embedFonts;
+		}
+		
+		/**
+		 * @private
 		 */
 		public function set embedFonts(value:Boolean):void
 		{
@@ -134,6 +197,7 @@ package com.ffcreations.ui.textfield
 		
 		/**
 		 * The html text for this component.
+		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/TextField.html#htmlText flash.text.TextField.htmlText
 		 */
 		public function get htmlText():String
 		{
@@ -154,7 +218,15 @@ package com.ffcreations.ui.textfield
 		
 		/**
 		 * The maximum number of characters that the field accepts.
-		 * @see flash.text.TextField#maxChars
+		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/TextField.html#maxChars flash.text.TextField.maxChars
+		 */
+		public function get maxChars():int
+		{
+			return _field.maxChars;
+		}
+		
+		/**
+		 * @private
 		 */
 		public function set maxChars(value:int):void
 		{
@@ -163,17 +235,32 @@ package com.ffcreations.ui.textfield
 		
 		/**
 		 * Whether the field text is multiline.
-		 * @see flash.text.TextField#multiline
-		 * @see flash.text.TextField#wordWrap
+		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/TextField.html#multiline flash.text.TextField.multiline
+		 */
+		public function get multiline():Boolean
+		{
+			return _field.multiline;
+		}
+		
+		/**
+		 * @private
 		 */
 		public function set multiline(value:Boolean):void
 		{
-			_field.multiline = _field.wordWrap = value;
+			_field.multiline = value;
 		}
 		
 		/**
 		 * Whether the field is for password input.
-		 * @see flash.text.TextField#displayAsPassword
+		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/TextField.html#displayAsPassword flash.text.TextField.displayAsPassword
+		 */
+		public function get password():Boolean
+		{
+			return _field.displayAsPassword;
+		}
+		
+		/**
+		 * @private
 		 */
 		public function set password(value:Boolean):void
 		{
@@ -182,7 +269,15 @@ package com.ffcreations.ui.textfield
 		
 		/**
 		 * If set, restricts the input of this component to given regex.
-		 * @see flash.text.TextField#restrict
+		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/TextField.html#restrict flash.text.TextField.restrict
+		 */
+		public function get restrict():String
+		{
+			return _field.restrict;
+		}
+		
+		/**
+		 * @private
 		 */
 		public function set restrict(value:String):void
 		{
@@ -191,7 +286,15 @@ package com.ffcreations.ui.textfield
 		
 		/**
 		 * Whether the field is selectable
-		 * @see flash.text.TextField#selectable
+		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/TextField.html#selectable flash.text.TextField.selectable
+		 */
+		public function get selectable():Boolean
+		{
+			return _field.selectable;
+		}
+		
+		/**
+		 * @private
 		 */
 		public function set selectable(value:Boolean):void
 		{
@@ -200,7 +303,15 @@ package com.ffcreations.ui.textfield
 		
 		/**
 		 * Whether the tab is enabled for this component.
-		 * @see flash.text.TextField#tabEnabled
+		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/TextField.html#tabEnabled flash.text.TextField.tabEnabled
+		 */
+		public function get tabEnabled():Boolean
+		{
+			return _field.tabEnabled;
+		}
+		
+		/**
+		 * @private
 		 */
 		public function set tabEnabled(value:Boolean):void
 		{
@@ -209,7 +320,7 @@ package com.ffcreations.ui.textfield
 		
 		/**
 		 * The tab index (if tab is enabled).
-		 * @see flash.text.TextField#tabIndex
+		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/TextField.html#tabIndex flash.text.TextField.tabIndex
 		 */
 		public function get tabIndex():int
 		{
@@ -226,6 +337,7 @@ package com.ffcreations.ui.textfield
 		
 		/**
 		 * The text for this component.
+		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/TextField.html#text flash.text.TextField.text
 		 */
 		public function get text():String
 		{
@@ -250,8 +362,8 @@ package com.ffcreations.ui.textfield
 		
 		/**
 		 * TextFormat for this component.
-		 * @see flash.text.TextFormat
-		 * @see flash.text.TextField#defaultTextFormat
+		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/TextFormat.html flash.text.TextFormat
+		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/TextField.html#defaultTextFormat flash.text.TextField.defaultTextFormat
 		 */
 		public function get textFormat():TextFormat
 		{
@@ -268,13 +380,30 @@ package com.ffcreations.ui.textfield
 			_transformDirty = true;
 		}
 		
+		/**
+		 * Whether the field should wrap its text.
+		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/TextField.html#wordWrap flash.text.TextField.wordWrap
+		 */
+		public function get wordWrap():Boolean
+		{
+			return _field.wordWrap;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set wordWrap(value:Boolean):void
+		{
+			_field.wordWrap = value;
+		}
+		
 		
 		//==========================================================
 		//   Constructor 
 		//==========================================================
 		
 		/**
-		 * Just creates a <code>TextField</code> and set it to <code>displayObject<code>.
+		 * Just creates a <code>TextField</code> and set it to <code>displayObject</code>.
 		 */
 		public function TextFieldComponent()
 		{
@@ -362,7 +491,7 @@ package com.ffcreations.ui.textfield
 		
 		/**
 		 * Appends a text to the end of the current text.
-		 * @see flash.text.TextField#appendText.
+		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/TextField.html#appendText flash.text.TextField.appendText
 		 */
 		public function appendText(text:String):void
 		{

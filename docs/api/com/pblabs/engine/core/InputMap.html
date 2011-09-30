@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><!-- saved from url=(0014)about:internet --><html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><link rel="stylesheet" href="../../../../style.css" type="text/css" media="screen"><link rel="stylesheet" href="../../../../print.css" type="text/css" media="print"><link rel="stylesheet" href="../../../../override.css" type="text/css"><meta name="keywords" content="InputMap,com.pblabs.engine.core.InputMap,add,add,addAnimatedObject,addClass,addClassName,addFileReference,addGroupReference,addTickedObject,addToGroup,addXML,add,and,callLater,callProperty,changeName,clear,clear,clear,clear,codeToString,contains,contains,deleteProperty,dequeue,deserialize,deserialize,deserialize,destroy,destroy,destroy,destroy,destroy,doTypesMatch,doTypesOverlap,doesTypeMatch,doesTypeOverlap,dump,enqueue,generateSchema,getDescendants,getItem,getItem,getLevelDescription,getProperty,getRegisteredTypes,getType,getTypeName,getXML,getlevelFiles,getlevelGroups,getlevelIndexByName,hasEntityCallback,hasProperty,initialize,initialize,instantiateEntity,instantiateEntityFromXML,instantiateGroup,isAnyKeyDown,isAttribute,isEmpty,isKeyDown,keyJustPressed,keyJustReleased,load,loadEntity,loadFile,loadLevel,loadNextLevel,lookup,lookupComponentByName,lookupComponentByType,lookupComponentsByType,mapActionToHandler,mapKeyToAction,mapKeyToHandler,nextNameIndex,nextName,nextValue,noteInSet,noteOutOfSet,onFrame,onTick,onTick,queueObject,registerAlias,registerEntityCallback,registerFlag,registerGroupCallback,remove,remove,remove,removeAnimatedObject,removeFileReference,removeFromGroup,removeGroupReference,removeLevel,removeTickedObject,removeXML,remove,reprioritize,schedule,seek,serialize,serialize,serialize,setLoadFileCallbacks,setLoadGroupCallbacks,setProperty,simulateKeyDown,simulateKeyUp,simulateMouseDown,simulateMouseMove,simulateMouseOut,simulateMouseOver,simulateMouseUp,simulateMouseWheel,sprintf,start,start,stop,stringToCode,stringToKey,testAdvance,toArray,toString,unloadCurrentLevel,unloadFile,unregisterAlias,unregisterAliases,unregisterEntityCallback,unregisterGroupCallback,validateName"><title>com.pblabs.engine.core.InputMap</title></head><body><script language="javascript" type="text/javascript" src="../../../../asdoc.js"></script><script language="javascript" type="text/javascript" src="../../../../help.js"></script><script language="javascript" type="text/javascript" src="../../../../cookies.js"></script><script language="javascript" type="text/javascript"><!--
+				asdocTitle = 'InputMap - PushButton API Reference';
+				var baseRef = '../../../../';
+				window.onload = configPage;
+			--></script>
+<script type="text/javascript">
+			scrollToNameAnchor();
+		</script><table class="titleTable" cellpadding="0" cellspacing="0" id="titleTable" style="display:none"><tr><td class="titleTableTitle" align="left">PushButton API Reference</td><td class="titleTableTopNav" align="right"><a href="../../../../package-summary.html" onclick="loadClassListFrame('../../../../all-classes.html')">All Packages</a>&nbsp;|&nbsp;<a href="../../../../class-summary.html" onclick="loadClassListFrame('../../../../all-classes.html')">All Classes</a>&nbsp;|&nbsp;<a href="../../../../all-index-A.html" onclick="loadClassListFrame('../../../../index-list.html')">Index</a>&nbsp;|&nbsp;<a id="framesLink1" href="../../../../index.html?com/pblabs/engine/core/InputMap.html&amp;com/pblabs/engine/core/class-list.html">Frames</a><a id="noFramesLink1" style="display:none" href="" onclick="parent.location=document.location"> No Frames </a></td><td class="titleTableLogo" align="right" rowspan="3"><img src="../../../../images/logo.jpg" class="logoImage" alt=" Adobe Logo " title=" Adobe Logo "></td></tr><tr class="titleTableRow2"><td class="titleTableSubTitle" id="subTitle" align="left">InputMap</td><td class="titleTableSubNav" id="subNav" align="right"><a href="#methodSummary">Methods</a></td></tr><tr class="titleTableRow3"><td colspan="3">&nbsp;</td></tr></table><script language="javascript" type="text/javascript" xml:space="preserve">
+				<!--
+				
+					if (!isEclipse() || window.name != ECLIPSE_FRAME_NAME) {titleBar_setSubTitle("InputMap"); titleBar_setSubNav(false,false,false,false,false,false,false,false,true,false,false	,false,false,false,false,false);}	
+				-->
+			</script><div xmlns:fn="http://www.w3.org/2005/xpath-functions" class="MainContent"><table class="classHeaderTable" cellpadding="0" cellspacing="0"><tr><td class="classHeaderTableLabel">Package</td><td><a href="package-detail.html" onclick="javascript:loadClassListFrame('class-list.html')">com.pblabs.engine.core</a></td></tr><tr><td class="classHeaderTableLabel">Class</td><td class="classSignature">public  class  InputMap</td></tr><tr><td class="classHeaderTableLabel">Inheritance</td><td class="inheritanceList">InputMap  <img src="../../../../images/inherit-arrow.gif" title="Inheritance" alt="Inheritance" class="inheritArrow"> Object</td></tr><tr><td class="classHeaderTableLabel">Implements</td><td> <a href="../../../../com/pblabs/engine/serialization/ISerializable.html">ISerializable</a></td></tr></table><p></p><p></p><p></p>
+     This class wraps the InputManager to allow for better control over
+     input events. It also provides a mechanism for creating custom
+     keybindings and serializing those bindings.
+          <p>The way this is accomplished is by abstracting input events by giving
+     them names, and then mapping those names to specific keys. So, registering
+     a method to be called when a key is pressed is done by registering that
+     method with the name representing the event, then registering the specific
+     key with the name.</p>
+            <p></p><p><span class="classHeaderTableLabel">See also</span></p><div class="seeAlso"><a href="InputKey.html" target="">InputKey</a><br/><a href="InputManager.html" target="">InputManager</a></div><br/><hr></div><a name="methodSummary"></a><div class="summarySection"><div class="summaryTableTitle">Public Methods </div><table cellspacing="0" cellpadding="3" class="summaryTable " id="summaryTableMethod"><tr><th>&nbsp;</th><th colspan="2">Method</th><th class="summaryTableOwnerCol">Defined By</th></tr><tr class=""><td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><div class="summarySignature"><a href="#deserialize()" class="signatureLink">deserialize</a>(xml:XML):*</div><div class="summaryTableDescription">
+         deserializes the InputMap from the format described in the serialize method.</div></td><td class="summaryTableOwnerCol">InputMap</td></tr><tr class=""><td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><div class="summarySignature"><a href="#destroy()" class="signatureLink">destroy</a>():void</div><div class="summaryTableDescription"></div></td><td class="summaryTableOwnerCol">InputMap</td></tr><tr class=""><td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><div class="summarySignature"><a href="#mapActionToHandler()" class="signatureLink">mapActionToHandler</a>(actionName:String, handler:Function):void</div><div class="summaryTableDescription">
+         Binds an input action to a handler callback.</div></td><td class="summaryTableOwnerCol">InputMap</td></tr><tr class=""><td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><div class="summarySignature"><a href="#mapKeyToAction()" class="signatureLink">mapKeyToAction</a>(key:<a href="../../../../com/pblabs/engine/core/InputKey.html">InputKey</a>, actionName:String):void</div><div class="summaryTableDescription">
+         Maps a specific key to an input action (registered with MapActionToHandler).</div></td><td class="summaryTableOwnerCol">InputMap</td></tr><tr class=""><td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><div class="summarySignature"><a href="#mapKeyToHandler()" class="signatureLink">mapKeyToHandler</a>(key:<a href="../../../../com/pblabs/engine/core/InputKey.html">InputKey</a>, handler:Function):void</div><div class="summaryTableDescription">
+         Maps a specific key to a handler callback.</div></td><td class="summaryTableOwnerCol">InputMap</td></tr><tr class=""><td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><div class="summarySignature"><a href="#serialize()" class="signatureLink">serialize</a>(xml:XML):void</div><div class="summaryTableDescription">
+         serializes the InputMap to a format containing just key value pairs with
+         the key representing the name of an input event and the value representing
+         the name of the key from the InputKey class.</div></td><td class="summaryTableOwnerCol">InputMap</td></tr></table></div><script language="javascript" type="text/javascript"><!--
+										showHideInherited();
+										--></script><div class="MainContent"><a name="methodDetail"></a><div class="detailSectionHeader">Method Detail</div><a name="deserialize()"></a><a name="deserialize(XML)"></a><table class="detailHeader" cellpadding="0" cellspacing="0"><tr><td class="detailHeaderName">deserialize</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td></tr></table><div class="detailBody"><code> public function deserialize(xml:XML):*</code><p></p><p></p><p>
+         deserializes the InputMap from the format described in the serialize method.
+                  
+       deserializes the object from xml. The format of the xml passed is custom,
+       depending on the way the object was serialized with the serialize method.
+       
+       </p><p><span class="label"> Parameters </span><table cellpadding="0" cellspacing="0" border="0"><tr><td width="20px"></td><td><code><span class="label">xml</span>:XML</code> &mdash; The xml containing the serialized definition of the class.
+       
+       </td></tr></table></p><p></p><span class="label">Returns</span><table cellpadding="0" cellspacing="0" border="0"><tr><td width="20"></td><td><code>*</code> &mdash; The deserialized object. Usually 'this' should be returned, but in
+       some cases it may be useful to return something else. The Enumerable class
+       does this to force all values to be a member of the enumeration.
+       
+       </td></tr></table><p><span class="label">See also</span></p><div class="seeAlso"><a href="InputMap.html#serialize()" target="">serialize()</a></div></div><a name="destroy()"></a><table class="detailHeader" cellpadding="0" cellspacing="0"><tr><td class="detailHeaderName">destroy</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td></tr></table><div class="detailBody"><code> public function destroy():void</code><p></p></div><a name="mapActionToHandler()"></a><a name="mapActionToHandler(String,Function)"></a><table class="detailHeader" cellpadding="0" cellspacing="0"><tr><td class="detailHeaderName">mapActionToHandler</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td></tr></table><div class="detailBody"><code> public function mapActionToHandler(actionName:String, handler:Function):void</code><p></p><p></p><p>
+         Binds an input action to a handler callback. When the specified input action
+         is triggered, the handler function will be called. If it is a press event, the
+         function will be passed 1 as its only parameter. If it is a release event, the
+         function will be passed 0 as its only parameter. If it is an analog event
+         then the analog value will be passed. In the case of mouse movement (currently
+         the only analog event) the value will be the amount the mouse moved on the
+         specific axis.
+                  Input actions are mapped to specific key or mouse inputs in SetKeyMapping().
+                  Note: If you are just binding a specific key directly to a specific handler
+          function (with no special key remapping options), then using
+          MapKeyToHandler() will save you a step. Use the MapKeyToAction() and
+          MapActionToHandler() pair if you want the flexibility of an abstracted
+          re-usable component or easier key re-binding.
+                  </p><p><span class="label"> Parameters </span><table cellpadding="0" cellspacing="0" border="0"><tr><td width="20px"></td><td><code><span class="label">actionName</span>:String</code> &mdash; The name to give this binding.
+         </td></tr><tr><td class="paramSpacer">&nbsp;</td></tr><tr><td width="20px"></td><td><code><span class="label">handler</span>:Function</code> &mdash; The function to call when the input event defined by actionName
+         is triggered.
+                  </td></tr></table></p><p><span class="label">See also</span></p><div class="seeAlso"><a href="InputMap.html#MapKeyToAction()" target="">MapKeyToAction()</a><br/><a href="InputMap.html#MapKeyToHandler()" target="">MapKeyToHandler()</a></div></div><a name="mapKeyToAction()"></a><a name="mapKeyToAction(com.pblabs.engine.core.InputKey,String)"></a><table class="detailHeader" cellpadding="0" cellspacing="0"><tr><td class="detailHeaderName">mapKeyToAction</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td></tr></table><div class="detailBody"><code> public function mapKeyToAction(key:<a href="../../../../com/pblabs/engine/core/InputKey.html">InputKey</a>, actionName:String):void</code><p></p><p></p><p>
+         Maps a specific key to an input action (registered with MapActionToHandler).
+                  Note: If you are just binding a specific key directly to a specific handler
+          function (with no special key remapping options), then using
+          MapKeyToHandler() will save you a step. Use the MapKeyToAction() and
+          MapActionToHandler() pair if you want the flexibility of an abstracted
+          re-usable component or easier key re-binding.
+                  </p><p><span class="label"> Parameters </span><table cellpadding="0" cellspacing="0" border="0"><tr><td width="20px"></td><td><code><span class="label">key</span>:<a href="../../../../com/pblabs/engine/core/InputKey.html">InputKey</a></code> &mdash; The key that will trigger the action. This should be one
+         of the constants defined in the InputKey class.
+         </td></tr><tr><td class="paramSpacer">&nbsp;</td></tr><tr><td width="20px"></td><td><code><span class="label">actionName</span>:String</code> &mdash; The name of the action to trigger when the key is pressed.
+                  </td></tr></table></p><p><span class="label">See also</span></p><div class="seeAlso"><a href="InputMap.html#MapActionToHandler()" target="">MapActionToHandler()</a><br/><a href="InputMap.html#MapKeyToHandler()" target="">MapKeyToHandler()</a></div></div><a name="mapKeyToHandler()"></a><a name="mapKeyToHandler(com.pblabs.engine.core.InputKey,Function)"></a><table class="detailHeader" cellpadding="0" cellspacing="0"><tr><td class="detailHeaderName">mapKeyToHandler</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td></tr></table><div class="detailBody"><code> public function mapKeyToHandler(key:<a href="../../../../com/pblabs/engine/core/InputKey.html">InputKey</a>, handler:Function):void</code><p></p><p></p><p>
+         Maps a specific key to a handler callback. When the specified key or mouse
+         input is triggered, the handler function will be called. If it is a press
+         event, the function will be passed 1 as its only parameter. If it is a
+         release event, the function will be passed 0 as its only parameter. If it
+         is an analog event then the analog value will be passed. In the case of
+         mouse movement (currently the only analog event) the value will be the
+         amount the mouse moved on the specific axis.
+                  Note: If you need special key remapping options, or are building an
+          abstracted re-usable component, you may want the flexibilty offered by
+          using MapKeyToAction() and MapKeyToHandler(), as this lets you separate
+          specific keys from specific callbacks, as they can be bound later in game
+          configuration files (such as .pbelevel files).
+                  </p><p><span class="label"> Parameters </span><table cellpadding="0" cellspacing="0" border="0"><tr><td width="20px"></td><td><code><span class="label">key</span>:<a href="../../../../com/pblabs/engine/core/InputKey.html">InputKey</a></code> &mdash; The key that will trigger the handler. This should be one
+         of the constants defined in the InputKey class.
+         </td></tr><tr><td class="paramSpacer">&nbsp;</td></tr><tr><td width="20px"></td><td><code><span class="label">handler</span>:Function</code> &mdash; The function to call when the input event is triggered.
+                  </td></tr></table></p><p><span class="label">See also</span></p><div class="seeAlso"><a href="InputMap.html#MapActionToHandler()" target="">MapActionToHandler()</a><br/><a href="InputMap.html#MapKeyToHandler()" target="">MapKeyToHandler()</a></div></div><a name="serialize()"></a><a name="serialize(XML)"></a><table class="detailHeader" cellpadding="0" cellspacing="0"><tr><td class="detailHeaderName">serialize</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td></tr></table><div class="detailBody"><code> public function serialize(xml:XML):void</code><p></p><p></p><p>
+         serializes the InputMap to a format containing just key value pairs with
+         the key representing the name of an input event and the value representing
+         the name of the key from the InputKey class.
+                  
+       serializes the object to XML. This should not include the main tag
+       defining the class itself.
+       
+       </p><p><span class="label"> Parameters </span><table cellpadding="0" cellspacing="0" border="0"><tr><td width="20px"></td><td><code><span class="label">xml</span>:XML</code> &mdash; The xml object to which the serialization of this class should
+       be added. This xml object is a single tag containing the main class definition,
+       so only children of this class should be added to it.
+       
+       </td></tr></table></p></div><br/><br/><hr><br/><p></p><center class="copyright"><footer>http://pushbuttonengine.com/</footer><br/>Fri Sep 30 2011, 03:31 PM -03:00  </center></div></body></html><!--http://pushbuttonengine.com/<br/>Fri Sep 30 2011, 03:31 PM -03:00  -->

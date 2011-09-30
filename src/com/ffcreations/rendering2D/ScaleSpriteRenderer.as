@@ -103,7 +103,7 @@ package com.ffcreations.rendering2D
 		
 		/**
 		 * The 9-slice grid.
-		 * @see flash.display.DisplayObject#scale9Grid
+		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/display/DisplayObject.html#scale9Grid flash.display.DisplayObject.scale9Grid
 		 */
 		public function get scale9Grid():Rectangle
 		{

@@ -46,7 +46,8 @@ package com.ffcreations.util
 		
 		/**
 		 * The table entire data.
-		 * If <code>mapByFirstColumn</code> is set to true, data is a <code>Dictionary<code>, otherwise is an <code>Array</code>.
+		 * If <code>mapByFirstColumn</code> is set to true, data is a <code>Dictionary</code>,
+		 * otherwise is an <code>Array</code>.
 		 * @see #mapByFirstColumn
 		 */
 		public function get data():*

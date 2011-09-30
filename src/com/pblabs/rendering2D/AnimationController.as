@@ -243,10 +243,7 @@ package com.pblabs.rendering2D
 		 */
 		public function setAnimation(ai:AnimationControllerInfo):void
 		{
-			PROFILER::ENABLED
-			{
-				Profiler.enter("AnimationController.SetAnimation");
-			}
+			Profiler.enter("AnimationController.SetAnimation");
 			
 			// Fire stop event.
 			if (_currentAnimation && _currentAnimation.completeEvent)
@@ -282,10 +279,7 @@ package com.pblabs.rendering2D
 			
 			//Logger.(this, "Changed animation to: " + _currentAnimation.spriteSheet.name + ". duration is " + _currentAnimationDuration);
 			
-			PROFILER::ENABLED
-			{
-				Profiler.exit("AnimationController.SetAnimation");
-			}
+			Profiler.exit("AnimationController.SetAnimation");
 		}
 		
 		protected function updateAnimationDuration():void

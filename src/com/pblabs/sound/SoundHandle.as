@@ -130,10 +130,7 @@ package com.pblabs.sound
 		
 		public function resume():void
 		{
-			PROFILER::ENABLED
-			{
-				Profiler.enter("SoundHandle.resume");
-			}
+			Profiler.enter("SoundHandle.resume");
 			
 			dirty = true;
 			
@@ -152,11 +149,7 @@ package com.pblabs.sound
 				Logger.error(this, "resume", "Error starting sound playback: " + e.toString());
 			}
 			
-			
-			PROFILER::ENABLED
-			{
-				Profiler.exit("SoundHandle.resume");
-			}
+			Profiler.exit("SoundHandle.resume");
 		}
 		
 		public function stop():void

@@ -15,7 +15,7 @@ package com.ffcreations.util
 		//==========================================================
 		
 		/**
-		 * Rounds the gigen <code>value</code> to the nearest <code>value</value>.
+		 * Rounds the gigen <code>value</code> to the nearest <code>value</code>.
 		 * @param roundTo	Reference value.
 		 * @param value		Value to round.
 		 * @return The parameter <code>value</code> rounded to the nearest
@@ -28,7 +28,7 @@ package com.ffcreations.util
 		}
 		
 		/**
-		 * Ceils the gigen <code>value</code> to the nearest <code>value</value>.
+		 * Ceils the gigen <code>value</code> to the nearest <code>value</code>.
 		 * @param roundTo	Reference value.
 		 * @param value		Value to round.
 		 * @return An <code>Number</code> that is both closest to, and greater than
@@ -41,7 +41,7 @@ package com.ffcreations.util
 		}
 		
 		/**
-		 * Floors the gigen <code>value</code> to the nearest <code>value</value>.
+		 * Floors the gigen <code>value</code> to the nearest <code>value</code>.
 		 * @param roundTo	Reference value.
 		 * @param value		Value to round.
 		 * @return The <code>Number</code> that is both closest to, and less than

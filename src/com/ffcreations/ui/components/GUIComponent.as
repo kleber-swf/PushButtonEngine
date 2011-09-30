@@ -18,6 +18,27 @@ package com.ffcreations.ui.components
 	
 	import mx.utils.StringUtil;
 	
+	/**
+	 * Component to easy handle with gui components, like buttons.
+	 * Considerations:
+	 * <ul>
+	 * <li>The image given in <code>fileName</code> field must be a sprite sheet containing the states of the
+	 * component</li>
+	 * <li>The <code>states</code> field must be set with an <code>Array</code> containing each state of this image in order</li>
+	 * <li>Each sub-image is a 9-sliced image, so you need to set the <code>grid9Scale</code> field properly</li>
+	 * <li>The default is consider a 2x4 sprite sheet like this:<br />
+	 * <pre>           out  over  down  disabled </pre>
+	 * <pre>          _____ _____ _____ _____    </pre>
+	 * <pre>         |     |     |     |     |   </pre>
+	 * <pre>  normal |  0  |  1  |  2  |  3  |   </pre>
+	 * <pre>         |_____|_____|_____|_____|   </pre>
+	 * <pre>         |     |     |     |     |   </pre>
+	 * <pre>selected |  4  |  5  |  6  |  7  |   </pre>
+	 * <pre>         |_____|_____|_____|_____|   </pre>
+	 * </li>
+	 * </ul>
+	 * @author Kleber Lopes da Silva (kleber.swf)
+	 */
 	public class GUIComponent extends ScaleSpriteRenderer implements IMouseInputComponent
 	{
 		
@@ -27,17 +48,21 @@ package com.ffcreations.ui.components
 		//==========================================================
 		
 		private static var zeroPoint:Point = new Point();
+		
+		/**
+		 * Event type called when the component is selected.
+		 */
 		public static var SELECTED:String = "selected";
 		
 		private static var _componentStates:Array = new Array("normal", "selected");
-		private static var _mouseStates:Object = {"out":"mouseOut", "over":"mouseOver", "down":"mouseDown", "disabled":"disabled"};
+		private static var _mouseStates:Object = { "out":"mouseOut", "over":"mouseOver", "down":"mouseDown", "disabled":"disabled" };
 		
 		
 		//==========================================================
 		//   Fields 
 		//==========================================================
 		
-		private var _states:Object = {"normal:mouseOut":0,
+		private var _states:Object = { "normal:mouseOut":0,
 				"normal:mouseOver":1,
 				"normal:mouseUp":1,
 				"normal:mouseDown":2,
@@ -46,7 +71,7 @@ package com.ffcreations.ui.components
 				"selected:mouseUp":4,
 				"selected:mouseOver":5,
 				"selected:mouseDown":6,
-				"selected:disabled":7};
+				"selected:disabled":7 };
 		
 		private var _target:BitmapData;
 		private var _sourceRect:Rectangle;
@@ -67,44 +92,65 @@ package com.ffcreations.ui.components
 		//   Properties 
 		//==========================================================
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function get acceptDrop():Boolean
 		{
 			return _acceptDrop;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function set acceptDrop(value:Boolean):void
 		{
 			_acceptDrop = value;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function get draggable():Boolean
 		{
 			return _draggable;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function set draggable(value:Boolean):void
 		{
 			_draggable = value;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function get enabled():Boolean
 		{
 			return _enabled && _alpha > 0;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function set enabled(value:Boolean):void
 		{
 			_enabled = value;
 			_stateDirty = true;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function get eventDispatcher():IEventDispatcher
 		{
 			return _eventDispatcher;
 		}
 		
 		/**
-		 * (xCount, yCount) or (columns, rows)
+		 * Columns count (x) and rows count (y) of the image.
 		 */
 		public function set imageDivider(value:Point):void
 		{
@@ -112,11 +158,17 @@ package com.ffcreations.ui.components
 			updateSourceRect();
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function get priority():int
 		{
 			return _priority;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function set priority(value:int):void
 		{
 			_priority = value;
@@ -126,11 +178,18 @@ package com.ffcreations.ui.components
 			}
 		}
 		
+		/**
+		 * Whether the component is selected.
+		 * @return
+		 */
 		public function get selected():Boolean
 		{
 			return _selected;
 		}
 		
+		/**
+		 * @private
+		 */
 		public function set selected(value:Boolean):void
 		{
 			if (_selected == value)
@@ -143,39 +202,97 @@ package com.ffcreations.ui.components
 			_stateDirty = true;
 		}
 		
-		public function set states(value:String):void
+		/**
+		 * An <code>Array</code> where its key is the image grid index and each value is
+		 * a comma separated <code>String</code> of state values.
+		 * State values are formed by two <code>String</code>s separated by a ":".
+		 * <p>
+		 * The first <code>String</code> is the component state and can be one of the follow
+		 * values:
+		 * <ul>
+		 * <li><code>normal</code>: when the component is in your normal state.</li>
+		 * <li><code>selected</code>: when the component is in your selected state.</li>
+		 * </ul>
+		 * </p>
+		 * <p>
+		 * The second <code>String</code> is the mouse state and can be one of the follow
+		 * values:
+		 * <ul>
+		 * <li><code>out</code>: when the mouse is out the component.</li>
+		 * <li><code>over</code>: when the mouse is over the component. </li>
+		 * <li><code>up</code>: when the mouse is just released inside the component.</li>
+		 * <li><code>down</code>: when the mouse is down inside the component.</li>
+		 * <li><code>disabled</code>: when the component is disabled for mouse inputs.</li>
+		 * </ul>
+		 * </p>
+		 * @example 
+		 * <listing version="3.0">
+		 * var button:GUIComponent = new GUIComponent();
+		 * 
+		 * // An 2x4 sprite sheet
+		 * button.fileName = "../assets/some/file.png";
+		 * 
+		 * // Set it as so (columns, rows)
+		 * button.imageDivider = new Point(4, 2);
+		 * 
+		 * // The scale9Grid considering each sprite in the image as a separated image
+		 * button.scale9Grid = new Rectangle(16, 16, 16, 16);
+		 * 
+		 * // Set the states related to each sprite sheet index
+		 * button.states = [
+		 * 		"normal:out",                   // index 0 of the sprite sheet (0,0)
+		 * 		"normal:over, normal:up",       // index 1 of the sprite sheet (0,1)
+		 * 		"normal:down",                  // index 2 of the sprite sheet (0,2)
+		 * 		"normal:disabled",              // index 3 of the sprite sheet (0,3)
+		 * 		"selected:out",                 // index 4 of the sprite sheet (1,0)
+		 * 		"selected:over, selected:up",   // index 5 of the sprite sheet (1,1)
+		 * 		"selected:down",                // index 6 of the sprite sheet (1,2)
+		 * 		"selected:disabled"             // index 7 of the sprite sheet (1,3)
+		 * ];
+		 * </listing>
+		 * @default
+		 */
+		public function set states(value:Array):void
 		{
-			var states:Array = value.split(",");
-			_states = new Object();
-			for (var i:int = 0; i < states.length; i++)
+			if (value == null)
 			{
-				var state:String = states[i];
-				var s:Array = state.split(":");
-				if (s.length != 2)
+				_states = new Object();
+				return;
+			}
+			for (var i:int = 0; i < value.length; i++)
+			{
+				var states:Array = value[i].split(",");
+				for each (var state:String in states)
 				{
-					Logger.warn(this, "states", "There is an error on indexes near '" + state + "'.");
-					continue;
-				}
-				var csi:int = _componentStates.indexOf(StringUtil.trim(s[0]));
-				var st:String = StringUtil.trim(s[1]);
-				if (csi < 0 || !_mouseStates.hasOwnProperty(st))
-				{
-					Logger.warn(this, "states", "Wrong state: '" + state + "'.");
-					continue;
-				}
-				_states[_componentStates[csi] + ":" + _mouseStates[st]] = i;
-				if (st == "over")
-				{
-					_states[_componentStates[csi] + ":mouseUp"] = i;
+					var s:Array = state.split(":");
+					if (s.length != 2)
+					{
+						Logger.warn(this, "states", "State must be a string like 'normal:out' or 'selected:over'.");
+						continue;
+					}
+					var csi:int = _componentStates.indexOf(StringUtil.trim(s[0]));
+					var st:String = StringUtil.trim(s[1]);
+					if (csi < 0 || !_mouseStates.hasOwnProperty(st))
+					{
+						Logger.warn(this, "states", "Wrong state: '" + state + "'.");
+						continue;
+					}
+					_states[_componentStates[csi] + ":" + _mouseStates[st]] = i;
 				}
 			}
 		}
 		
+		/**
+		 * Whether the component is visible.
+		 */
 		public function get visible():Boolean
 		{
 			return _visible;
 		}
 		
+		/**
+		 * @private
+		 */
 		public function set visible(value:Boolean):void
 		{
 			if (_visible == value)
@@ -199,6 +316,9 @@ package com.ffcreations.ui.components
 		//   Functions 
 		//==========================================================
 		
+		/**
+		 * @inheritDoc
+		 */
 		protected override function onAdd():void
 		{
 			super.onAdd();
@@ -212,6 +332,9 @@ package com.ffcreations.ui.components
 			_eventDispatcher.addEventListener(MouseEvent.MOUSE_UP, onMouse, false, int.MIN_VALUE, true);
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		protected override function onRemove():void
 		{
 			_target = null;
@@ -225,6 +348,9 @@ package com.ffcreations.ui.components
 			super.onRemove();
 		}
 		
+		/**
+		 * Updates the state when <code>_stateDirty</code> is set.
+		 */
 		protected function updateState():void
 		{
 			if (!_sourceRect)
@@ -253,6 +379,9 @@ package com.ffcreations.ui.components
 			_stateDirty = false;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		protected override function onImageLoadComplete():void
 		{
 			updateSourceRect();
@@ -271,6 +400,9 @@ package com.ffcreations.ui.components
 			_registrationPoint = new Point(_sourceRect.width * 0.5, _sourceRect.height * 0.5);
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public override function onFrame(elapsed:Number):void
 		{
 			super.onFrame(elapsed);
@@ -280,6 +412,9 @@ package com.ffcreations.ui.components
 			}
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		protected override function redraw():void
 		{
 			if (!isRegistered || !_source || !_target)
@@ -318,16 +453,32 @@ package com.ffcreations.ui.components
 			_scaleDirty = false;
 		}
 		
-		public function canDrag(component:IMouseInputComponent):Boolean
+		/**
+		 * Whether this component can be draggad at the moment that the drag starts.
+		 * @return <code>True</code> if can be dragged, or <code>false</code> otherwise.
+		 * @default The value in <code>draggable</code> field.
+		 */
+		public function canDrag():Boolean
 		{
 			return _draggable;
 		}
 		
+		/**
+		 * If this component accepts drop, this method is called when a <code>IMouseInputComponent</code>
+		 * is about to be dropped inside it.
+		 * @param component	The <code>IMouseInputComponent</code> that is dropped inside this component.
+		 * @return <code>True</code> if the given <code>IMouseInputComponent</code> can be dropped inside
+		 * this component or <code>false</code> otherwise.
+		 * @default The value in <code>acceptDrop</code> field.
+		 */
 		public function canDrop(component:IMouseInputComponent):Boolean
 		{
-			return false;
+			return _acceptDrop;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function contains(point:Point):Boolean
 		{
 			return isRegistered ? pointOccupied(point, null) : false;

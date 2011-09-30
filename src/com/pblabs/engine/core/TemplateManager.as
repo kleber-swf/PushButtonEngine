@@ -111,7 +111,7 @@ package com.pblabs.engine.core
 		 */
 		public function instantiateEntity(name:String, entityName:String = null):IEntity
 		{
-			PROFILER::ENABLED {Profiler.enter("instantiateEntity");}
+			Profiler.enter("instantiateEntity");
 
 			try
 			{
@@ -124,7 +124,7 @@ package com.pblabs.engine.core
 					if (_things[name].entityCallback)
 					{
 						var instantiated:IEntity=_things[name].entityCallback();
-						PROFILER::ENABLED {Profiler.exit("instantiateEntity");}
+						Profiler.exit("instantiateEntity");
 						return instantiated;
 					}
 				}
@@ -133,18 +133,18 @@ package com.pblabs.engine.core
 				if (!xml)
 				{
 					Logger.error(this, "instantiateEntity", "Unable to find a template or entity with the name " + name + ".");
-					PROFILER::ENABLED {Profiler.exit("instantiateEntity");}
+					Profiler.exit("instantiateEntity");
 					return null;
 				}
 
 				var entity:IEntity=instantiateEntityFromXML(xml, entityName);
-				PROFILER::ENABLED {Profiler.exit("instantiateEntity");}
+				Profiler.exit("instantiateEntity");
 			}
 			catch (e:Error)
 			{
 				Logger.error(this, "instantiateEntity", "Failed instantiating '" + name + "' due to: " + e.toString() + "\n" + e.getStackTrace());
 				entity=null;
-				PROFILER::ENABLED {Profiler.exit("instantiateEntity");}
+				Profiler.exit("instantiateEntity");
 			}
 
 			return entity;
@@ -156,7 +156,7 @@ package com.pblabs.engine.core
 		 */
 		public function instantiateEntityFromXML(xml:XML, entityName:String = null ):IEntity
 		{
-			PROFILER::ENABLED {Profiler.enter("instantiateEntityFromXML");}
+			Profiler.enter("instantiateEntityFromXML");
 
 			try
 			{
@@ -185,7 +185,7 @@ package com.pblabs.engine.core
                 if (!doInstantiateTemplate(entity, xml.attribute("template"), new Dictionary()))
 				{
 					entity.destroy();
-					PROFILER::ENABLED {Profiler.exit("instantiateEntityFromXML");}
+					Profiler.exit("instantiateEntityFromXML");
 					return null;
 				}
 
@@ -198,13 +198,13 @@ package com.pblabs.engine.core
 				if (!_inGroup)
 					Serializer.instance.reportMissingReferences();
 
-				PROFILER::ENABLED {Profiler.exit("instantiateEntityFromXML");}
+				Profiler.exit("instantiateEntityFromXML");
 			}
 			catch (e:Error)
 			{
 				Logger.error(this, "instantiateEntity", "Failed instantiating '" + name + "' due to: " + e.toString() + "\n" + e.getStackTrace());
 				entity=null;
-				PROFILER::ENABLED {Profiler.exit("instantiateEntityFromXML");}
+				Profiler.exit("instantiateEntityFromXML");
 			}
 
 			return entity;

@@ -5,6 +5,16 @@ package com.ffcreations.ui.mouse
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	
+	/**
+	 * Manager for mouse inputs.
+	 * Checks the mouse inputs (move, up and down) and redirects the event to the components
+	 * under the mouse pointer.
+	 *
+	 * @see com.ffcreations.ui.mouse.MouseInputComponent
+	 * @see com.ffcreations.ui.mouse.MouseInputEvent
+	 *
+	 * @author Kleber Lopes da Silva (kleber.swf)
+	 */
 	public class MouseInputManager
 	{
 		
@@ -13,9 +23,28 @@ package com.ffcreations.ui.mouse
 		//   Static 
 		//==========================================================
 		
+		/**
+		 * Event type called when a drag action starts.
+		 * Called on the dragged <code>IMouseInputComponent</code>.
+		 */
 		public static const DRAG_START:String = "dragStart";
+		
+		/**
+		 * Event type called when a drag action stops.
+		 * Called on the dragged <code>IMouseInputComponent</code>.
+		 */
 		public static const DRAG_STOP:String = "dragStop";
+		
+		/**
+		 * Event type called when the <code>IMouseInputComponent</code> is being dragged.
+		 * Called on the dragged <code>IMouseInputComponent</code>.
+		 */
 		public static const DRAG_MOVE:String = "dragMove";
+		
+		/**
+		 * Event type called when the <code>IMouseInputComponent</code> is dropped.
+		 * Called on the <code>IMouseInputComponent</code> where the drop occured.
+		 */
 		public static const DROP:String = "drop";
 		
 		
@@ -23,10 +52,9 @@ package com.ffcreations.ui.mouse
 		//   Fields 
 		//==========================================================
 		
-		private var _components:Array = new Array() //Vector has a very slow splice
+		private var _components:Array = new Array();
 		private var _lockedPriority:int;
 		
-		//private var _mouseData:MouseInputData;
 		private var _scenePosition:Point = new Point();
 		
 		// mouse move
@@ -45,22 +73,15 @@ package com.ffcreations.ui.mouse
 		//   Constructor 
 		//==========================================================
 		
+		/**
+		 * Called once and automatically by PBE class.
+		 * @see com.pblabs.engine.PBE#mouseInputManager
+		 */
 		public function MouseInputManager()
 		{
 			PBE.inputManager.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown, false, 0, true);
 			PBE.inputManager.addEventListener(MouseEvent.MOUSE_UP, onMouseUp, false, 0, true);
 			PBE.inputManager.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove, false, 0, true);
-		
-			//TEMP
-			//			var t:Timer = new Timer(200, 0);
-			//			t.addEventListener(TimerEvent.TIMER, function tt(e:TimerEvent):void {
-			//				t.removeEventListener(TimerEvent.TIMER, tt);
-			//				t.stop();
-			//				t = null;
-			//				redraw();
-			//			});
-			//			
-			//			t.start();
 		}
 		
 		
@@ -68,24 +89,11 @@ package com.ffcreations.ui.mouse
 		//   Functions 
 		//==========================================================
 		
-		
-		//		/** TEMP */
-		//		public function redraw():void
-		//		{
-		//			var g:Graphics = PBE.mainClass.graphics;
-		//			g.clear();
-		//			for (var i:int = _components.length - 1; i >= 0; i--)
-		//			{
-		//				var c:MouseInputComponent = _components[i] as MouseInputComponent;
-		//				var a:Point = PBE.scene.transformSceneToScreen(new Point(c.sceneBounds.x, c.sceneBounds.y));
-		//				g.lineStyle(1, c.fc, 1);
-		//				g.beginFill(c.fc, 1);
-		//				g.drawRect(a.x, a.y, c.sceneBounds.width, c.sceneBounds.height);
-		//				g.endFill();
-		//			}
-		//		}
-		
-		
+		/**
+		 * Adds a <code>IMouseInputComponent</code> to the components list.
+		 * Only componentes added to this list is verified to respond to mouse inputs
+		 * @param component The <code>IMouseInputComponent</code> to add;
+		 */
 		public function addComponent(component:IMouseInputComponent):void
 		{
 			if (_components.indexOf(component) < 0)
@@ -112,6 +120,10 @@ package com.ffcreations.ui.mouse
 			return getInsertIndex(priority, start, middle - 1);
 		}
 		
+		/**
+		 * Removes a <code>IMouseInputComponent</code> from the components list.
+		 * @param component The <code>IMouseInputComponent</code> to remove;
+		 */
 		public function removeComponent(component:IMouseInputComponent):void
 		{
 			var index:int = _components.indexOf(component);
@@ -126,12 +138,22 @@ package com.ffcreations.ui.mouse
 			}
 		}
 		
+		/**
+		 * Updates the priority of the given <code>IMouseInputComponent</code> in the
+		 * components list.
+		 * @param component The <code>IMouseComponent</code> which the priority was updated.
+		 */
 		public function updatePriority(component:IMouseInputComponent):void
 		{
 			removeComponent(component);
 			addComponent(component);
 		}
 		
+		/**
+		 * Locks the input lower then the given value.
+		 * @param value Minimum priority that components has to have to respond to mouse events.
+		 * @default 0
+		 */
 		public function lockInputUnderPriority(value:int):void
 		{
 			_lockedPriority = value;
@@ -216,7 +238,7 @@ package com.ffcreations.ui.mouse
 			{
 				if (_initialDownScenePosition.subtract(_scenePosition).length >= _pixelsToStartDrag)
 				{
-					if (_mouseDownComponent.canDrag(_mouseDownComponent))
+					if (_mouseDownComponent.canDrag())
 					{
 						_dragStarted = true;
 						_mouseDownComponent.eventDispatcher.dispatchEvent(new MouseInputEvent(DRAG_START, event, _mouseDownComponent, _scenePosition));
@@ -337,7 +359,6 @@ package com.ffcreations.ui.mouse
 				}
 			}
 		}
-		
 		
 		private function setupMouseData(event:MouseEvent):void
 		{

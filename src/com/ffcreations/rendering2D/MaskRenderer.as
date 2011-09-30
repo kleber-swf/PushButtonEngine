@@ -13,8 +13,8 @@ package com.ffcreations.rendering2D
 	
 	/**
 	 * A Renderer with a mask.
-	 * This component can be particularly confusing because of <code>maskPosition<code>
-	 * and <code>maskRegistrationPoint<code> properties, so, here is an example:
+	 * This component can be particularly confusing because of <code>maskPosition</code>
+	 * and <code>maskRegistrationPoint</code> properties, so, here is an example:
 	 * @example Suppose you want to create a volume bar. Set the parameters as follow:
 	 * <pre>
 	 * // position the mask on the left border of the texture

@@ -94,18 +94,12 @@ package com.pblabs.sound
 		
 		public function play(sound:*, category:String="sfx", pan:Number=0.0, loopCount:int=0, startDelay:Number=0.0, resourceType:Class=null):SoundHandle
 		{
-			PROFILER::ENABLED
-			{
-				Profiler.enter("SoundManager.play");
-			}
+			Profiler.enter("SoundManager.play");
 			
 			// Cap sound playback.
 			if (playingSounds.length > maxConcurrentSounds)
 			{
-				PROFILER::ENABLED
-				{
-					Profiler.exit("SoundManager.play");
-				}
+				Profiler.exit("SoundManager.play");
 				return null;
 			}
 			
@@ -142,10 +136,7 @@ package com.pblabs.sound
 						play(r as SoundResource, category, pan, loopCount, startDelay);
 					});
 					
-					PROFILER::ENABLED
-					{
-						Profiler.exit("SoundManager.play");
-					}
+					Profiler.exit("SoundManager.play");
 					return null;
 				}
 				
@@ -170,10 +161,7 @@ package com.pblabs.sound
 			// Add to the list of playing sounds.
 			playingSounds.push(sh);
 			
-			PROFILER::ENABLED
-			{
-				Profiler.exit("SoundManager.play");
-			}
+			Profiler.exit("SoundManager.play");
 			return sh;
 		}
 		
@@ -281,10 +269,7 @@ package com.pblabs.sound
 		
 		internal function updateSounds():void
 		{
-			PROFILER::ENABLED
-			{
-				Profiler.enter("SoundManager.updateSounds");
-			}
+			Profiler.enter("SoundManager.updateSounds");
 			
 			// Push dirty state down.
 			if (!rootCategory.dirty)
@@ -346,10 +331,7 @@ package com.pblabs.sound
 			// Clean the root category.
 			rootCategory.dirty = false;
 			
-			PROFILER::ENABLED
-			{
-				Profiler.exit("SoundManager.updateSounds");
-			}
+			Profiler.exit("SoundManager.updateSounds");
 		}
 		
 		public function onTick(elapsed:Number):void

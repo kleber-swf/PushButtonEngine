@@ -4,6 +4,11 @@ package com.ffcreations.ui.mouse
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	
+	/**
+	 * Event that is dispatched when a mouse input event ocurrs.
+	 * @see com.ffcreations.ui.mouse.MouseInputManager
+	 * @author Kleber Lopes da Silva (kleber.swf)
+	 */
 	public final class MouseInputEvent extends Event
 	{
 		
@@ -14,9 +19,24 @@ package com.ffcreations.ui.mouse
 		
 		internal var _propagationStopped:Boolean;
 		
+		/**
+		 * The flash MouseEvent associated.
+		 */
 		public var event:MouseEvent;
+		
+		/**
+		 * Mouse position in scene coordinates.
+		 */
 		public var scenePosition:Point;
+		
+		/**
+		 * Local position relative to the component registration point.
+		 */
 		public var localPosition:Point;
+		
+		/**
+		 * The component related to this event.
+		 */
 		public var component:IMouseInputComponent;
 		
 		
@@ -36,6 +56,14 @@ package com.ffcreations.ui.mouse
 			}
 		}
 		
+		
+		//==========================================================
+		//   Functions 
+		//==========================================================
+		
+		/**
+		 * @inheritDoc
+		 */
 		public override function stopImmediatePropagation():void
 		{
 			super.stopImmediatePropagation();

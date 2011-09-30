@@ -10,6 +10,11 @@ package com.ffcreations.ui.mouse
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
+	/**
+	 * Default <code>IMouseInpuComponent</code> implementation.
+	 * Automatically registers/unregister itself in <code>MouseInpuManager</code>.
+	 * @author Kleber Lopes da Silva (kleber.swf)
+	 */
 	public class MouseInputComponent extends TickedComponent implements IMouseInputComponent
 	{
 		
@@ -18,24 +23,31 @@ package com.ffcreations.ui.mouse
 		//   Fields 
 		//==========================================================
 		
-		private var _sceneBounds:Rectangle = new Rectangle();
-		private var _position:Point = new Point();
-		private var _positionOffset:Point = new Point();
-		private var _size:Point = new Point();
-		private var _draggable:Boolean = false;
-		private var _acceptDrop:Boolean = false;
-		
-		private var _dirty:Boolean;
-		private var _renderer:DisplayObjectRenderer;
+		protected var _sceneBounds:Rectangle = new Rectangle();
+		protected var _position:Point = new Point();
+		protected var _positionOffset:Point = new Point();
+		protected var _size:Point = new Point();
+		protected var _draggable:Boolean = false;
+		protected var _acceptDrop:Boolean = false;
+		protected var _dirty:Boolean;
+		protected var _renderer:DisplayObjectRenderer;
 		protected var _eventDispatcher:IEventDispatcher = new EventDispatcher();
-		
 		protected var _priority:int = 0;
 		protected var _enabled:Boolean = true;
 		
-		/** TEST */
-		public var fc:uint;
+		/**
+		 * If set, size is determined by this property every frame.
+		 */
 		public var sizeProperty:PropertyReference;
+		
+		/**
+		 * If set, position is determined by this property every frame.
+		 */
 		public var positionProperty:PropertyReference;
+		
+		/**
+		 * If set, positionOffset is determined by this property every frame.
+		 */
 		public var positionOffsetProperty:PropertyReference;
 		
 		
@@ -43,68 +55,107 @@ package com.ffcreations.ui.mouse
 		//   Properties 
 		//==========================================================
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function get acceptDrop():Boolean
 		{
 			return _acceptDrop;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function set acceptDrop(value:Boolean):void
 		{
 			_acceptDrop = value;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function get draggable():Boolean
 		{
 			return _draggable;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function set draggable(value:Boolean):void
 		{
 			_draggable = value;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function get enabled():Boolean
 		{
 			return _enabled;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function set enabled(value:Boolean):void
 		{
 			_enabled = value;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function get eventDispatcher():IEventDispatcher
 		{
 			return _eventDispatcher;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function get position():Point
 		{
 			return _position;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function set position(value:Point):void
 		{
 			_position = value;
 			_dirty = true;
 		}
 		
+		/**
+		 * The point that offsets the position
+		 */
 		public function get positionOffset():Point
 		{
 			return _positionOffset;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function set positionOffset(value:Point):void
 		{
 			_positionOffset = value;
 			_dirty = true;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function get priority():int
 		{
 			return _priority;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function set priority(value:int):void
 		{
 			_priority = value;
@@ -114,6 +165,9 @@ package com.ffcreations.ui.mouse
 			}
 		}
 		
+		/**
+		 * <code>DisplayObjectRenderer</code> to verifies if the mouse is inside.
+		 */
 		public function set renderer(value:DisplayObjectRenderer):void
 		{
 			_renderer = value;
@@ -124,16 +178,25 @@ package com.ffcreations.ui.mouse
 			sizeProperty = null;
 		}
 		
+		/**
+		 * Gets the bounds of this component (in scene coordinates).
+		 */
 		public function get sceneBounds():Rectangle
 		{
 			return _sceneBounds;
 		}
 		
+		/**
+		 * Size of this component.
+		 */
 		public function get size():Point
 		{
 			return _size;
 		}
 		
+		/**
+		 * @private
+		 */
 		public function set size(value:Point):void
 		{
 			_size = value;
@@ -145,12 +208,18 @@ package com.ffcreations.ui.mouse
 		//   Functions 
 		//==========================================================
 		
+		/**
+		 * @inheritDoc
+		 */
 		protected override function onAdd():void
 		{
 			super.onAdd();
 			PBE.mouseInputManager.addComponent(this);
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		protected override function onRemove():void
 		{
 			super.onRemove();
@@ -167,15 +236,20 @@ package com.ffcreations.ui.mouse
 			_sceneBounds.y = _position.y + _positionOffset.y - _size.y * 0.5;
 			_sceneBounds.width = _size.x;
 			_sceneBounds.height = _size.y;
-			//PBE.mouseInputManager.redraw();
 			_dirty = false;
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function contains(point:Point):Boolean
 		{
 			return _renderer ? _renderer.pointOccupied(point, null) : _sceneBounds.containsPoint(point);
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public override function onTick(deltaTime:Number):void
 		{
 			super.onTick(deltaTime);
@@ -186,6 +260,9 @@ package com.ffcreations.ui.mouse
 			}
 		}
 		
+		/**
+		 * Updates the *Properties fields.
+		 */
 		protected function updateProperties():void
 		{
 			if (sizeProperty)
@@ -216,12 +293,25 @@ package com.ffcreations.ui.mouse
 			}
 		}
 		
-		public function canDrop(data:IMouseInputComponent):Boolean
+		/**
+		 * If this component accepts drop, this method is called when a <code>IMouseInputComponent</code>
+		 * is about to be dropped inside it.
+		 * @param component	The <code>IMouseInputComponent</code> that is dropped inside this component.
+		 * @return <code>True</code> if the given <code>IMouseInputComponent</code> can be dropped inside
+		 * this component or <code>false</code> otherwise.
+		 * @default The value in <code>acceptDrop</code> field.
+		 */
+		public function canDrop(component:IMouseInputComponent):Boolean
 		{
 			return _acceptDrop;
 		}
 		
-		public function canDrag(data:IMouseInputComponent):Boolean
+		/**
+		 * Whether this component can be draggad at the moment that the drag starts.
+		 * @return <code>True</code> if can be dragged, or <code>false</code> otherwise.
+		 * @default The value in <code>draggable</code> field.
+		 */
+		public function canDrag():Boolean
 		{
 			return _draggable;
 		}
