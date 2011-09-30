@@ -60,7 +60,7 @@ package com.ffcreations.rendering2D
 		 */
 		public function set fileName(value:String):void
 		{
-			if (fileName != value)
+			if (_fileName != value)
 			{
 				if (_resource)
 				{
@@ -70,7 +70,7 @@ package com.ffcreations.rendering2D
 				_fileName = value;
 				_loading = true;
 				// Tell the ResourceManager to load the ImageResource
-				PBE.resourceManager.load(fileName, ImageResource, imageLoadCompleted, imageLoadFailed, false);
+				PBE.resourceManager.load(_fileName, ImageResource, imageLoadCompleted, imageLoadFailed, false);
 			}
 		}
 		
@@ -166,11 +166,11 @@ package com.ffcreations.rendering2D
 		protected override function onAdd():void
 		{
 			super.onAdd();
-			if (!loading && !_resource && fileName != null && fileName != "")
+			if (!loading && !_resource && _fileName != null && _fileName != "")
 			{
 				_loading = true;
 				// Tell the ResourceManager to load the ImageResource
-				PBE.resourceManager.load(fileName, ImageResource, imageLoadCompleted, imageLoadFailed, false);
+				PBE.resourceManager.load(_fileName, ImageResource, imageLoadCompleted, imageLoadFailed, false);
 			}
 		}
 		

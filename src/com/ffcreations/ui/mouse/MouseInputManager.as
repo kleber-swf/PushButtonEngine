@@ -23,7 +23,7 @@ package com.ffcreations.ui.mouse
 		//   Fields 
 		//==========================================================
 		
-		private var _components:Array = new Array()//Vector has a very slow splice
+		private var _components:Array = new Array() //Vector has a very slow splice
 		private var _lockedPriority:int;
 		
 		//private var _mouseData:MouseInputData;
@@ -68,6 +68,7 @@ package com.ffcreations.ui.mouse
 		//   Functions 
 		//==========================================================
 		
+		
 		//		/** TEMP */
 		//		public function redraw():void
 		//		{
@@ -84,23 +85,22 @@ package com.ffcreations.ui.mouse
 		//			}
 		//		}
 		
-		public function lockInputUnderPriority(value:int):void
-		{
-			_lockedPriority = value;
-		}
 		
 		public function addComponent(component:IMouseInputComponent):void
 		{
-			_components.splice(getInsertIndex(component.priority, 0, _components.length-1), 0, component);
+			if (_components.indexOf(component) < 0)
+			{
+				_components.splice(getInsertIndex(component.priority, 0, _components.length - 1), 0, component);
+			}
 		}
 		
 		private function getInsertIndex(priority:int, start:int, end:int):int
 		{
 			if (end <= start)
 			{
-				return start;
+				return (start == _components.length - 1 && _components[start].priority > priority) ? start + 1 : start;
 			}
-			var middle:int = start + int((end - start) * 0.5);
+			var middle:int = start + Math.round((end - start) * 0.5);
 			if (_components[middle].priority == priority)
 			{
 				return middle;
@@ -126,10 +126,15 @@ package com.ffcreations.ui.mouse
 			}
 		}
 		
-		internal function updatePriority(component:IMouseInputComponent):void
+		public function updatePriority(component:IMouseInputComponent):void
 		{
 			removeComponent(component);
 			addComponent(component);
+		}
+		
+		public function lockInputUnderPriority(value:int):void
+		{
+			_lockedPriority = value;
 		}
 		
 		//--------------------------------------
@@ -319,7 +324,10 @@ package com.ffcreations.ui.mouse
 				}
 				if (component.enabled && component.contains(_scenePosition))
 				{
-					_mouseMoveOldList.push(component);
+					if (_mouseMoveOldList.indexOf(component) < 0)
+					{
+						_mouseMoveOldList.push(component);
+					}
 					e = new MouseInputEvent(event.type, event, component, _scenePosition);
 					component.eventDispatcher.dispatchEvent(e);
 					if (e._propagationStopped)

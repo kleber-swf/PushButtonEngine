@@ -4,6 +4,7 @@ package com.ffcreations.ui.components
 	import com.ffcreations.ui.mouse.IMouseInputComponent;
 	import com.ffcreations.ui.mouse.MouseInputEvent;
 	import com.pblabs.engine.PBE;
+	import com.pblabs.engine.debug.Logger;
 	
 	import flash.display.BitmapData;
 	import flash.display.Graphics;
@@ -15,6 +16,8 @@ package com.ffcreations.ui.components
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
+	import mx.utils.StringUtil;
+	
 	public class GUIComponent extends ScaleSpriteRenderer implements IMouseInputComponent
 	{
 		
@@ -24,18 +27,33 @@ package com.ffcreations.ui.components
 		//==========================================================
 		
 		private static var zeroPoint:Point = new Point();
-		private static var _indexes:Object = {"mouseOut":0, "mouseOver":1, "mouseDown":2, "mouseUp":1};
 		public static var SELECTED:String = "selected";
+		
+		private static var _componentStates:Array = new Array("normal", "selected");
+		private static var _mouseStates:Object = {"out":"mouseOut", "over":"mouseOver", "down":"mouseDown", "disabled":"disabled"};
 		
 		
 		//==========================================================
 		//   Fields 
 		//==========================================================
 		
+		private var _states:Object = {"normal:mouseOut":0,
+				"normal:mouseOver":1,
+				"normal:mouseUp":1,
+				"normal:mouseDown":2,
+				"normal:disabled":3,
+				"selected:mouseOut":4,
+				"selected:mouseUp":4,
+				"selected:mouseOver":5,
+				"selected:mouseDown":6,
+				"selected:disabled":7};
+		
 		private var _target:BitmapData;
 		private var _sourceRect:Rectangle;
 		private var _stateDirty:Boolean;
 		private var _state:String;
+		private var _grid:Point = new Point(4, 2);
+		private var _visible:Boolean = true;
 		
 		protected var _enabled:Boolean = true;
 		protected var _selected:Boolean = false;
@@ -71,7 +89,7 @@ package com.ffcreations.ui.components
 		
 		public function get enabled():Boolean
 		{
-			return _enabled;
+			return _enabled && _alpha > 0;
 		}
 		
 		public function set enabled(value:Boolean):void
@@ -85,6 +103,15 @@ package com.ffcreations.ui.components
 			return _eventDispatcher;
 		}
 		
+		/**
+		 * (xCount, yCount) or (columns, rows)
+		 */
+		public function set imageDivider(value:Point):void
+		{
+			_grid = value;
+			updateSourceRect();
+		}
+		
 		public function get priority():int
 		{
 			return _priority;
@@ -93,6 +120,10 @@ package com.ffcreations.ui.components
 		public function set priority(value:int):void
 		{
 			_priority = value;
+			if (isRegistered)
+			{
+				PBE.mouseInputManager.updatePriority(this);
+			}
 		}
 		
 		public function get selected():Boolean
@@ -112,6 +143,57 @@ package com.ffcreations.ui.components
 			_stateDirty = true;
 		}
 		
+		public function set states(value:String):void
+		{
+			var states:Array = value.split(",");
+			_states = new Object();
+			for (var i:int = 0; i < states.length; i++)
+			{
+				var state:String = states[i];
+				var s:Array = state.split(":");
+				if (s.length != 2)
+				{
+					Logger.warn(this, "states", "There is an error on indexes near '" + state + "'.");
+					continue;
+				}
+				var csi:int = _componentStates.indexOf(StringUtil.trim(s[0]));
+				var st:String = StringUtil.trim(s[1]);
+				if (csi < 0 || !_mouseStates.hasOwnProperty(st))
+				{
+					Logger.warn(this, "states", "Wrong state: '" + state + "'.");
+					continue;
+				}
+				_states[_componentStates[csi] + ":" + _mouseStates[st]] = i;
+				if (st == "over")
+				{
+					_states[_componentStates[csi] + ":mouseUp"] = i;
+				}
+			}
+		}
+		
+		public function get visible():Boolean
+		{
+			return _visible;
+		}
+		
+		public function set visible(value:Boolean):void
+		{
+			if (_visible == value)
+			{
+				return;
+			}
+			_visible = value;
+			alpha = value ? 1 : 0;
+			if (value)
+			{
+				PBE.mouseInputManager.addComponent(this);
+			}
+			else
+			{
+				PBE.mouseInputManager.removeComponent(this);
+			}
+		}
+		
 		
 		//==========================================================
 		//   Functions 
@@ -120,7 +202,10 @@ package com.ffcreations.ui.components
 		protected override function onAdd():void
 		{
 			super.onAdd();
-			PBE.mouseInputManager.addComponent(this);
+			if (_visible)
+			{
+				PBE.mouseInputManager.addComponent(this);
+			}
 			_eventDispatcher.addEventListener(MouseEvent.MOUSE_OVER, onMouse, false, int.MIN_VALUE, true);
 			_eventDispatcher.addEventListener(MouseEvent.MOUSE_OUT, onMouse, false, int.MIN_VALUE, true);
 			_eventDispatcher.addEventListener(MouseEvent.MOUSE_DOWN, onMouse, false, int.MIN_VALUE, true);
@@ -142,31 +227,48 @@ package com.ffcreations.ui.components
 		
 		protected function updateState():void
 		{
+			if (!_sourceRect)
+			{
+				return;
+			}
+			var state:String;
 			if (_enabled)
 			{
-				if (!_indexes.hasOwnProperty(_state))
-				{
-					return;
-				}
-				_sourceRect.x = _target.width * _indexes[_state];
+				state = (_selected ? "selected" : "normal") + ":" + _state;
 			}
 			else
 			{
-				_sourceRect.x = _target.width * 3;
+				state = (_selected ? "selected" : "normal") + ":disabled";
 			}
-			_sourceRect.y = _target.height * (_selected ? 1 : 0);
+			
+			if (_states.hasOwnProperty(state))
+			{
+				var index:int = _states[state];
+				_sourceRect.x = int(_target.width * (index % _grid.x));
+				_sourceRect.y = int(_target.height * int(index / _grid.x));
+				_transformDirty = true;
+				_scaleDirty = true;
+			}
+			
 			_stateDirty = false;
-			_transformDirty = true;
-			_scaleDirty = true;
 		}
 		
 		protected override function onImageLoadComplete():void
 		{
-			_sourceRect = new Rectangle(0, 0, int(_source.width * 0.25), int(_source.height * 0.5));
-			_target = new BitmapData(_sourceRect.width, _sourceRect.height, true, 0);
-			_registrationPoint = new Point(_sourceRect.width * 0.5, _sourceRect.height * 0.5);
+			updateSourceRect();
 			_state = MouseEvent.MOUSE_OUT;
 			_stateDirty = true;
+		}
+		
+		private function updateSourceRect():void
+		{
+			if (!_source)
+			{
+				return;
+			}
+			_sourceRect = new Rectangle(0, 0, int(_source.width * (1 / _grid.x)), int(_source.height * (1 / _grid.y)));
+			_target = new BitmapData(_sourceRect.width, _sourceRect.height, true, 0);
+			_registrationPoint = new Point(_sourceRect.width * 0.5, _sourceRect.height * 0.5);
 		}
 		
 		public override function onFrame(elapsed:Number):void
@@ -180,7 +282,7 @@ package com.ffcreations.ui.components
 		
 		protected override function redraw():void
 		{
-			if (!isRegistered || !_source)
+			if (!isRegistered || !_source || !_target)
 			{
 				return;
 			}
@@ -239,7 +341,6 @@ package com.ffcreations.ui.components
 		{
 			_state = data.type;
 			_stateDirty = true;
-			//			data.stopPropagation();
 			data.stopImmediatePropagation();
 		}
 	}

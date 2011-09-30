@@ -31,10 +31,11 @@ package com.ffcreations.ui.components
 		private var _layerIndex:int = 0;
 		private var _position:Point = new Point();
 		private var _pos:Point = new Point();
-		public var positionOffset:Point = new Point();
-		public var positionProperty:PropertyReference;
 		
 		private var _eventDispatcher:IEventDispatcher = new EventDispatcher();
+		private var _priority:int;
+		public var positionOffset:Point = new Point();
+		public var positionProperty:PropertyReference;
 		
 		
 		//==========================================================
@@ -97,6 +98,19 @@ package com.ffcreations.ui.components
 		public function set position(value:Point):void
 		{
 			_pos = value;
+		}
+		
+		public function set priority(value:int):void
+		{
+			if (_priority == value)
+			{
+				return;
+			}
+			_priority = value;
+			for each (var opt:Toggle in _options)
+			{
+				opt.priority = value;
+			}
 		}
 		
 		public function get selectedIndex():int

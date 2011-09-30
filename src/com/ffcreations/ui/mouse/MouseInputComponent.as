@@ -108,6 +108,10 @@ package com.ffcreations.ui.mouse
 		public function set priority(value:int):void
 		{
 			_priority = value;
+			if (isRegistered)
+			{
+				PBE.mouseInputManager.updatePriority(this);
+			}
 		}
 		
 		public function set renderer(value:DisplayObjectRenderer):void
