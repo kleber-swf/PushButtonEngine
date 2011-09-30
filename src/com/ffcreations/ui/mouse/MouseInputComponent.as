@@ -1,22 +1,16 @@
-
-
 package com.ffcreations.ui.mouse
 {
-	import com.ffcreations.util.Delegate;
 	import com.pblabs.engine.PBE;
-	import com.pblabs.engine.debug.Logger;
-	import com.pblabs.engine.entity.EntityComponent;
+	import com.pblabs.engine.components.TickedComponent;
 	import com.pblabs.engine.entity.PropertyReference;
 	import com.pblabs.rendering2D.DisplayObjectRenderer;
 	
+	import flash.events.EventDispatcher;
+	import flash.events.IEventDispatcher;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
-	/**
-	 * Basic mouse input component. Allows the <code>MouseInputManager</code> to handle with it.
-	 * @author	Kleber Lopes da Silva (kleber.swf)
-	 */
-	public class MouseInputComponent extends EntityComponent
+	public class MouseInputComponent extends TickedComponent implements IMouseInputComponent
 	{
 		
 		
@@ -24,69 +18,50 @@ package com.ffcreations.ui.mouse
 		//   Fields 
 		//==========================================================
 		
-		protected var _visible:Boolean = true;
+		private var _sceneBounds:Rectangle = new Rectangle();
+		private var _position:Point = new Point();
+		private var _positionOffset:Point = new Point();
+		private var _size:Point = new Point();
+		private var _draggable:Boolean = false;
+		private var _acceptDrop:Boolean = false;
 		
+		private var _dirty:Boolean;
+		private var _renderer:DisplayObjectRenderer;
+		protected var _eventDispatcher:IEventDispatcher = new EventDispatcher();
+		
+		protected var _priority:int = 0;
 		protected var _enabled:Boolean = true;
 		
-		protected var _renderer:DisplayObjectRenderer;
-		
-		/**
-		 * Higher values makes the component handle the mouse event before another components under the same mouse position.
-		 */
-		public var layerIndex:int = 0;
-		
-		
-		/**
-		 * Component position. Ignored when <code>renderer</code> is set.
-		 * @default (0,0)
-		 */
-		public var position:Point = new Point();
-		
-		/**
-		 * Property where to get the position. Ignored when <code>renderer</code> is set.
-		 */
-		public var positionProperty:PropertyReference;
-		
-		/**
-		 * Point to sum to position to get the real position. Ignored when <code>renderer</code> is set.
-		 */
-		public var positionOffset:Point;
-		
-		/**
-		 * Property where to get the position offset. Ignored when <code>renderer</code> is set.
-		 */
-		public var positionOffsetProperty:PropertyReference;
-		
-		/**
-		 * Size of the component. Ignored when <code>renderer</code> is set.
-		 */
-		public var size:Point;
-		
-		/**
-		 * Property where to get the size. Ignored when <code>renderer</code> is set.
-		 */
+		/** TEST */
+		public var fc:uint;
 		public var sizeProperty:PropertyReference;
-		
-		/**
-		 * A set of functions that will be called when the mouse is just pressed.
-		 * This is special for cases when you don't want to extend the MouseInputComponent class.
-		 * The signature for the function must be function(data:MouseInputData):void
-		 * @see MouseInputData
-		 */
-		public var mouseDownFunction:Delegate = new Delegate();
-		
-		/**
-		 * A set of functions that will be called when the mouse is just pressed.
-		 * This is special for cases when you don't want to extend the MouseInputComponent class.
-		 * The signature for the function must be function(data:MouseInputData):void
-		 * @see MouseInputData
-		 */
-		public var mouseUpFunction:Delegate = new Delegate();
+		public var positionProperty:PropertyReference;
+		public var positionOffsetProperty:PropertyReference;
 		
 		
 		//==========================================================
 		//   Properties 
 		//==========================================================
+		
+		public function get acceptDrop():Boolean
+		{
+			return _acceptDrop;
+		}
+		
+		public function set acceptDrop(value:Boolean):void
+		{
+			_acceptDrop = value;
+		}
+		
+		public function get draggable():Boolean
+		{
+			return _draggable;
+		}
+		
+		public function set draggable(value:Boolean):void
+		{
+			_draggable = value;
+		}
 		
 		public function get enabled():Boolean
 		{
@@ -98,59 +73,71 @@ package com.ffcreations.ui.mouse
 			_enabled = value;
 		}
 		
-		/**
-		 * Renderer which boundaries are verified on events. If set, ignores <code>position</code>, <code>positionProperty</code>, <code>positionOffset</code>, <code>positionOffsetProperty</code>, <code>size</code> and <code>sizeProperty</code> for contains checks.
-		 */
-		public function get renderer():DisplayObjectRenderer
+		public function get eventDispatcher():IEventDispatcher
 		{
-			return _renderer;
+			return _eventDispatcher;
 		}
 		
-		/**
-		 * @private
-		 */
+		public function get position():Point
+		{
+			return _position;
+		}
+		
+		public function set position(value:Point):void
+		{
+			_position = value;
+			_dirty = true;
+		}
+		
+		public function get positionOffset():Point
+		{
+			return _positionOffset;
+		}
+		
+		public function set positionOffset(value:Point):void
+		{
+			_positionOffset = value;
+			_dirty = true;
+		}
+		
+		public function get priority():int
+		{
+			return _priority;
+		}
+		
+		public function set priority(value:int):void
+		{
+			_priority = value;
+			if (isRegistered)
+			{
+				PBE.mouseInputManager.updatePriority(this);
+			}
+		}
+		
 		public function set renderer(value:DisplayObjectRenderer):void
 		{
 			_renderer = value;
+			_position = value.position;
+			positionProperty = value.positionProperty;
+			_positionOffset = value.positionOffset;
+			positionOffsetProperty = value.positionOffsetProperty;
+			sizeProperty = null;
 		}
 		
-		private function get scenePlace():Rectangle
+		public function get sceneBounds():Rectangle
 		{
-			var pos:Point = scenePosition;
-			var size:Point = owner.getProperty(sizeProperty, size) as Point;
-			return new Rectangle(pos.x - (size.x * 0.5), pos.y - (size.y * 0.5), size.x, size.y);
+			return _sceneBounds;
 		}
 		
-		/**
-		 * Gets the position of this component relative to the scene.
-		 */
-		public function get scenePosition():Point
+		public function get size():Point
 		{
-			if (_renderer)
-			{
-				return _renderer.position;
-			}
-			var pos:Point = owner.getProperty(positionProperty, position) as Point;
-			var offset:Point = owner.getProperty(positionOffsetProperty, positionOffset) as Point;
-			if (offset)
-			{
-				pos = pos.add(offset);
-			}
-			return pos;
+			return _size;
 		}
 		
-		public function get visible():Boolean
+		public function set size(value:Point):void
 		{
-			return _renderer && _renderer.displayObject ? _renderer.displayObject.visible : _visible;
-		}
-		
-		public function set visible(value:Boolean):void
-		{
-			_visible = value;
-			if (_renderer)
-			{
-				_renderer.alpha = value ? 1 : 0;
-			}
+			_size = value;
+			_dirty = true;
 		}
 		
 		
@@ -160,88 +147,83 @@ package com.ffcreations.ui.mouse
 		
 		protected override function onAdd():void
 		{
-			if (isRegistered)
-			{
-				return;
-			}
+			super.onAdd();
 			PBE.mouseInputManager.addComponent(this);
-			if (!(_renderer || sizeProperty || size))
-			{
-				Logger.warn(this, "onAdd", "Mouse component on [" + owner.name + " -> " + this.name + "] without place for check. Set renderer, sizeProperty or size on this component.");
-			}
 		}
 		
 		protected override function onRemove():void
 		{
 			super.onRemove();
-			PBE.mouseInputManager.removeComponent(this);
+			_sceneBounds = null;
+			_position = null;
+			_size = null;
 			_renderer = null;
-			mouseDownFunction.clear();
-			mouseDownFunction = null;
-			mouseUpFunction.clear();
-			mouseUpFunction = null;
-			position = null;
-			positionProperty = null;
-			positionOffset = null;
-			positionOffsetProperty = null;
-			size = null;
-			sizeProperty = null;
+			PBE.mouseInputManager.removeComponent(this);
 		}
 		
-		/**
-		 * Verifies whether this component contains the given point.
-		 * @param scenePoint Point on the scene to verify.
-		 * @return Whether this component contains <code>scenePoint</code>.
-		 */
-		public function contains(scenePoint:Point):Boolean
+		private function updateBounds():void
 		{
-			if (_renderer)
+			_sceneBounds.x = _position.x + _positionOffset.x - _size.x * 0.5;
+			_sceneBounds.y = _position.y + _positionOffset.y - _size.y * 0.5;
+			_sceneBounds.width = _size.x;
+			_sceneBounds.height = _size.y;
+			//PBE.mouseInputManager.redraw();
+			_dirty = false;
+		}
+		
+		public function contains(point:Point):Boolean
+		{
+			return _renderer ? _renderer.pointOccupied(point, null) : _sceneBounds.containsPoint(point);
+		}
+		
+		public override function onTick(deltaTime:Number):void
+		{
+			super.onTick(deltaTime);
+			updateProperties();
+			if (_dirty)
 			{
-				return _renderer.pointOccupied(scenePoint, null);
+				updateBounds();
 			}
-			return scenePlace.contains(scenePoint.x, scenePoint.y);
 		}
 		
-		internal function mouseDown(data:MouseInputData):Boolean
+		protected function updateProperties():void
 		{
-			if (mouseDownFunction)
+			if (sizeProperty)
 			{
-				mouseDownFunction.call(data);
+				var s:Point = owner.getProperty(sizeProperty, _size);
+				if (s.x != _size.x || s.y != _size.y)
+				{
+					size = s;
+				}
 			}
-			return onMouseDown(data);
-		}
-		
-		internal function mouseUp(data:MouseInputData):Boolean
-		{
-			var passThrough:Boolean = onMouseUp(data);
-			if (mouseUpFunction)
+			
+			if (positionProperty)
 			{
-				mouseUpFunction.call(data);
-				return false;
+				var p:Point = owner.getProperty(positionProperty, _position);
+				if (p.x != _position.x || p.y != _position.y)
+				{
+					position = p;
+				}
 			}
-			return passThrough;
+			
+			if (positionOffsetProperty)
+			{
+				var o:Point = owner.getProperty(positionOffsetProperty, _positionOffset);
+				if (o.x != _positionOffset.x || o.y != _positionOffset.y)
+				{
+					positionOffset = o;
+				}
+			}
 		}
 		
-		/**
-		 * Called when the mouse is just pressed. Overrite it to make specific implementations.
-		 * @param data	Mouse data for this event.
-		 * @return Whether the event flow should pass through this component after its execution.
-		 * @see MouseInputManager
-		 */
-		protected function onMouseDown(data:MouseInputData):Boolean
+		public function canDrop(data:IMouseInputComponent):Boolean
 		{
-			return true;
+			return _acceptDrop;
 		}
 		
-		/**
-		 * Called when the mouse is just released. Overrite it to make specific implementations.
-		 * @param data	Mouse data for this event.
-		 * @return Whether the event flow should pass through this component after its execution.
-		 * @see MouseInputManager
-		 */
-		protected function onMouseUp(data:MouseInputData):Boolean
+		public function canDrag(data:IMouseInputComponent):Boolean
 		{
-			return true;
+			return _draggable;
 		}
 	}
 }
