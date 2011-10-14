@@ -2,8 +2,6 @@ package com.ffcreations.ui.components
 {
 	import com.ffcreations.ui.mouse.MouseInputEvent;
 	
-	import flash.events.MouseEvent;
-	
 	/**
 	 * A GUIComponent that have its <code>selected</code> property inverted each time it is pressed.
 	 * @author Kleber Lopes da Silva (kleber.swf)
@@ -13,12 +11,24 @@ package com.ffcreations.ui.components
 		
 		
 		//==========================================================
+		//   Fields 
+		//==========================================================
+		
+		private var _groupped:Boolean;
+		
+		
+		//==========================================================
 		//   Functions 
 		//==========================================================
 		
 		internal function group():void
 		{
-			_eventDispatcher.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+			if (_groupped)
+			{
+				return;
+			}
+			_groupped = true;
+			_eventDispatcher.removeEventListener(MouseInputEvent.MOUSE_UP, onMouseUp);
 		}
 		
 		/**
@@ -27,7 +37,10 @@ package com.ffcreations.ui.components
 		protected override function onAdd():void
 		{
 			super.onAdd();
-			_eventDispatcher.addEventListener(MouseEvent.MOUSE_UP, onMouseUp, false, 0, true);
+			if (!_groupped)
+			{
+				_eventDispatcher.addEventListener(MouseInputEvent.MOUSE_UP, onMouseUp, false, 0, true);
+			}
 		}
 		
 		/**
@@ -35,7 +48,7 @@ package com.ffcreations.ui.components
 		 */
 		protected override function onRemove():void
 		{
-			_eventDispatcher.removeEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+			_eventDispatcher.removeEventListener(MouseInputEvent.MOUSE_UP, onMouseUp);
 			super.onRemove();
 		}
 		

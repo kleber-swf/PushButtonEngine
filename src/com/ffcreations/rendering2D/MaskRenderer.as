@@ -7,21 +7,18 @@ package com.ffcreations.rendering2D
 	import flash.display.Sprite;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
-	import flash.geom.Rectangle;
-	
-	import spark.primitives.Graphic;
 	
 	/**
 	 * A Renderer with a mask.
 	 * This component can be particularly confusing because of <code>maskPosition</code>
 	 * and <code>maskRegistrationPoint</code> properties, so, here is an example:
 	 * @example Suppose you want to create a volume bar. Set the parameters as follow:
-	 * <pre>
+	 * <listing version="3.0">
 	 * // position the mask on the left border of the texture
 	 * maskRenderer.maskPostion = new Point(-0.5, 0);
 	 * // position the mask registration point on its left border
 	 * maskRenderer.maskRegistrationPoint = new Point(-0.5, 0);
-	 * </pre>
+	 * </listing>
 	 * This will make the mask be resized (through the <code>maskScale</code> property)
 	 * only in the right side. Just like a volume bar should be.
 	 *

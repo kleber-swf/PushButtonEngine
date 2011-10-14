@@ -168,14 +168,29 @@ package com.ffcreations.ui.mouse
 		/**
 		 * <code>DisplayObjectRenderer</code> to verifies if the mouse is inside.
 		 */
+		public function get renderer():DisplayObjectRenderer
+		{
+			return _renderer;
+		}
+		
+		/**
+		 * @private
+		 */
 		public function set renderer(value:DisplayObjectRenderer):void
 		{
 			_renderer = value;
-			_position = value.position;
-			positionProperty = value.positionProperty;
-			_positionOffset = value.positionOffset;
-			positionOffsetProperty = value.positionOffsetProperty;
-			sizeProperty = null;
+			if (isRegistered)
+			{
+				_renderer.positionProperty = new PropertyReference("#" + owner.name + "." + name + ".position");
+				_renderer.positionOffsetProperty = new PropertyReference("#" + owner.name + "." + name + ".positionOffset");
+			}
+			//			_position = value.position;
+			//			positionProperty = value.positionProperty;
+			//			_positionOffset = value.positionOffset;
+			//			positionOffsetProperty = value.positionOffsetProperty;
+			//			sizeProperty = null;
+		
+		
 		}
 		
 		/**
@@ -215,6 +230,11 @@ package com.ffcreations.ui.mouse
 		{
 			super.onAdd();
 			PBE.mouseInputManager.addComponent(this);
+			if (_renderer)
+			{
+				_renderer.positionProperty = new PropertyReference("#" + owner.name + "." + name + ".position");
+				_renderer.positionOffsetProperty = new PropertyReference("#" + owner.name + "." + name + ".positionOffset");
+			}
 		}
 		
 		/**
@@ -232,10 +252,23 @@ package com.ffcreations.ui.mouse
 		
 		private function updateBounds():void
 		{
-			_sceneBounds.x = _position.x + _positionOffset.x - _size.x * 0.5;
-			_sceneBounds.y = _position.y + _positionOffset.y - _size.y * 0.5;
-			_sceneBounds.width = _size.x;
-			_sceneBounds.height = _size.y;
+			if (_renderer)
+			{
+				_sceneBounds = _renderer.sceneBounds;
+				if (!_sceneBounds)
+				{
+					return;
+				}
+				_sceneBounds.x = _position.x + _positionOffset.x - _sceneBounds.width * 0.5;
+				_sceneBounds.y = _position.y + _positionOffset.y - _sceneBounds.height * 0.5;
+			}
+			else
+			{
+				_sceneBounds.x = _position.x + _positionOffset.x - _size.x * 0.5;
+				_sceneBounds.y = _position.y + _positionOffset.y - _size.y * 0.5;
+				_sceneBounds.width = _size.x;
+				_sceneBounds.height = _size.y;
+			}
 			_dirty = false;
 		}
 		

@@ -4,6 +4,7 @@ package com.ffcreations.ui.mouse
 	
 	import flash.events.IEventDispatcher;
 	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	
 	/**
 	 * Interface that must be implemented to handle with mouse inputs.
@@ -12,48 +13,41 @@ package com.ffcreations.ui.mouse
 	 * and remove it from the same class when it's not used anymore.
 	 * When updating its priority, the <code>MouseInputManager</code> must
 	 * be informed too.
-	 * 
+	 *
 	 * @see com.ffcreations.ui.mouse.MouseInputManager#addComponent
 	 * @see com.ffcreations.ui.mouse.MouseInputManager#removeComponent
 	 * @see com.ffcreations.ui.mouse.MouseInputManager#updatePriority
-	 * 
+	 *
 	 * @author Kleber Lopes da Silva (kleber.swf)
 	 */
 	public interface IMouseInputComponent extends IEntityComponent
 	{
-		/**
-		 * Whether the component should accept drop of other <code>IMouseInputComponent</code>'s.
-		 */
+		/** Whether the component should accept drop of other <code>IMouseInputComponent</code>'s. */
 		function get acceptDrop():Boolean;
 		/** @private */
 		function set acceptDrop(value:Boolean):void;
 		
-		/**
-		 * Whether the component can be dragged.
-		 */
+		/** Whether the component can be dragged. */
 		function get draggable():Boolean;
 		/** @private */
 		function set draggable(value:Boolean):void;
-
-		/**
-		 * Whether the component is enabledand respond to mouse inputs.
-		 */
+		
+		/** Whether the component is enabledand respond to mouse inputs. */
 		function get enabled():Boolean;
 		/** @private */
 		function set enabled(value:Boolean):void;
 		
-		/**
-		 * EventDispatcher where the mouse events are dispatched.
-		 */
+		/** EventDispatcher where the mouse events are dispatched. */
 		function get eventDispatcher():IEventDispatcher;
 		
-		/**
-		 * Position of the component.
-		 */
+		/** Position of the component. */
 		function get position():Point;
 		/** @private */
 		function set position(value:Point):void;
 		
+		/** Scene bounds of the component. */
+		function get sceneBounds():Rectangle;
+
 		/**
 		 * Priority of the component. If two or more components are ready to respond to a
 		 * mouse event, the one with the highest priority will do it first.
@@ -71,7 +65,7 @@ package com.ffcreations.ui.mouse
 		
 		/**
 		 * Whether this component can be draggad at the moment that the drag starts.
-		 * @return <code>True</code> if can be dragged, or <code>false</code> otherwise. 
+		 * @return <code>True</code> if can be dragged, or <code>false</code> otherwise.
 		 */
 		function canDrag():Boolean;
 		

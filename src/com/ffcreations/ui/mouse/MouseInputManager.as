@@ -20,35 +20,6 @@ package com.ffcreations.ui.mouse
 		
 		
 		//==========================================================
-		//   Static 
-		//==========================================================
-		
-		/**
-		 * Event type called when a drag action starts.
-		 * Called on the dragged <code>IMouseInputComponent</code>.
-		 */
-		public static const DRAG_START:String = "dragStart";
-		
-		/**
-		 * Event type called when a drag action stops.
-		 * Called on the dragged <code>IMouseInputComponent</code>.
-		 */
-		public static const DRAG_STOP:String = "dragStop";
-		
-		/**
-		 * Event type called when the <code>IMouseInputComponent</code> is being dragged.
-		 * Called on the dragged <code>IMouseInputComponent</code>.
-		 */
-		public static const DRAG_MOVE:String = "dragMove";
-		
-		/**
-		 * Event type called when the <code>IMouseInputComponent</code> is dropped.
-		 * Called on the <code>IMouseInputComponent</code> where the drop occured.
-		 */
-		public static const DROP:String = "drop";
-		
-		
-		//==========================================================
 		//   Fields 
 		//==========================================================
 		
@@ -159,6 +130,11 @@ package com.ffcreations.ui.mouse
 			_lockedPriority = value;
 		}
 		
+		internal function getComponents():Array
+		{
+			return _components;
+		}
+		
 		//--------------------------------------
 		//   Event handlers 
 		//--------------------------------------
@@ -181,7 +157,7 @@ package com.ffcreations.ui.mouse
 				{
 					for each (component in _mouseMoveOldList)
 					{
-						component.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseEvent.MOUSE_OUT, event, component, _scenePosition));
+						component.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseInputEvent.MOUSE_OUT, event, component, _scenePosition));
 					}
 					_mouseMoveOldList.length = 0;
 					_mouseMoveNewList.length = 0;
@@ -198,13 +174,13 @@ package com.ffcreations.ui.mouse
 				// if it's not in the old list, then mouse just entered (over)
 				if (index < 0)
 				{
-					e = new MouseInputEvent(MouseEvent.MOUSE_OVER, event, component, _scenePosition);
+					e = new MouseInputEvent(MouseInputEvent.MOUSE_OVER, event, component, _scenePosition);
 					component.eventDispatcher.dispatchEvent(e);
 				}
 				// if it's on the old list, then mouse is moving inside it
 				else if (callMouseMove)
 				{
-					e = new MouseInputEvent(MouseEvent.MOUSE_MOVE, event, component, _scenePosition);
+					e = new MouseInputEvent(MouseInputEvent.MOUSE_MOVE, event, component, _scenePosition);
 					component.eventDispatcher.dispatchEvent(e);
 					callMouseMove = !e._propagationStopped;
 				}
@@ -216,7 +192,7 @@ package com.ffcreations.ui.mouse
 				// if it's not in the new list, then mouse just leave (out)
 				if (_mouseMoveNewList.indexOf(component) < 0)
 				{
-					component.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseEvent.MOUSE_OUT, event, component, _scenePosition));
+					component.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseInputEvent.MOUSE_OUT, event, component, _scenePosition));
 				}
 			}
 			_mouseMoveOldList = _mouseMoveNewList.slice();
@@ -232,7 +208,7 @@ package com.ffcreations.ui.mouse
 			if (_dragStarted)
 			{
 				_mouseDownComponent.position = _scenePosition.subtract(_initialDownLocalPosition);
-				_mouseDownComponent.eventDispatcher.dispatchEvent(new MouseInputEvent(DRAG_MOVE, event, _mouseDownComponent, _scenePosition));
+				_mouseDownComponent.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseInputEvent.DRAG_MOVE, event, _mouseDownComponent, _scenePosition));
 			}
 			else
 			{
@@ -241,7 +217,7 @@ package com.ffcreations.ui.mouse
 					if (_mouseDownComponent.canDrag())
 					{
 						_dragStarted = true;
-						_mouseDownComponent.eventDispatcher.dispatchEvent(new MouseInputEvent(DRAG_START, event, _mouseDownComponent, _scenePosition));
+						_mouseDownComponent.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseInputEvent.DRAG_START, event, _mouseDownComponent, _scenePosition));
 					}
 				}
 			}
@@ -257,10 +233,10 @@ package com.ffcreations.ui.mouse
 				if (_lockedPriority <= component.priority && component != _mouseDownComponent && component.acceptDrop && component.enabled && component.contains(_scenePosition) && component.canDrop(_mouseDownComponent))
 				{
 					dropSuccess = true;
-					e = new MouseInputEvent(DROP, event, _mouseDownComponent, _scenePosition);
+					e = new MouseInputEvent(MouseInputEvent.DROP, event, _mouseDownComponent, _scenePosition);
 					component.eventDispatcher.dispatchEvent(e);
 					p = e._propagationStopped;
-					e = new MouseInputEvent(DRAG_STOP, event, _mouseDownComponent, _scenePosition);
+					e = new MouseInputEvent(MouseInputEvent.DRAG_STOP, event, component, _scenePosition);
 					_mouseDownComponent.eventDispatcher.dispatchEvent(e);
 					if (p || e._propagationStopped)
 					{
@@ -270,9 +246,9 @@ package com.ffcreations.ui.mouse
 			}
 			if (!dropSuccess)
 			{
-				_mouseDownComponent.eventDispatcher.dispatchEvent(new MouseInputEvent(DRAG_STOP, event, null, _scenePosition));
+				_mouseDownComponent.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseInputEvent.DRAG_STOP, event, null, _scenePosition));
 			}
-			_mouseDownComponent.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseEvent.MOUSE_UP, event, _mouseDownComponent, _scenePosition));
+			_mouseDownComponent.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseInputEvent.MOUSE_UP, event, _mouseDownComponent, _scenePosition));
 			_dragStarted = false;
 			_mouseDownComponent = null;
 		}
@@ -298,8 +274,8 @@ package com.ffcreations.ui.mouse
 					{
 						_mouseDownComponent = component;
 						_mouseMoveOldList.splice(_mouseMoveOldList.indexOf(_mouseDownComponent), 1);
-						_initialDownScenePosition = _scenePosition;
-						_initialDownLocalPosition = e.localPosition;
+						_initialDownScenePosition = _scenePosition.clone();
+						_initialDownLocalPosition = e.localPosition.clone();
 					}
 					component.eventDispatcher.dispatchEvent(e);
 					if (e._propagationStopped)

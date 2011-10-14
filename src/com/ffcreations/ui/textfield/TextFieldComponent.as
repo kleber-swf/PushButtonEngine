@@ -496,6 +496,10 @@ package com.ffcreations.ui.textfield
 		public function appendText(text:String):void
 		{
 			_field.appendText(text);
+			if (_autoHeight)
+			{
+				_transformDirty = true;
+			}
 		}
 		
 		public function focus():void

@@ -141,7 +141,13 @@ package com.ffcreations.rendering2D
 			_source = res.image.bitmapData;			
 			_displayObject = new Sprite();
 			onImageLoadComplete();
-			redraw();
+			//redraw();
+			_scaleDirty=true;
+		}
+		
+		public override function set size(value:Point):void
+		{
+			super.size = value;
 		}
 		
 		/**
@@ -149,6 +155,12 @@ package com.ffcreations.rendering2D
 		 */
 		protected function onImageLoadComplete():void
 		{
+		}
+		
+		protected override function addToScene():void
+		{
+			super.addToScene();
+			_scaleDirty=true;
 		}
 		
 		/**
@@ -201,15 +213,22 @@ package com.ffcreations.rendering2D
 			{
 				return;
 			}
+			
+			var graphics:Graphics = (_displayObject as Sprite).graphics;
+			
 			if (!_scale9Grid)
 			{
+				graphics.clear();
+				graphics.beginBitmapFill(_source);
+				graphics.drawRect(0, 0, _source.width, _source.height);
+				graphics.endFill();
 				_displayObject.scale9Grid = null;
+				_scaleDirty = false;
 				return;
 			}
 			var gridX:Array = [_scale9Grid.left, _scale9Grid.right, _source.width];
 			var gridY:Array = [_scale9Grid.top, _scale9Grid.bottom, _source.height];
 			
-			var graphics:Graphics = (_displayObject as Sprite).graphics;
 			graphics.clear();
 			
 			var left:Number = 0;
@@ -226,7 +245,7 @@ package com.ffcreations.rendering2D
 				left = gridX[i];
 			}
 			_displayObject.scale9Grid = _scale9Grid;
-			_scaleDirty = true;
+			_scaleDirty = false;
 		}
 		
 		/**
@@ -234,11 +253,11 @@ package com.ffcreations.rendering2D
 		 */
 		public override function onFrame(elapsed:Number):void
 		{
-			super.onFrame(elapsed);
 			if (_scaleDirty)
 			{
 				redraw();
 			}
+			super.onFrame(elapsed);
 		}
 		
 		//--------------------------------------
