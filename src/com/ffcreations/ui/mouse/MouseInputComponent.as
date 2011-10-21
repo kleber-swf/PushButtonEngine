@@ -27,13 +27,15 @@ package com.ffcreations.ui.mouse
 		protected var _position:Point = new Point();
 		protected var _positionOffset:Point = new Point();
 		protected var _size:Point = new Point();
-		protected var _draggable:Boolean = false;
-		protected var _acceptDrop:Boolean = false;
+		protected var _draggable:Boolean;
+		protected var _dragging:Boolean;
+		protected var _acceptDrop:Boolean;
 		protected var _dirty:Boolean;
 		protected var _renderer:DisplayObjectRenderer;
 		protected var _eventDispatcher:IEventDispatcher = new EventDispatcher();
 		protected var _priority:int = 0;
 		protected var _enabled:Boolean = true;
+		protected var _container:IMouseInputComponent;
 		
 		/**
 		 * If set, size is determined by this property every frame.
@@ -74,6 +76,22 @@ package com.ffcreations.ui.mouse
 		/**
 		 * @inheritDoc
 		 */
+		public function get container():IMouseInputComponent
+		{
+			return _container;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function set container(value:IMouseInputComponent):void
+		{
+			_container = value;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
 		public function get draggable():Boolean
 		{
 			return _draggable;
@@ -85,6 +103,22 @@ package com.ffcreations.ui.mouse
 		public function set draggable(value:Boolean):void
 		{
 			_draggable = value;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get dragging():Boolean
+		{
+			return _dragging;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function set dragging(value:Boolean):void
+		{
+			_dragging = value;
 		}
 		
 		/**
@@ -242,12 +276,18 @@ package com.ffcreations.ui.mouse
 		 */
 		protected override function onRemove():void
 		{
-			super.onRemove();
 			_sceneBounds = null;
 			_position = null;
+			_positionOffset = null;
 			_size = null;
 			_renderer = null;
+			_container = null;
+			_eventDispatcher = null;
+			sizeProperty = null;
+			positionProperty = null;
+			positionOffsetProperty = null;
 			PBE.mouseInputManager.removeComponent(this);
+			super.onRemove();
 		}
 		
 		private function updateBounds():void

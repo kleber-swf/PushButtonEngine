@@ -50,6 +50,13 @@ package com.ffcreations.ui.mouse
 		public static const DRAG_START:String = "dragStart";
 		
 		/**
+		 * Event type dispatched when a drag action starts.
+		 * Called on the <code>IMouseInputComponent</code> that
+		 * contains the dragged component.
+		 */
+		public static const ITEM_DRAG_START:String = "itemDragStart";
+		
+		/**
 		 * Event type dispatched when a drag action stops.
 		 * Called on the dragged <code>IMouseInputComponent</code>.
 		 */

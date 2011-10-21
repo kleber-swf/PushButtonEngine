@@ -72,6 +72,7 @@ package com.ffcreations.ui.components
 		
 		protected var _target:BitmapData;
 		protected var _sceneInputBounds:Rectangle;
+		protected var _dragging:Boolean;
 		
 		protected var _state:String = MouseInputEvent.MOUSE_OUT;
 		protected var _grid:Point = new Point(4, 2);
@@ -86,16 +87,13 @@ package com.ffcreations.ui.components
 		protected var _priority:int;
 		protected var _eventDispatcher:IEventDispatcher = new EventDispatcher();
 		
+		protected var _container:IMouseInputComponent;
+		
 		
 		//==========================================================
 		//   Properties 
 		//==========================================================
 		
-		public override function get sceneBounds():Rectangle
-		{
-			return _sceneBounds;
-		}
-
 		/**
 		 * @inheritDoc
 		 */
@@ -115,6 +113,22 @@ package com.ffcreations.ui.components
 		/**
 		 * @inheritDoc
 		 */
+		public function get container():IMouseInputComponent
+		{
+			return _container;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function set container(value:IMouseInputComponent):void
+		{
+			_container = value;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
 		public function get draggable():Boolean
 		{
 			return _draggable;
@@ -126,6 +140,22 @@ package com.ffcreations.ui.components
 		public function set draggable(value:Boolean):void
 		{
 			_draggable = value;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get dragging():Boolean
+		{
+			return _dragging;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function set dragging(value:Boolean):void
+		{
+			_dragging = value;
 		}
 		
 		/**
@@ -199,6 +229,11 @@ package com.ffcreations.ui.components
 			{
 				PBE.mouseInputManager.updatePriority(this);
 			}
+		}
+		
+		public override function get sceneBounds():Rectangle
+		{
+			return _sceneBounds;
 		}
 		
 		/**

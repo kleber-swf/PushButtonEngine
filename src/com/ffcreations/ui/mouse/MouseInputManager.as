@@ -50,6 +50,7 @@ package com.ffcreations.ui.mouse
 		 */
 		public function MouseInputManager()
 		{
+			//PBE.mainStage.mouseChildren = false;
 			PBE.inputManager.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown, false, 0, true);
 			PBE.inputManager.addEventListener(MouseEvent.MOUSE_UP, onMouseUp, false, 0, true);
 			PBE.inputManager.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove, false, 0, true);
@@ -217,6 +218,12 @@ package com.ffcreations.ui.mouse
 					if (_mouseDownComponent.canDrag())
 					{
 						_dragStarted = true;
+						_mouseDownComponent.dragging = true;
+						if (_mouseDownComponent.container)
+						{
+							_mouseDownComponent.container.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseInputEvent.ITEM_DRAG_START, event, _mouseDownComponent, _scenePosition));
+							_mouseDownComponent.container = null;
+						}
 						_mouseDownComponent.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseInputEvent.DRAG_START, event, _mouseDownComponent, _scenePosition));
 					}
 				}
@@ -236,6 +243,8 @@ package com.ffcreations.ui.mouse
 					e = new MouseInputEvent(MouseInputEvent.DROP, event, _mouseDownComponent, _scenePosition);
 					component.eventDispatcher.dispatchEvent(e);
 					p = e._propagationStopped;
+					_mouseDownComponent.dragging = false;
+					_mouseDownComponent.container = component;
 					e = new MouseInputEvent(MouseInputEvent.DRAG_STOP, event, component, _scenePosition);
 					_mouseDownComponent.eventDispatcher.dispatchEvent(e);
 					if (p || e._propagationStopped)
@@ -246,7 +255,9 @@ package com.ffcreations.ui.mouse
 			}
 			if (!dropSuccess)
 			{
+				_mouseDownComponent.dragging = false;
 				_mouseDownComponent.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseInputEvent.DRAG_STOP, event, null, _scenePosition));
+				_mouseDownComponent.container = null;
 			}
 			_mouseDownComponent.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseInputEvent.MOUSE_UP, event, _mouseDownComponent, _scenePosition));
 			_dragStarted = false;

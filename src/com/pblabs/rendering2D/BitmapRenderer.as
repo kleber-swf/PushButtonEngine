@@ -75,7 +75,7 @@ package com.pblabs.rendering2D
         {
             _mouseEnabled = value;
             if (displayObject != null)
-				(_displayObject as Sprite).mouseEnabled = value;
+				(_displayObject as Sprite).mouseEnabled = (_displayObject as Sprite).mouseChildren = value;
         }
         
         public function get mouseEnabled():Boolean
@@ -115,10 +115,11 @@ package com.pblabs.rendering2D
 
 			if (displayObject==null)
 			{
-				_displayObject = new Sprite();
-				(_displayObject as Sprite).addChild(bitmap);				
-				_displayObject.visible = false;
-				(_displayObject as Sprite).mouseEnabled = _mouseEnabled;
+				var s:Sprite = new Sprite();
+				s.addChild(bitmap);				
+				s.visible = false;
+				s.mouseEnabled = s.mouseChildren = _mouseEnabled;
+				_displayObject = s;
 			}
 			
             // Due to a bug, this has to be reset after setting bitmapData.

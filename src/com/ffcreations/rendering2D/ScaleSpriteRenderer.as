@@ -139,7 +139,10 @@ package com.ffcreations.rendering2D
 			registrationPoint = new Point(res.image.bitmapData.width * 0.5, res.image.bitmapData.height * 0.5);
 			// set the bitmapData of this render object
 			_source = res.image.bitmapData;			
-			_displayObject = new Sprite();
+			var s:Sprite = new Sprite();
+			s.mouseChildren = false;
+			s.mouseEnabled = false;
+			_displayObject = s;
 			onImageLoadComplete();
 			//redraw();
 			_scaleDirty=true;

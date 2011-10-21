@@ -32,6 +32,11 @@ package com.ffcreations.ui.mouse
 		/** @private */
 		function set draggable(value:Boolean):void;
 		
+		/** Whether the component is dragging. */
+		function get dragging():Boolean;
+		/** @private */
+		function set dragging(value:Boolean):void;
+		
 		/** Whether the component is enabledand respond to mouse inputs. */
 		function get enabled():Boolean;
 		/** @private */
@@ -47,6 +52,11 @@ package com.ffcreations.ui.mouse
 		
 		/** Scene bounds of the component. */
 		function get sceneBounds():Rectangle;
+		
+		/** Mouse component that contains this component (drag and drop). */
+		function get container():IMouseInputComponent;
+		/** @private */
+		function set container(value:IMouseInputComponent):void;
 
 		/**
 		 * Priority of the component. If two or more components are ready to respond to a

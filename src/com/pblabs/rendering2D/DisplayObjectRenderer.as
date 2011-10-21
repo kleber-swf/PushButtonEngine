@@ -17,9 +17,12 @@ package com.pblabs.rendering2D
     
     import flash.display.BlendMode;
     import flash.display.DisplayObject;
+    import flash.display.DisplayObjectContainer;
+    import flash.display.InteractiveObject;
     import flash.geom.Matrix;
     import flash.geom.Point;
     import flash.geom.Rectangle;
+
     /**
      * Base renderer for Rendering2D. It wraps a DisplayObject, allows it
      * to be controlled by PropertyReferences, and hooks it into a scene.
@@ -528,6 +531,14 @@ package com.pblabs.rendering2D
             removeFromScene();
             
             _displayObject = value;
+			if (_displayObject is InteractiveObject)
+			{
+				InteractiveObject(_displayObject).mouseEnabled = false;
+			}
+			if (_displayObject is DisplayObjectContainer)
+			{
+				DisplayObjectContainer(_displayObject).mouseChildren = false;
+			}
             
             if(name && owner && owner.name)
 			{
