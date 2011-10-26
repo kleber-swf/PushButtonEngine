@@ -421,7 +421,7 @@ package com.ffcreations.ui.textfield
 		protected override function updateProperties():void
 		{
 			super.updateProperties();
-			if (textProperty)
+			if (alpha > 0 && textProperty)
 			{
 				text = owner.getProperty(textProperty, "");
 			}

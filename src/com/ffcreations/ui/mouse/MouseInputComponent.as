@@ -36,6 +36,7 @@ package com.ffcreations.ui.mouse
 		protected var _priority:int = 0;
 		protected var _enabled:Boolean = true;
 		protected var _container:IMouseInputComponent;
+		protected var _pixelPrecise:Boolean = true;
 		
 		/**
 		 * If set, size is determined by this property every frame.
@@ -143,6 +144,24 @@ package com.ffcreations.ui.mouse
 		public function get eventDispatcher():IEventDispatcher
 		{
 			return _eventDispatcher;
+		}
+		
+		/**
+		 * Whether the input shall be checked on the pixels or just the bounds.
+		 * @default true
+		 */
+		public function get pixelPrecise():Boolean
+		{
+			return _pixelPrecise;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function set pixelPrecise(value:Boolean):void
+		{
+			_pixelPrecise = value;
+			_dirty = true;
 		}
 		
 		/**
@@ -290,15 +309,17 @@ package com.ffcreations.ui.mouse
 			super.onRemove();
 		}
 		
-		private function updateBounds():void
+		protected function updateBounds():void
 		{
-			if (_renderer)
+			if (_pixelPrecise && _renderer)
 			{
 				_sceneBounds = _renderer.sceneBounds;
 				if (!_sceneBounds)
 				{
 					return;
 				}
+				_sceneBounds.width *= _renderer.scale.x;
+				_sceneBounds.height *= _renderer.scale.y;
 				_sceneBounds.x = _position.x + _positionOffset.x - _sceneBounds.width * 0.5;
 				_sceneBounds.y = _position.y + _positionOffset.y - _sceneBounds.height * 0.5;
 			}
@@ -317,7 +338,7 @@ package com.ffcreations.ui.mouse
 		 */
 		public function contains(point:Point):Boolean
 		{
-			return _renderer ? _renderer.pointOccupied(point, null) : _sceneBounds.containsPoint(point);
+			return _renderer && _pixelPrecise ? _renderer.pointOccupied(point, null) : _sceneBounds.containsPoint(point);
 		}
 		
 		/**

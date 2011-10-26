@@ -259,7 +259,10 @@ package com.ffcreations.ui.mouse
 				_mouseDownComponent.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseInputEvent.DRAG_STOP, event, null, _scenePosition));
 				_mouseDownComponent.container = null;
 			}
-			_mouseDownComponent.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseInputEvent.MOUSE_UP, event, _mouseDownComponent, _scenePosition));
+			if (_mouseDownComponent.eventDispatcher)
+			{
+				_mouseDownComponent.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseInputEvent.MOUSE_UP, event, _mouseDownComponent, _scenePosition));
+			}
 			_dragStarted = false;
 			_mouseDownComponent = null;
 		}

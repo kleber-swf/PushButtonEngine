@@ -2,7 +2,6 @@ package com.ffcreations.ui.components
 {
 	import com.ffcreations.rendering2D.ScaleSpriteRenderer;
 	import com.ffcreations.ui.mouse.IMouseInputComponent;
-	import com.ffcreations.ui.mouse.MouseInputComponent;
 	import com.ffcreations.ui.mouse.MouseInputEvent;
 	import com.pblabs.engine.PBE;
 	import com.pblabs.engine.debug.Logger;
@@ -10,7 +9,6 @@ package com.ffcreations.ui.components
 	import flash.display.BitmapData;
 	import flash.display.Graphics;
 	import flash.display.Sprite;
-	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
 	import flash.geom.Point;
@@ -58,6 +56,7 @@ package com.ffcreations.ui.components
 		//==========================================================
 		
 		private var _sceneBounds:Rectangle = new Rectangle();
+		private var _pixelPrecise:Boolean = true;
 		
 		protected var _states:Object = {"normal:mouseOut":0,
 				"normal:mouseOver":1,
@@ -209,6 +208,24 @@ package com.ffcreations.ui.components
 			_inputBounds = value;
 			_sceneInputBounds = new Rectangle();
 			_transformDirty = true;
+			_pixelPrecise = _sceneInputBounds != null
+		}
+		
+		/**
+		 * Whether the input shall be checked on the pixels or just the bounds.
+		 * @default true
+		 */
+		public function get pixelPrecise():Boolean
+		{
+			return _pixelPrecise;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function set pixelPrecise(value:Boolean):void
+		{
+			_pixelPrecise = value;
 		}
 		
 		/**
@@ -502,7 +519,7 @@ package com.ffcreations.ui.components
 			}
 		}
 		
-		private function updateInputBounds():void
+		protected function updateInputBounds():void
 		{
 			var pos:Point = _position.add(_positionOffset);
 			_sceneInputBounds.x = pos.x + _inputBounds.x;
@@ -587,7 +604,7 @@ package com.ffcreations.ui.components
 		 */
 		public function contains(point:Point):Boolean
 		{
-			return _sceneInputBounds ? _sceneInputBounds.containsPoint(point) : pointOccupied(point, null);
+			return _sceneInputBounds && !_pixelPrecise ? _sceneInputBounds.containsPoint(point) : pointOccupied(point, null);
 		}
 		
 		//--------------------------------------

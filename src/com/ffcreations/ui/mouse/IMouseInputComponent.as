@@ -57,6 +57,11 @@ package com.ffcreations.ui.mouse
 		function get container():IMouseInputComponent;
 		/** @private */
 		function set container(value:IMouseInputComponent):void;
+		
+		/** Whether the input shall be checked on the pixels or just the bounds. */
+		function get pixelPrecise():Boolean;
+		/** @private */
+		function set pixelPrecise(value:Boolean):void;
 
 		/**
 		 * Priority of the component. If two or more components are ready to respond to a

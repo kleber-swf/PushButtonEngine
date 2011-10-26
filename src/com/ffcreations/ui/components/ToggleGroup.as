@@ -4,7 +4,6 @@ package com.ffcreations.ui.components
 	import com.pblabs.engine.components.TickedComponent;
 	import com.pblabs.engine.entity.PropertyReference;
 	
-	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
 	import flash.geom.Point;
@@ -320,9 +319,9 @@ package com.ffcreations.ui.components
 		//   Event handlers 
 		//--------------------------------------
 		
-		private function onSelect(data:MouseInputEvent):void
+		private function onSelect(event:MouseInputEvent):void
 		{
-			selectedIndex = _options.indexOf(data.component);
+			selectedIndex = _options.indexOf(event.component);
 		}
 	}
 }
