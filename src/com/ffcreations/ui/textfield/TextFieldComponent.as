@@ -6,7 +6,9 @@ package com.ffcreations.ui.textfield
 	import com.pblabs.rendering2D.DisplayObjectRenderer;
 	
 	import flash.geom.Point;
+	import flash.text.StyleSheet;
 	import flash.text.TextField;
+	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFieldType;
 	import flash.text.TextFormat;
 	
@@ -23,13 +25,28 @@ package com.ffcreations.ui.textfield
 		//   Fields 
 		//==========================================================
 		
+		private var _text:String;
+		private var _htmlText:String;
+		private var _defaultSize:Point = new Point();
+		
 		protected var _field:TextField = new TextField();
 		protected var _autoHeight:Boolean;
+		protected var _minSize:Point = new Point();
+		protected var _maxSize:Point = new Point(3000, 5000);
 		
 		/**
 		 * Property where to get the text for this component.
 		 */
 		public var textProperty:PropertyReference;
+		
+		/**
+		 * Multiplier to the size to automatically calculate <code>registrationPoint</code>.
+		 * This is helpful when the <code>autoSize</code> or <code>autoHeight</code> are set.
+		 * @see #registrationPoint
+		 * @see #autoSize
+		 * @see #autoHeight
+		 */
+		public var registrationPointFactor:Point;
 		
 		
 		//==========================================================
@@ -85,6 +102,7 @@ package com.ffcreations.ui.textfield
 		public function set autoSize(value:String):void
 		{
 			_field.autoSize = value;
+			_transformDirty = true;
 		}
 		
 		/**
@@ -176,6 +194,7 @@ package com.ffcreations.ui.textfield
 		public function set editable(value:Boolean):void
 		{
 			_field.type = value ? TextFieldType.INPUT : TextFieldType.DYNAMIC;
+			_field.mouseEnabled = value;
 		}
 		
 		/**
@@ -201,7 +220,7 @@ package com.ffcreations.ui.textfield
 		 */
 		public function get htmlText():String
 		{
-			return _field.htmlText;
+			return _htmlText;
 		}
 		
 		/**
@@ -209,11 +228,8 @@ package com.ffcreations.ui.textfield
 		 */
 		public function set htmlText(value:String):void
 		{
-			_field.htmlText = value;
-			if (_autoHeight)
-			{
-				_transformDirty = true;
-			}
+			_htmlText = value;
+			_transformDirty = true;
 		}
 		
 		/**
@@ -231,6 +247,38 @@ package com.ffcreations.ui.textfield
 		public function set maxChars(value:int):void
 		{
 			_field.maxChars = value;
+		}
+		
+		/**
+		 * Text field maximum size.
+		 */
+		public function get maxSize():Point
+		{
+			return _maxSize;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set maxSize(value:Point):void
+		{
+			_maxSize = value;
+		}
+		
+		/**
+		 * Text field minimum size. 
+		 */
+		public function get minSize():Point
+		{
+			return _minSize;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set minSize(value:Point):void
+		{
+			_minSize = value;
 		}
 		
 		/**
@@ -299,6 +347,28 @@ package com.ffcreations.ui.textfield
 		public function set selectable(value:Boolean):void
 		{
 			_field.selectable = value;
+			_field.mouseEnabled = value;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public override function set size(value:Point):void
+		{
+			_defaultSize = value;
+		}
+		
+		/**
+		 * Attaches a style sheet to the text field.
+		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/TextField.html#selectable flash.text.TextField.styleSheet
+		 */
+		public function set styleSheet(value:String):void
+		{
+			var s:StyleSheet = new StyleSheet();
+			s.parseCSS(value);
+			_field.styleSheet = s;
+			_field.htmlText = _field.htmlText;
+			_transformDirty = true;
 		}
 		
 		/**
@@ -353,11 +423,8 @@ package com.ffcreations.ui.textfield
 			{
 				return;
 			}
-			_field.text = value ? value : "";
-			if (_autoHeight)
-			{
-				_transformDirty = true;
-			}
+			_text = value;
+			_transformDirty = true;
 		}
 		
 		/**
@@ -376,7 +443,9 @@ package com.ffcreations.ui.textfield
 		public function set textFormat(value:TextFormat):void
 		{
 			_field.defaultTextFormat = value;
+			_field.setTextFormat(value);
 			_field.text = _field.text;
+			_field.htmlText = _field.htmlText;
 			_transformDirty = true;
 		}
 		
@@ -427,6 +496,18 @@ package com.ffcreations.ui.textfield
 			}
 		}
 		
+		private function updateText():void
+		{
+			if (_htmlText)
+			{
+				_field.htmlText = _htmlText;
+			}
+			else if (_text)
+			{
+				_field.text = _text;
+			}
+		}
+		
 		/**
 		 * @inheritDoc
 		 **/
@@ -442,39 +523,58 @@ package com.ffcreations.ui.textfield
 				updateProperties();
 			}
 			
-			var size:Point = sizeProperty != null ? owner.getProperty(sizeProperty) as Point : this.size;
-			var width:int;
-			var height:int;
+			var autoSize:Boolean = _field.autoSize != TextFieldAutoSize.NONE;
 			
-			if (size == null)
+			// specify the default size
+			var size:Point;
+			if (!autoSize)
 			{
-				width = _field.textWidth;
-				height = _field.textHeight;
+				size = sizeProperty != null ? owner.getProperty(sizeProperty) as Point : _defaultSize.clone();
 			}
-			else
+			if (!size)
 			{
-				width = size.x;
-				height = size.y;
-				
-				if (width <= 0)
-				{
-					width = _field.textWidth;
-				}
-				if (_autoHeight)
-				{
-					height = int(_field.getLineMetrics(0).height + (1 - Number.MIN_VALUE)) * _field.numLines + 4; // 4:gutter
-				}
-			}
-			if (_field.border)
-			{
-				width += 2;
-				height += 2;
+				size = _minSize.clone();
 			}
 			
-			_field.width = width;
-			_field.height = height;
-			registrationPoint = new Point(width * 0.5, height * 0.5);
+			_field.width = size.x;
+			_field.height = size.y;
 			
+			// put the text
+			updateText();
+			
+			if (autoSize || size.x <= 0)
+			{
+				size.x = _field.textWidth + 4; //gutter
+			}
+			if (_autoHeight || size.y <= 0)
+			{
+				size.y = int(_field.getLineMetrics(0).height + (1 - Number.MIN_VALUE)) * _field.numLines + 4; // gutter
+			}
+			
+			// assure that the size is inside the range 
+			size.x = Math.min(_maxSize.x, Math.max(_minSize.x, size.x));
+			size.y = Math.min(_maxSize.y, Math.max(_minSize.y, size.y));
+			
+			// resize according to the content
+			_field.width = size.x;
+			_field.height = size.y;
+			
+			// put the text again
+			updateText();
+			if (_autoHeight)
+			{
+				size.y = int(_field.getLineMetrics(0).height + (1 - Number.MIN_VALUE)) * _field.numLines + 4; // gutter
+				_field.height = size.y;
+			}
+			_size = size;
+			
+			// calculates the registration point
+			if (registrationPointFactor)
+			{
+				registrationPoint = new Point(size.x * registrationPointFactor.x, size.y * registrationPointFactor.y);
+			}
+			
+			// applies transformations
 			_transformMatrix.identity();
 			_transformMatrix.scale(_scale.x, _scale.y);
 			_transformMatrix.translate(-_registrationPoint.x * _scale.x, -_registrationPoint.y * _scale.y);
@@ -502,6 +602,9 @@ package com.ffcreations.ui.textfield
 			}
 		}
 		
+		/**
+		 * Requires the stage focus to this text field. 
+		 */
 		public function focus():void
 		{
 			PBE.mainStage.focus = _field;
@@ -512,8 +615,8 @@ package com.ffcreations.ui.textfield
 		 */
 		protected override function onRemove():void
 		{
-			super.onRemove();
 			_field = null;
+			super.onRemove();
 		}
 	}
 }

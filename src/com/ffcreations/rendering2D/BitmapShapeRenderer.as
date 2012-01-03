@@ -13,7 +13,7 @@ package com.ffcreations.rendering2D
 	
 	/**
 	 * Draws a shape filled with a bitmap. A mix of SpriteRenderer and ShapeRenderer.
-	 * Does not use scale to resize itself.
+	 * It does not uses scale to resize itself.
 	 *
 	 * @see com.pblabs.rendering2D.SimpleShapeRenderer
 	 * @see com.pblabs.rendering2D.SpriteRenderer

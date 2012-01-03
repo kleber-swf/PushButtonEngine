@@ -137,6 +137,8 @@ package com.pblabs.rendering2D
         protected var _hitTestDirty:Boolean = true;
         
         protected var _inScene:Boolean = false;
+        private var _filters:Array;
+        private var _filtersDirty:Boolean;
         
 		public function DisplayObjectRenderer()
 		{
@@ -322,6 +324,17 @@ package com.pblabs.rendering2D
 			
 			_blendMode = value;
 			_transformDirty = true;
+		}
+		
+		/**
+		 * Filters to aplly to the display object.
+		 * Accepts all flash.filters.*
+		 * @see flash.filters
+		 */
+		public function set filters(value:Array):void
+		{
+			_filters = value;
+			_filtersDirty = true;
 		}
 		
 		public function get positionOffset():Point
@@ -677,17 +690,32 @@ package com.pblabs.rendering2D
             // Now that we've read all our properties, apply them to our transform.
             if (_transformDirty)
                 updateTransform();
+			if (_filtersDirty) {
+				updateFilters();
+			}
         }
-        
+		
+		private function updateFilters():void
+		{
+			if (!_displayObject)
+				return;
+			_displayObject.filters = _filters ? _filters : [];
+			_filtersDirty = false;
+		}
+		
         protected function updateProperties():void
         {
             if(!owner)
                 return;
 			
 			// Alpha.
+			var a:Number;
 			if (alphaProperty)
 			{
-				this.alpha = owner.getProperty(alphaProperty) as Number;
+				a = owner.getProperty(alphaProperty) as Number;
+				if (a != alpha) {
+					alpha = a;
+				}
 			}
 			
 			if (alpha == 0)

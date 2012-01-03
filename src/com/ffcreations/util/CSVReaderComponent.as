@@ -1,10 +1,9 @@
 package com.ffcreations.util
 {
 	import com.pblabs.engine.PBE;
+	import com.pblabs.engine.debug.Logger;
 	import com.pblabs.engine.entity.EntityComponent;
 	import com.pblabs.engine.resource.TextResource;
-	
-	import flash.utils.Dictionary;
 	
 	import mx.utils.StringUtil;
 	
@@ -29,7 +28,7 @@ package com.ffcreations.util
 		private var _data:*;
 		
 		/**
-		 * If set to true, the first column is considered titles to a map, <code>data</code> is a Dictionary and all column indexes decrease by 1.
+		 * If set to true, the first column is considered titles to a map, <code>data</code> is an <code>Object</code> and all column indexes decrease by 1.
 		 */
 		public var mapByFirstColumn:Boolean;
 		
@@ -46,7 +45,7 @@ package com.ffcreations.util
 		
 		/**
 		 * The table entire data.
-		 * If <code>mapByFirstColumn</code> is set to true, data is a <code>Dictionary</code>,
+		 * If <code>mapByFirstColumn</code> is set to true, data is a <code>Object</code>,
 		 * otherwise is an <code>Array</code>.
 		 * @see #mapByFirstColumn
 		 */
@@ -129,7 +128,7 @@ package com.ffcreations.util
 			
 			if (mapByFirstColumn)
 			{
-				_mapToDictionary(buffer, length);
+				_mapToObject(buffer, length);
 			}
 			else
 			{
@@ -144,9 +143,9 @@ package com.ffcreations.util
 		
 		}
 		
-		private function _mapToDictionary(buffer:Array, length:int):void
+		private function _mapToObject(buffer:Array, length:int):void
 		{
-			_data = new Dictionary();
+			_data = new Object();
 			
 			var tmp:Array;
 			for (var i:int = 0; i < length; i++)
@@ -195,14 +194,20 @@ package com.ffcreations.util
 		 */
 		public function getCell(row:*, col:int):String
 		{
-			if (data is Array && row is int)
+			if (mapByFirstColumn)
+			{
+				if (row is String)
+				{
+					return (col < _data[row].length) ? _data[row][col] : null;
+				}
+				Logger.warn(this, "getCell", "Trying to get a cell from an Object with a non-String key: '" + row + "'");
+				return null;
+			}
+			if (row is int)
 			{
 				return (row < _data.length && col < _data[row].length) ? _data[row][col] : null;
 			}
-			else if (data is Dictionary && row is String)
-			{
-				return (col < _data[row].length) ? _data[row][col] : null;
-			}
+			Logger.warn(this, "getCell", "Trying to get a cell from an Array with a NaN key: '" + row + "'");
 			return null;
 		}
 		
@@ -215,34 +220,69 @@ package com.ffcreations.util
 		 */
 		public function getRow(row:*):Array
 		{
-			return (_data is Dictionary || row < _data.length) ? _data[row] : null;
+			if (mapByFirstColumn)
+			{
+				if (row is String)
+				{
+					return _data[row];
+				}
+			}
+			if (row >= 0 && row < _data.length)
+			{
+				return _data[row]
+			}
+			return null;
+			//return (!(_data is Array) || row < _data.length) ? _data[row] : null;
 		}
 		
 		/**
 		 * Gets an entire column from the table.
 		 * If some row has no value for the (row,col) cell, an empty String is placed.
 		 * @param col	Column index.
-		 * @return 		An Array with all rows in the specified row.
+		 * @return 		An <code>Array</code> if <code>mapByFirstColumn</code> is <code>false</code>
+		 * 					or an <code>Object</code> indexed by the key column if <code>false</code>.
 		 * @see			#mapByFirstColumn
 		 * @see			#data
 		 */
-		public function getColumn(col:int):Array
+		public function getColumn(col:int):*
 		{
-			const length:int = _data.length;
-			const result:Array = new Array(length);
+			var result:*;
 			if (mapByFirstColumn)
 			{
+				result = new Object();
 				for (var s:String in _data)
 				{
-					result[i] = (col < _data[i].length ? _data[i][col] : "");
+					result[s] = (col < _data[s].length ? _data[s][col] : "");
 				}
 			}
 			else
 			{
+				const length:int = _data.length;
+				result = new Array(length);
 				for (var i:int = 0; i < length; i++)
 				{
 					result[i] = (col < _data[i].length ? _data[i][col] : "");
 				}
+			}
+			return result;
+		}
+		
+		/**
+		 * Get the key column as <code>Array</code>.
+		 * Only works if <code>mapByFirstColumn</code> is <code>true</code>.
+		 * @return An <code>Array</code> with all keys.
+		 */
+		public function getKeyColumn():Array
+		{
+			if (!mapByFirstColumn)
+			{
+				return null;
+			}
+			const result:Array = new Array(_data.length);
+			var i:int = 0;
+			for (var s:String in _data)
+			{
+				result[i++] = s;
 			}
 			return result;
 		}

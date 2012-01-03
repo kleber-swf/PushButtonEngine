@@ -204,6 +204,31 @@ package com.ffcreations.ui.components
 			select(value)
 		}
 		
+		/**
+		 * The value of the selected option.
+		 * @return
+		 */
+		public function get selectedValue():*
+		{
+			_options[_selectedIndex].value;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set selectedValue(value:*):void
+		{
+			for (var i:int = 0; i < _options.length; i++)
+			{
+				if (_options[i].value != value)
+				{
+					continue;
+				}
+				selectedIndex = i;
+				return;
+			}
+		}
+		
 		
 		//==========================================================
 		//   Functions 
@@ -217,7 +242,7 @@ package com.ffcreations.ui.components
 				{
 					_options[i].selected = i == value;
 				}
-				_eventDispatcher.dispatchEvent(new PropertyChangedEvent(PropertyChangedEvent.SELECTION_CHANGED, value));
+				_eventDispatcher.dispatchEvent(new PropertyChangedEvent(PropertyChangedEvent.SELECTION_CHANGED, value >=0 && _options[value].value ? _options[value].value : value));
 			}
 			_selectedIndex = value;
 		}
@@ -242,7 +267,8 @@ package com.ffcreations.ui.components
 			option.group();
 			option.eventDispatcher.addEventListener(MouseInputEvent.MOUSE_UP, onSelect, false, 0, true);
 			index = _options.push(option) - 1;
-			if (index == _selectedIndex) {
+			if (index == _selectedIndex)
+			{
 				select(index);
 			}
 			return index;
@@ -296,7 +322,6 @@ package com.ffcreations.ui.components
 		 */
 		public override function onTick(deltaTime:Number):void
 		{
-			super.onTick(deltaTime);
 			updateProperties();
 		}
 		

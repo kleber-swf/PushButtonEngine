@@ -5,6 +5,7 @@ package com.ffcreations.ui.components
 	import com.ffcreations.ui.mouse.MouseInputEvent;
 	import com.pblabs.engine.PBE;
 	import com.pblabs.engine.debug.Logger;
+	import com.pblabs.engine.entity.PropertyReference;
 	
 	import flash.display.BitmapData;
 	import flash.display.Graphics;
@@ -70,7 +71,6 @@ package com.ffcreations.ui.components
 				"selected:disabled":7};
 		
 		protected var _target:BitmapData;
-		protected var _sceneInputBounds:Rectangle;
 		protected var _dragging:Boolean;
 		
 		protected var _state:String = MouseInputEvent.MOUSE_OUT;
@@ -78,7 +78,7 @@ package com.ffcreations.ui.components
 		protected var _visible:Boolean = true;
 		protected var _inputBounds:Rectangle;
 		protected var _sourceRect:Rectangle;
-		protected var _stateDirty:Boolean;
+		protected var _stateDirty:Boolean = true;
 		protected var _enabled:Boolean = true;
 		protected var _selected:Boolean = false;
 		protected var _acceptDrop:Boolean;
@@ -87,6 +87,18 @@ package com.ffcreations.ui.components
 		protected var _eventDispatcher:IEventDispatcher = new EventDispatcher();
 		
 		protected var _container:IMouseInputComponent;
+		protected var _lockCenter:Boolean;
+		protected var _canDrop:Boolean;
+		
+		/**
+		 * If set, <code>enabled</code> is determined by this property every frame.
+		 */
+		public var enabledProperty:PropertyReference;
+		
+		/**
+		 * If set, <code>visible</code> is determined by this property every frame.
+		 */
+		public var visibleProperty:PropertyReference;
 		
 		
 		//==========================================================
@@ -107,6 +119,22 @@ package com.ffcreations.ui.components
 		public function set acceptDrop(value:Boolean):void
 		{
 			_acceptDrop = value;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get canDrop():Boolean
+		{
+			return _canDrop;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function set canDrop(value:Boolean):void
+		{
+			_canDrop = value;
 		}
 		
 		/**
@@ -192,8 +220,7 @@ package com.ffcreations.ui.components
 		}
 		
 		/**
-		 * Rectangle relative to the component center to check for mouse inputs.
-		 * If not set, the inputs will be verified by the image bounds.
+		 * @inheritDoc
 		 */
 		public function get inputBounds():Rectangle
 		{
@@ -201,19 +228,33 @@ package com.ffcreations.ui.components
 		}
 		
 		/**
-		 * @private
+		 * @inheritDoc
 		 */
 		public function set inputBounds(value:Rectangle):void
 		{
 			_inputBounds = value;
-			_sceneInputBounds = new Rectangle();
 			_transformDirty = true;
-			_pixelPrecise = _sceneInputBounds != null
+			_pixelPrecise = value != null
 		}
 		
 		/**
-		 * Whether the input shall be checked on the pixels or just the bounds.
-		 * @default true
+		 * @inheritDoc
+		 */
+		public function get lockCenter():Boolean
+		{
+			return _lockCenter;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function set lockCenter(value:Boolean):void
+		{
+			_lockCenter = value;
+		}
+		
+		/**
+		 * @inheritDoc
 		 */
 		public function get pixelPrecise():Boolean
 		{
@@ -254,15 +295,6 @@ package com.ffcreations.ui.components
 		}
 		
 		/**
-		 * Scene rectangle based on <code>inputBounds</code>to check for mouse inputs.
-		 * @see #inputBounds
-		 */
-		public function get sceneInputBounds():Rectangle
-		{
-			return _sceneInputBounds;
-		}
-		
-		/**
 		 * Whether the component is selected.
 		 * @return
 		 */
@@ -282,6 +314,30 @@ package com.ffcreations.ui.components
 			}
 			_selected = value;
 			_eventDispatcher.dispatchEvent(new PropertyChangedEvent(PropertyChangedEvent.SELECTED, value));
+			_stateDirty = true;
+		}
+		
+		
+		/**
+		 * Gets/sets the state of the component.
+		 * Possible values are in <code>MouseInputEvent</code> class.
+		 * To select/deselect the component, call <code>selected</code>.
+		 * To enable/disable the component, call <code>enabled</code>.
+		 * @see com.ffcreations.ui.mouse.MouseInputEvent
+		 * @see #selected
+		 * @see #enabled
+		 */
+		public function get state():String
+		{
+			return _state;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set state(value:String):void
+		{
+			_state = value;
 			_stateDirty = true;
 		}
 		
@@ -384,7 +440,6 @@ package com.ffcreations.ui.components
 			}
 			_visible = value;
 			alpha = value ? 1 : 0;
-			registerForUpdates = value;
 			if (value)
 			{
 				PBE.mouseInputManager.addComponent(this);
@@ -405,15 +460,16 @@ package com.ffcreations.ui.components
 		 */
 		protected override function addToScene():void
 		{
+			var previousInScene:Boolean = _inScene;
 			super.addToScene();
-			if (!_scene || !_displayObject)
+			if (!_scene || !_displayObject || previousInScene)
 			{
 				return;
 			}
-			_eventDispatcher.addEventListener(MouseInputEvent.MOUSE_OVER, onMouse, false, int.MIN_VALUE, true);
-			_eventDispatcher.addEventListener(MouseInputEvent.MOUSE_OUT, onMouse, false, int.MIN_VALUE, true);
-			_eventDispatcher.addEventListener(MouseInputEvent.MOUSE_DOWN, onMouse, false, int.MIN_VALUE, true);
-			_eventDispatcher.addEventListener(MouseInputEvent.MOUSE_UP, onMouse, false, int.MIN_VALUE, true);
+			_eventDispatcher.addEventListener(MouseInputEvent.MOUSE_OVER, onMouseInput, false, int.MIN_VALUE, true);
+			_eventDispatcher.addEventListener(MouseInputEvent.MOUSE_OUT, onMouseInput, false, int.MIN_VALUE, true);
+			_eventDispatcher.addEventListener(MouseInputEvent.MOUSE_DOWN, onMouseInput, false, int.MIN_VALUE, true);
+			_eventDispatcher.addEventListener(MouseInputEvent.MOUSE_UP, onMouseInput, false, int.MIN_VALUE, true);
 			if (_visible)
 			{
 				PBE.mouseInputManager.addComponent(this);
@@ -428,10 +484,10 @@ package com.ffcreations.ui.components
 		{
 			if (_scene && _displayObject && _inScene)
 			{
-				_eventDispatcher.removeEventListener(MouseInputEvent.MOUSE_OVER, onMouse);
-				_eventDispatcher.removeEventListener(MouseInputEvent.MOUSE_OUT, onMouse);
-				_eventDispatcher.removeEventListener(MouseInputEvent.MOUSE_DOWN, onMouse);
-				_eventDispatcher.removeEventListener(MouseInputEvent.MOUSE_UP, onMouse);
+				_eventDispatcher.removeEventListener(MouseInputEvent.MOUSE_OVER, onMouseInput);
+				_eventDispatcher.removeEventListener(MouseInputEvent.MOUSE_OUT, onMouseInput);
+				_eventDispatcher.removeEventListener(MouseInputEvent.MOUSE_DOWN, onMouseInput);
+				_eventDispatcher.removeEventListener(MouseInputEvent.MOUSE_UP, onMouseInput);
 				PBE.mouseInputManager.removeComponent(this);
 			}
 			super.removeFromScene();
@@ -502,30 +558,44 @@ package com.ffcreations.ui.components
 			}
 		}
 		
+		protected override function updateProperties():void
+		{
+			super.updateProperties();
+			if (visibleProperty)
+			{
+				var e:Boolean = owner.getProperty(visibleProperty);
+				if (e != _visible)
+				{
+					visible = e;
+				}
+			}
+			if (alpha == 0)
+			{
+				return;
+			}
+			if (enabledProperty)
+			{
+				e = owner.getProperty(enabledProperty);
+				if (e != _enabled)
+				{
+					enabled = e;
+				}
+			}
+		}
+		
 		public override function updateTransform(updateProps:Boolean = false):void
 		{
-			if (_inputBounds)
-			{
-				updateInputBounds();
-			}
 			super.updateTransform(updateProps);
-			if (_inputBounds)
-			{
-				_sceneBounds = _inputBounds.clone();
-			}
-			else
-			{
-				_sceneBounds = super.sceneBounds;
-			}
+			_sceneBounds = _inputBounds ? _inputBounds.clone() : super.sceneBounds;
 		}
 		
 		protected function updateInputBounds():void
 		{
 			var pos:Point = _position.add(_positionOffset);
-			_sceneInputBounds.x = pos.x + _inputBounds.x;
-			_sceneInputBounds.y = pos.y + _inputBounds.y;
-			_sceneInputBounds.width = _inputBounds.width;
-			_sceneInputBounds.height = _inputBounds.height;
+			_sceneBounds.x = pos.x + _inputBounds.x;
+			_sceneBounds.y = pos.y + _inputBounds.y;
+			_sceneBounds.width = _inputBounds.width;
+			_sceneBounds.height = _inputBounds.height;
 		}
 		
 		/**
@@ -559,10 +629,10 @@ package com.ffcreations.ui.components
 			
 			graphics.clear();
 			
-			var left:Number = 0;
+			var left:int = 0;
 			for (var i:int = 0; i < 3; i++)
 			{
-				var top:Number = 0;
+				var top:int = 0;
 				for (var j:int = 0; j < 3; j++)
 				{
 					graphics.beginBitmapFill(_target);
@@ -572,6 +642,8 @@ package com.ffcreations.ui.components
 				}
 				left = gridX[i];
 			}
+			_displayObject.width = _size.x;
+			_displayObject.height = size.y;
 			_displayObject.scale9Grid = _scale9Grid;
 			_scaleDirty = false;
 		}
@@ -594,7 +666,7 @@ package com.ffcreations.ui.components
 		 * this component or <code>false</code> otherwise.
 		 * @default The value in <code>acceptDrop</code> field.
 		 */
-		public function canDrop(component:IMouseInputComponent):Boolean
+		public function canDropItem(component:IMouseInputComponent):Boolean
 		{
 			return _acceptDrop;
 		}
@@ -604,17 +676,17 @@ package com.ffcreations.ui.components
 		 */
 		public function contains(point:Point):Boolean
 		{
-			return _sceneInputBounds && !_pixelPrecise ? _sceneInputBounds.containsPoint(point) : pointOccupied(point, null);
+			return _pixelPrecise ? pointOccupied(point, null) : _sceneBounds.containsPoint(point);
+			//			return _sceneInputBounds && !_pixelPrecise ? _sceneInputBounds.containsPoint(point) : pointOccupied(point, null);
 		}
 		
 		//--------------------------------------
 		//   Event handlers 
 		//--------------------------------------
 		
-		private function onMouse(data:MouseInputEvent):void
+		private function onMouseInput(data:MouseInputEvent):void
 		{
-			_state = data.type;
-			_stateDirty = true;
+			state = data.type;
 			data.stopImmediatePropagation();
 		}
 	}

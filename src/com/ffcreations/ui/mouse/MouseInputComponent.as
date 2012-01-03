@@ -26,7 +26,7 @@ package com.ffcreations.ui.mouse
 		protected var _sceneBounds:Rectangle = new Rectangle();
 		protected var _position:Point = new Point();
 		protected var _positionOffset:Point = new Point();
-		protected var _size:Point = new Point();
+		protected var _size:Point = null;
 		protected var _draggable:Boolean;
 		protected var _dragging:Boolean;
 		protected var _acceptDrop:Boolean;
@@ -37,21 +37,30 @@ package com.ffcreations.ui.mouse
 		protected var _enabled:Boolean = true;
 		protected var _container:IMouseInputComponent;
 		protected var _pixelPrecise:Boolean = true;
+		protected var _lockCenter:Boolean;
+		protected var _canDrop:Boolean = true;
+		protected var _inputBounds:Rectangle;
+		protected var _copyRendererPosition:Boolean;
 		
 		/**
-		 * If set, size is determined by this property every frame.
+		 * If set, <code>size</code> is determined by this property every frame.
 		 */
 		public var sizeProperty:PropertyReference;
 		
 		/**
-		 * If set, position is determined by this property every frame.
+		 * If set, <code>position</code> is determined by this property every frame.
 		 */
 		public var positionProperty:PropertyReference;
 		
 		/**
-		 * If set, positionOffset is determined by this property every frame.
+		 * If set, <code>positionOffset</code> is determined by this property every frame.
 		 */
 		public var positionOffsetProperty:PropertyReference;
+		
+		/**
+		 * If set, <code>enabled</code> is determined by this property every frame.
+		 */
+		public var enabledProperty:PropertyReference;
 		
 		
 		//==========================================================
@@ -77,6 +86,22 @@ package com.ffcreations.ui.mouse
 		/**
 		 * @inheritDoc
 		 */
+		public function get canDrop():Boolean
+		{
+			return _canDrop;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function set canDrop(value:Boolean):void
+		{
+			_canDrop = value;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
 		public function get container():IMouseInputComponent
 		{
 			return _container;
@@ -88,6 +113,34 @@ package com.ffcreations.ui.mouse
 		public function set container(value:IMouseInputComponent):void
 		{
 			_container = value;
+		}
+		
+		/**
+		 * When setting <code>renderer</code> property, the <code>position</code> and
+		 * <code>positionProperty</code> should be copied from or to this component.
+		 * When this property is <code>false</code>, the component copies its
+		 * <code>position</code> and <code>positionOffset</code> to the
+		 * <code>renderer</code>. If <code>true</code>, the <code>renderer</code>
+		 * copies its <code>position</code> and <code>positionOffset</code> to this
+		 * component.
+		 * @default false
+		 * @see #renderer
+		 */
+		public function get copyRendererPosition():Boolean
+		{
+			return _copyRendererPosition;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set copyRendererPosition(value:Boolean):void
+		{
+			_copyRendererPosition = value;
+			if (isRegistered)
+			{
+				setupRenderer();
+			}
 		}
 		
 		/**
@@ -147,8 +200,40 @@ package com.ffcreations.ui.mouse
 		}
 		
 		/**
-		 * Whether the input shall be checked on the pixels or just the bounds.
-		 * @default true
+		 * @inheritDoc
+		 */
+		public function get inputBounds():Rectangle
+		{
+			return _inputBounds;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function set inputBounds(value:Rectangle):void
+		{
+			_inputBounds = value;
+			pixelPrecise = value == null
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function get lockCenter():Boolean
+		{
+			return _lockCenter;
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function set lockCenter(value:Boolean):void
+		{
+			_lockCenter = value;
+		}
+		
+		/**
+		 * @inheritDoc
 		 */
 		public function get pixelPrecise():Boolean
 		{
@@ -220,6 +305,10 @@ package com.ffcreations.ui.mouse
 		
 		/**
 		 * <code>DisplayObjectRenderer</code> to verifies if the mouse is inside.
+		 * When setting this property, check the <code>copyRendererPosition</code>
+		 * to see if the <code>position</code> and <code>positionOffset</code> will
+		 * be copied from or to the <code>DisplayObjectRenderer</code>.
+		 * @see #copyRendererPosition
 		 */
 		public function get renderer():DisplayObjectRenderer
 		{
@@ -234,16 +323,13 @@ package com.ffcreations.ui.mouse
 			_renderer = value;
 			if (isRegistered)
 			{
-				_renderer.positionProperty = new PropertyReference("#" + owner.name + "." + name + ".position");
-				_renderer.positionOffsetProperty = new PropertyReference("#" + owner.name + "." + name + ".positionOffset");
+				setupRenderer()
 			}
 			//			_position = value.position;
 			//			positionProperty = value.positionProperty;
 			//			_positionOffset = value.positionOffset;
 			//			positionOffsetProperty = value.positionOffsetProperty;
 			//			sizeProperty = null;
-		
-		
 		}
 		
 		/**
@@ -276,6 +362,20 @@ package com.ffcreations.ui.mouse
 		//   Functions 
 		//==========================================================
 		
+		private function setupRenderer():void
+		{
+			if (_copyRendererPosition)
+			{
+				positionProperty = new PropertyReference("#" + _renderer.owner.name + "." + _renderer.name + ".position");
+				positionOffsetProperty = new PropertyReference("#" + _renderer.owner.name + "." + _renderer.name + ".positionOffset");
+			}
+			else
+			{
+				_renderer.positionProperty = new PropertyReference("#" + owner.name + "." + name + ".position");
+				_renderer.positionOffsetProperty = new PropertyReference("#" + owner.name + "." + name + ".positionOffset");
+			}
+		}
+		
 		/**
 		 * @inheritDoc
 		 */
@@ -285,8 +385,7 @@ package com.ffcreations.ui.mouse
 			PBE.mouseInputManager.addComponent(this);
 			if (_renderer)
 			{
-				_renderer.positionProperty = new PropertyReference("#" + owner.name + "." + name + ".position");
-				_renderer.positionOffsetProperty = new PropertyReference("#" + owner.name + "." + name + ".positionOffset");
+				setupRenderer();
 			}
 		}
 		
@@ -301,7 +400,7 @@ package com.ffcreations.ui.mouse
 			_size = null;
 			_renderer = null;
 			_container = null;
-			_eventDispatcher = null;
+			//_eventDispatcher = null;
 			sizeProperty = null;
 			positionProperty = null;
 			positionOffsetProperty = null;
@@ -311,6 +410,16 @@ package com.ffcreations.ui.mouse
 		
 		protected function updateBounds():void
 		{
+			if (_inputBounds)
+			{
+				var pos:Point = _position.add(_positionOffset);
+				_sceneBounds.x = pos.x + _inputBounds.x;
+				_sceneBounds.y = pos.y + _inputBounds.y;
+				_sceneBounds.width = _inputBounds.width;
+				_sceneBounds.height = _inputBounds.height;
+				_dirty = false;
+				return;
+			}
 			if (_pixelPrecise && _renderer)
 			{
 				_sceneBounds = _renderer.sceneBounds;
@@ -325,10 +434,28 @@ package com.ffcreations.ui.mouse
 			}
 			else
 			{
-				_sceneBounds.x = _position.x + _positionOffset.x - _size.x * 0.5;
-				_sceneBounds.y = _position.y + _positionOffset.y - _size.y * 0.5;
-				_sceneBounds.width = _size.x;
-				_sceneBounds.height = _size.y;
+				var s:Point;
+				if (_size && _size.x > 0 && _size.y > 0)
+				{
+					s = _size;
+				}
+				else if (_renderer.size)
+				{
+					s = _renderer.size;
+				}
+				else if (_renderer && _renderer.displayObject)
+				{
+					s = new Point(_renderer.displayObject.width, _renderer.displayObject.height);
+				}
+				else
+				{
+					return;
+				}
+				_sceneBounds.x = _position.x + _positionOffset.x - s.x * 0.5;
+				_sceneBounds.y = _position.y + _positionOffset.y - s.y * 0.5;
+				_sceneBounds.width = s.x;
+				_sceneBounds.height = s.y;
+				
 			}
 			_dirty = false;
 		}
@@ -338,7 +465,7 @@ package com.ffcreations.ui.mouse
 		 */
 		public function contains(point:Point):Boolean
 		{
-			return _renderer && _pixelPrecise ? _renderer.pointOccupied(point, null) : _sceneBounds.containsPoint(point);
+			return _pixelPrecise && _renderer ? _renderer.pointOccupied(point, null) : _sceneBounds.containsPoint(point);
 		}
 		
 		/**
@@ -346,7 +473,6 @@ package com.ffcreations.ui.mouse
 		 */
 		public override function onTick(deltaTime:Number):void
 		{
-			super.onTick(deltaTime);
 			updateProperties();
 			if (_dirty)
 			{
@@ -361,8 +487,8 @@ package com.ffcreations.ui.mouse
 		{
 			if (sizeProperty)
 			{
-				var s:Point = owner.getProperty(sizeProperty, _size);
-				if (s.x != _size.x || s.y != _size.y)
+				var s:Point = owner.getProperty(sizeProperty);
+				if (s)
 				{
 					size = s;
 				}
@@ -370,8 +496,8 @@ package com.ffcreations.ui.mouse
 			
 			if (positionProperty)
 			{
-				var p:Point = owner.getProperty(positionProperty, _position);
-				if (p.x != _position.x || p.y != _position.y)
+				var p:Point = owner.getProperty(positionProperty);
+				if (p)
 				{
 					position = p;
 				}
@@ -379,10 +505,19 @@ package com.ffcreations.ui.mouse
 			
 			if (positionOffsetProperty)
 			{
-				var o:Point = owner.getProperty(positionOffsetProperty, _positionOffset);
-				if (o.x != _positionOffset.x || o.y != _positionOffset.y)
+				var o:Point = owner.getProperty(positionOffsetProperty);
+				if (o)
 				{
 					positionOffset = o;
+				}
+			}
+			
+			if (enabledProperty)
+			{
+				var e:Boolean = owner.getProperty(enabledProperty);
+				if (e != _enabled)
+				{
+					enabled = e;
 				}
 			}
 		}
@@ -395,7 +530,7 @@ package com.ffcreations.ui.mouse
 		 * this component or <code>false</code> otherwise.
 		 * @default The value in <code>acceptDrop</code> field.
 		 */
-		public function canDrop(component:IMouseInputComponent):Boolean
+		public function canDropItem(component:IMouseInputComponent):Boolean
 		{
 			return _acceptDrop;
 		}

@@ -24,6 +24,7 @@ package com.pblabs.engine.debug
     import flash.events.Event;
     import flash.external.ExternalInterface;
     import flash.geom.Point;
+    import flash.geom.Rectangle;
     
     /**
      * Process simple text commands from the user. Useful for debugging.
@@ -239,10 +240,16 @@ package com.pblabs.engine.debug
                 "Sets a property reference. usage: set #entity.component.property false");
             
             registerCommand("setPoint", _setPointProperty,
-                "Sets a point property reference. usage: set #entity.component.property 100 -200");
+                "Sets a point property reference. usage: setPoint #entity.component.property 100 -200");
+			
+            registerCommand("addPoint", _addPointProperty,
+                "Adds a point to a point property reference. usage: addPoint #entity.component.property 100 -200");
             
+            registerCommand("setRect", _setRectProperty,
+                "Sets a rectangle property reference. usage: setRect #entity.component.property 10 -10 20 30");
+			
             registerCommand("setString", _setStringProperty,
-                "Sets a string property reference. usage: set #entity.component.property \"text\"");
+                "Sets a string property reference. usage: setString #entity.component.property \"text\"");
             
             registerCommand("get", _getProperty,
                 "Gets a property reference. usage: get #entity.component.property");
@@ -285,7 +292,9 @@ package com.pblabs.engine.debug
             if (downcase == "true" || downcase == "false")
             {
                 value = PBUtil.stringToBoolean(downcase);
-            }
+            } else if (downcase == "null") {
+				value = null;
+			}
             
             entity.setProperty(pr, value);
         }
@@ -314,6 +323,64 @@ package com.pblabs.engine.debug
             
             entity.setProperty(pr, value);
         }
+        
+        protected static function _setRectProperty(reference:String, xIn:String, yIn:String, wIn:String, hIn:String):void
+        {
+            if (reference.substr(0, 1) != "#" && reference.substr(0, 1) != "!")
+            {
+                Logger.warn(Console, "setRect", "set can only be used on named entites or templates. " +
+                    "The PropertyReference must start with # or !.");
+                return;
+            }
+            
+            var entity:IEntity = PBE.lookupEntity("console");
+            var pr:PropertyReference = new PropertyReference(reference);
+            
+            var x:Number = Number(xIn);
+            var y:Number = Number(yIn);
+			var w:Number = Number(wIn);
+			var h:Number = Number(hIn);
+            
+            if (isNaN(x) || isNaN(y) || isNaN(w) || isNaN(h))
+            {
+                Logger.warn(Console, "setRect", "setRect can only be used with a valid x, y, width and height");
+                return;
+            }
+            var value:Rectangle = new Rectangle(x, y, w, h);
+            
+            entity.setProperty(pr, value);
+        }
+		
+		protected static function _addPointProperty(reference:String, xIn:String, yIn:String):void
+		{
+			if (reference.substr(0, 1) != "#" && reference.substr(0, 1) != "!")
+			{
+				Logger.warn(Console, "addPoint", "set can only be used on named entites or templates. " +
+					"The PropertyReference must start with # or !.");
+				return;
+			}
+			
+			var entity:IEntity = PBE.lookupEntity("console");
+			var pr:PropertyReference = new PropertyReference(reference);
+			
+			var x:Number = Number(xIn);
+			var y:Number = Number(yIn);
+			
+			if (isNaN(x) || isNaN(y))
+			{
+				Logger.warn(Console, "setPoint", "setPoint can only be used with a valid x and y");
+				return;
+			}
+			var value:Point = entity.getProperty(pr);
+			if (!value) {
+				Logger.warn(Console, "addPoint", "the property " + reference + " is not a point.");
+				return;
+			}
+			
+			value.offset(x, y);
+			entity.setProperty(pr, value);
+			Logger.info(Console, "addPoint", "result: " + value);
+		}
         
         protected static function _setStringProperty(reference:String, ...args):void
         {

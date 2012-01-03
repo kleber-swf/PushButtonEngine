@@ -1,12 +1,10 @@
 package com.ffcreations.ui.mouse
 {
 	import com.pblabs.engine.PBE;
-	import com.pblabs.engine.components.TickedComponent;
 	import com.pblabs.rendering2D.DisplayObjectRenderer;
 	
 	import flash.display.Graphics;
 	import flash.display.Sprite;
-	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
 	public final class MouseInputDebug extends DisplayObjectRenderer
@@ -30,6 +28,7 @@ package com.ffcreations.ui.mouse
 			super.onAdd();
 			_manager = PBE.mouseInputManager;
 			displayObject = new Sprite();
+			
 			_graphics = Sprite(displayObject).graphics;
 		}
 		

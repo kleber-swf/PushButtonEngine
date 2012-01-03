@@ -46,71 +46,113 @@ package com.pblabs.engine.core
 		//   Properties 
 		//==========================================================
 		
+		private var _mouseEnabled:Object = new Object();
+		
+		/**
+		 * Whether the mouse input is enabled.
+		 */
 		public function get mouseMoveEnabled():Boolean
 		{
-			return PBE.mainClass.parent.hasEventListener(MouseEvent.MOUSE_MOVE);
+			return _mouseEnabled[MouseEvent.MOUSE_MOVE];
 		}
 		
+		/**
+		 * @private
+		 */
 		public function set mouseMoveEnabled(value:Boolean):void
 		{
-			if (value)
-			{
-				PBE.mainClass.parent.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove, false, 0, true);
-			}
-			else
-			{
-				PBE.mainClass.parent.removeEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
-			}
+			enableMouseProperty(MouseEvent.MOUSE_MOVE, value);
 		}
 		
+		/**
+		 * Whether the mouse out state is enabled.
+		 */
 		public function get mouseOutEnabled():Boolean
 		{
-			return PBE.mainClass.parent.hasEventListener(MouseEvent.MOUSE_OUT);
+			return _mouseEnabled[MouseEvent.MOUSE_OUT];
 		}
 		
+		/**
+		 * @private
+		 */
 		public function set mouseOutEnabled(value:Boolean):void
 		{
-			if (value)
-			{
-				PBE.mainClass.parent.addEventListener(MouseEvent.MOUSE_OUT, onMouseOut, false, 0, true);
-			}
-			else
-			{
-				PBE.mainClass.parent.removeEventListener(MouseEvent.MOUSE_OUT, onMouseOut);
-			}
+			enableMouseProperty(MouseEvent.MOUSE_OUT, value);
 		}
 		
+		/**
+		 * Whether the mouse over state is enabled.
+		 */
 		public function get mouseOverEnabled():Boolean
 		{
-			return PBE.mainClass.parent.hasEventListener(MouseEvent.MOUSE_OVER);
+			return _mouseEnabled[MouseEvent.MOUSE_OVER];
 		}
 		
+		/**
+		 * @private
+		 */
 		public function set mouseOverEnabled(value:Boolean):void
 		{
-			if (value)
-			{
-				PBE.mainClass.parent.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver, false, 0, true);
-			}
-			else
-			{
-				PBE.mainClass.parent.removeEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
-			}
+			enableMouseProperty(MouseEvent.MOUSE_OVER, value);
 		}
 		
+		/**
+		 * Whether the mouse wheel state is enabled.
+		 */
 		public function get mouseWheelEnabled():Boolean
 		{
-			return PBE.mainClass.parent.hasEventListener(MouseEvent.MOUSE_WHEEL);
+			return _mouseEnabled[MouseEvent.MOUSE_WHEEL];
 		}
 		
+		/**
+		 * @private
+		 */
 		public function set mouseWheelEnabled(value:Boolean):void
 		{
+			enableMouseProperty(MouseEvent.MOUSE_WHEEL, value);
+		}
+		
+		/**
+		 * Whether the mouse up state is enabled.
+		 */
+		public function get mouseUpEnabled():Boolean
+		{
+			return _mouseEnabled[MouseEvent.MOUSE_UP];
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set mouseUpEnabled(value:Boolean):void
+		{
+			enableMouseProperty(MouseEvent.MOUSE_UP, value);
+		}
+		
+		/**
+		 * Whether the mouse down state is enabled.
+		 */
+		public function get mouseDownEnabled():Boolean
+		{
+			return _mouseEnabled[MouseEvent.MOUSE_DOWN];
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set mouseDownEnabled(value:Boolean):void
+		{
+			enableMouseProperty(MouseEvent.MOUSE_DOWN, value);
+		}
+		
+		private function enableMouseProperty(value:String, enable:Boolean):void {
+			_mouseEnabled[value] = enable;
 			if (value)
 			{
-				PBE.mainClass.parent.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel, false, 0, true);
+				PBE.mainClass.parent.addEventListener(value, onMouse, false, 0, true);
 			}
 			else
 			{
-				PBE.mainClass.parent.removeEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel);
+				PBE.mainClass.parent.removeEventListener(value, onMouse);
 			}
 		}
 		
@@ -123,12 +165,13 @@ package com.pblabs.engine.core
 		{
 			PBE.mainStage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 0, true);
 			PBE.mainStage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp, false, 0, true);
-			PBE.mainClass.parent.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown, false, 0, true);
-			PBE.mainClass.parent.addEventListener(MouseEvent.MOUSE_UP, onMouseUp, false, 0, true);
-			PBE.mainClass.parent.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove, false, 0, true);
-			PBE.mainClass.parent.addEventListener(MouseEvent.MOUSE_WHEEL, onMouseWheel, false, 0, true);
-			PBE.mainClass.parent.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver, false, 0, true);
-			PBE.mainClass.parent.addEventListener(MouseEvent.MOUSE_OUT, onMouseOut, false, 0, true);
+			
+			mouseDownEnabled = true;
+			mouseUpEnabled = true;
+			mouseMoveEnabled = true;
+			mouseOverEnabled = true;
+			mouseOutEnabled = true;
+			mouseWheelEnabled = true;
 			
 			// Add ourselves with the highest priority, so that our update happens at the beginning of the next tick.
 			// This will keep objects processing afterwards as up-to-date as possible when using keyJustPressed() or keyJustReleased()
@@ -245,7 +288,7 @@ package com.pblabs.engine.core
 		 */
 		public function simulateMouseDown():void
 		{
-			onMouseDown(new MouseEvent(MouseEvent.MOUSE_DOWN));
+			onMouse(new MouseEvent(MouseEvent.MOUSE_DOWN));
 		}
 		
 		/**
@@ -253,7 +296,7 @@ package com.pblabs.engine.core
 		 */
 		public function simulateMouseUp():void
 		{
-			onMouseUp(new MouseEvent(MouseEvent.MOUSE_UP));
+			onMouse(new MouseEvent(MouseEvent.MOUSE_UP));
 		}
 		
 		/**
@@ -263,22 +306,7 @@ package com.pblabs.engine.core
 		 */
 		public function simulateMouseMove():void
 		{
-			onMouseMove(new MouseEvent(MouseEvent.MOUSE_MOVE, true, false, Math.random() * 100, Math.random() * 100));
-		}
-		
-		public function simulateMouseOver():void
-		{
-			onMouseOver(new MouseEvent(MouseEvent.MOUSE_OVER));
-		}
-		
-		public function simulateMouseOut():void
-		{
-			onMouseOut(new MouseEvent(MouseEvent.MOUSE_OUT));
-		}
-		
-		public function simulateMouseWheel():void
-		{
-			onMouseWheel(new MouseEvent(MouseEvent.MOUSE_WHEEL));
+			onMouse(new MouseEvent(MouseEvent.MOUSE_MOVE, true, false, Math.random() * 100, Math.random() * 100));
 		}
 		
 		//--------------------------------------
@@ -287,7 +315,7 @@ package com.pblabs.engine.core
 		
 		private function onKeyDown(event:KeyboardEvent):void
 		{
-			if (keyLocked)
+			if (keyLocked || !PBE.processManager.isTicking)
 			{
 				return;
 			}
@@ -302,7 +330,7 @@ package com.pblabs.engine.core
 		
 		private function onKeyUp(event:KeyboardEvent):void
 		{
-			if (keyLocked)
+			if (keyLocked || !PBE.processManager.isTicking)
 			{
 				return;
 			}
@@ -310,64 +338,9 @@ package com.pblabs.engine.core
 			dispatchEvent(event);
 		}
 		
-		private function onMouseDown(event:MouseEvent):void
+		private function onMouse(event:MouseEvent):void
 		{
-			if (mouseLocked)
-			{
-				return;
-			}
-			event.localX = event.stageX;
-			event.localY = event.stageY;
-			dispatchEvent(event);
-		}
-		
-		private function onMouseMove(event:MouseEvent):void
-		{
-			if (mouseLocked)
-			{
-				return;
-			}
-			event.localX = event.stageX;
-			event.localY = event.stageY;
-			dispatchEvent(event);
-		}
-		
-		private function onMouseOut(event:MouseEvent):void
-		{
-			if (mouseLocked)
-			{
-				return;
-			}
-			event.localX = event.stageX;
-			event.localY = event.stageY;
-			dispatchEvent(event);
-		}
-		
-		private function onMouseOver(event:MouseEvent):void
-		{
-			if (mouseLocked)
-			{
-				return;
-			}
-			event.localX = event.stageX;
-			event.localY = event.stageY;
-			dispatchEvent(event);
-		}
-		
-		private function onMouseUp(event:MouseEvent):void
-		{
-			if (mouseLocked)
-			{
-				return;
-			}
-			event.localX = event.stageX;
-			event.localY = event.stageY;
-			dispatchEvent(event);
-		}
-		
-		private function onMouseWheel(event:MouseEvent):void
-		{
-			if (mouseLocked)
+			if (mouseLocked || !PBE.processManager.isTicking)
 			{
 				return;
 			}

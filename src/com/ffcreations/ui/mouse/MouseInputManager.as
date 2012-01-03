@@ -41,6 +41,30 @@ package com.ffcreations.ui.mouse
 		
 		
 		//==========================================================
+		//   Properties 
+		//==========================================================
+		
+		
+		/**
+		 * Locks the input lower then the given value.
+		 * @param value Minimum priority that components has to have to respond to mouse events.
+		 * @default 0
+		 */
+		public function get lockedPriority():int
+		{
+			return _lockedPriority;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set lockedPriority(value:int):void
+		{
+			_lockedPriority = value;
+		}
+		
+		
+		//==========================================================
 		//   Constructor 
 		//==========================================================
 		
@@ -72,13 +96,19 @@ package com.ffcreations.ui.mouse
 			{
 				_components.splice(getInsertIndex(component.priority, 0, _components.length - 1), 0, component);
 			}
+			//			var s:String = component.priority.toString() + ":";
+			//			for each (var d:IMouseInputComponent in _components) {
+			//				s += " " + d.priority.toString();
+			//			}
+			//			trace(s);
 		}
 		
 		private function getInsertIndex(priority:int, start:int, end:int):int
 		{
 			if (end <= start)
 			{
-				return (start == _components.length - 1 && _components[start].priority > priority) ? start + 1 : start;
+				return (_components.length > start && _components[start].priority > priority) ? start + 1 : start;
+					//return (start == _components.length - 1 || (_components.length > start && _components[start].priority > priority)) ? start + 1 : start;
 			}
 			var middle:int = start + Math.round((end - start) * 0.5);
 			if (_components[middle].priority == priority)
@@ -119,16 +149,6 @@ package com.ffcreations.ui.mouse
 		{
 			removeComponent(component);
 			addComponent(component);
-		}
-		
-		/**
-		 * Locks the input lower then the given value.
-		 * @param value Minimum priority that components has to have to respond to mouse events.
-		 * @default 0
-		 */
-		public function lockInputUnderPriority(value:int):void
-		{
-			_lockedPriority = value;
 		}
 		
 		internal function getComponents():Array
@@ -237,7 +257,8 @@ package com.ffcreations.ui.mouse
 			var p:Boolean;
 			for each (var component:IMouseInputComponent in _components)
 			{
-				if (_lockedPriority <= component.priority && component != _mouseDownComponent && component.acceptDrop && component.enabled && component.contains(_scenePosition) && component.canDrop(_mouseDownComponent))
+				if (_lockedPriority <= component.priority && component != _mouseDownComponent && component.enabled && component.contains(_scenePosition) && component.acceptDrop && _mouseDownComponent.
+					canDrop && component.canDropItem(_mouseDownComponent))
 				{
 					dropSuccess = true;
 					e = new MouseInputEvent(MouseInputEvent.DROP, event, _mouseDownComponent, _scenePosition);
@@ -259,10 +280,10 @@ package com.ffcreations.ui.mouse
 				_mouseDownComponent.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseInputEvent.DRAG_STOP, event, null, _scenePosition));
 				_mouseDownComponent.container = null;
 			}
-			if (_mouseDownComponent.eventDispatcher)
-			{
-				_mouseDownComponent.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseInputEvent.MOUSE_UP, event, _mouseDownComponent, _scenePosition));
-			}
+			//			if (_mouseDownComponent.eventDispatcher)
+			//			{
+			//				_mouseDownComponent.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseInputEvent.MOUSE_UP, event, _mouseDownComponent, _scenePosition));
+			//			}
 			_dragStarted = false;
 			_mouseDownComponent = null;
 		}
@@ -279,7 +300,7 @@ package com.ffcreations.ui.mouse
 			{
 				if (_lockedPriority > component.priority)
 				{
-					break;
+					return;
 				}
 				if (component.enabled && component.contains(_scenePosition))
 				{
@@ -289,7 +310,7 @@ package com.ffcreations.ui.mouse
 						_mouseDownComponent = component;
 						_mouseMoveOldList.splice(_mouseMoveOldList.indexOf(_mouseDownComponent), 1);
 						_initialDownScenePosition = _scenePosition.clone();
-						_initialDownLocalPosition = e.localPosition.clone();
+						_initialDownLocalPosition = _mouseDownComponent.lockCenter ? new Point() : e.localPosition.clone();
 					}
 					component.eventDispatcher.dispatchEvent(e);
 					if (e._propagationStopped)
@@ -308,7 +329,10 @@ package com.ffcreations.ui.mouse
 			}
 			setupMouseData(event);
 			drag(event);
-			move(event);
+			if (PBE.inputManager.mouseOverEnabled && PBE.inputManager.mouseOutEnabled)
+			{
+				move(event);
+			}
 		}
 		
 		private function onMouseUp(event:MouseEvent):void
@@ -332,7 +356,7 @@ package com.ffcreations.ui.mouse
 			{
 				if (_lockedPriority > component.priority)
 				{
-					break;
+					return;
 				}
 				if (component.enabled && component.contains(_scenePosition))
 				{

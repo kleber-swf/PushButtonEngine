@@ -16,6 +16,14 @@ package com.ffcreations.ui.components
 		
 		private var _groupped:Boolean;
 		
+		/**
+		 * Value associated to this Toggle instance.
+		 * This is usefull for <code>ToogleGroups</code> and is returned by <code>PropertyChangedEvent</code> when this instance is selected.
+		 * @see com.ffcreations.ui.components.ToggleGroup
+		 * @see com.ffcreations.ui.components.PropertyChangedEvent
+		 */
+		public var value:*;
+		
 		
 		//==========================================================
 		//   Functions 

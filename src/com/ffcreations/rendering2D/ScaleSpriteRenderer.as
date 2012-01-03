@@ -138,19 +138,14 @@ package com.ffcreations.rendering2D
 			// set the registration (alignment) point to the sprite's center
 			registrationPoint = new Point(res.image.bitmapData.width * 0.5, res.image.bitmapData.height * 0.5);
 			// set the bitmapData of this render object
-			_source = res.image.bitmapData;			
+			_source = res.image.bitmapData;
 			var s:Sprite = new Sprite();
 			s.mouseChildren = false;
 			s.mouseEnabled = false;
 			_displayObject = s;
 			onImageLoadComplete();
 			//redraw();
-			_scaleDirty=true;
-		}
-		
-		public override function set size(value:Point):void
-		{
-			super.size = value;
+			_scaleDirty = true;
 		}
 		
 		/**
@@ -163,7 +158,7 @@ package com.ffcreations.rendering2D
 		protected override function addToScene():void
 		{
 			super.addToScene();
-			_scaleDirty=true;
+			_scaleDirty = true;
 		}
 		
 		/**
@@ -234,10 +229,10 @@ package com.ffcreations.rendering2D
 			
 			graphics.clear();
 			
-			var left:Number = 0;
+			var left:int = 0;
 			for (var i:int = 0; i < 3; i++)
 			{
-				var top:Number = 0;
+				var top:int = 0;
 				for (var j:int = 0; j < 3; j++)
 				{
 					graphics.beginBitmapFill(_source);
@@ -246,6 +241,11 @@ package com.ffcreations.rendering2D
 					top = gridY[j];
 				}
 				left = gridX[i];
+			}
+			if (_size)
+			{
+				_displayObject.width = _size.x;
+				_displayObject.height = _size.y;
 			}
 			_displayObject.scale9Grid = _scale9Grid;
 			_scaleDirty = false;

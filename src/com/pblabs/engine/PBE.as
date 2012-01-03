@@ -493,11 +493,6 @@ package com.pblabs.engine
 		{
 			return _mouseInputManager;
 		}
-        
-//		public static function get mouseInputManager2():com.ffcreations.ui.mouse.MouseInputManager
-//		{
-//			return _mouseInputManager2;
-//		}
 		
         /**
          * Returns the ObjectTypeManager instance. 
