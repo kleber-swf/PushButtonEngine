@@ -250,7 +250,7 @@ package com.ffcreations.ui.textfield
 		}
 		
 		/**
-		 * Text field maximum size.
+		 * Text field maximum size (pixels).
 		 */
 		public function get maxSize():Point
 		{
@@ -266,7 +266,7 @@ package com.ffcreations.ui.textfield
 		}
 		
 		/**
-		 * Text field minimum size. 
+		 * Text field minimum size (pixels). 
 		 */
 		public function get minSize():Point
 		{

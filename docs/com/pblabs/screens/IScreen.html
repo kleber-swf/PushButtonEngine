@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><!-- saved from url=(0014)about:internet --><html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><link rel="stylesheet" href="../../../style.css" type="text/css" media="screen"><link rel="stylesheet" href="../../../print.css" type="text/css" media="print"><link rel="stylesheet" href="../../../override.css" type="text/css"><meta name="keywords" content="IScreen,com.pblabs.screens.IScreen,get,getCurrentScreen,goto,hasScreen,onFrame,onHide,onShow,onTick,pop,push,registerScreen"><title>com.pblabs.screens.IScreen</title></head><body><script language="javascript" type="text/javascript" src="../../../asdoc.js"></script><script language="javascript" type="text/javascript" src="../../../help.js"></script><script language="javascript" type="text/javascript" src="../../../cookies.js"></script><script language="javascript" type="text/javascript"><!--
+				asdocTitle = 'IScreen - PushButton Engine Documentation';
+				var baseRef = '../../../';
+				window.onload = configPage;
+			--></script>
+<script type="text/javascript">
+			scrollToNameAnchor();
+		</script><table class="titleTable" cellpadding="0" cellspacing="0" id="titleTable" style="display:none"><tr><td class="titleTableTitle" align="left">PushButton Engine</td><td class="titleTableTopNav" align="right"><a href="../../../package-summary.html" onclick="loadClassListFrame('../../../all-classes.html')">All Packages</a>&nbsp;|&nbsp;<a href="../../../class-summary.html" onclick="loadClassListFrame('../../../all-classes.html')">All Classes</a>&nbsp;|&nbsp;<a href="../../../all-index-A.html" onclick="loadClassListFrame('../../../index-list.html')">Index</a>&nbsp;|&nbsp;<a id="framesLink1" href="../../../index.html?com/pblabs/screens/IScreen.html&amp;com/pblabs/screens/class-list.html">Frames</a><a id="noFramesLink1" style="display:none" href="" onclick="parent.location=document.location"> No Frames </a></td><td class="titleTableLogo" align="right" rowspan="3"><img src="../../../images/logo.jpg" class="logoImage" alt=" Adobe Logo " title=" Adobe Logo "></td></tr><tr class="titleTableRow2"><td class="titleTableSubTitle" id="subTitle" align="left">IScreen</td><td class="titleTableSubNav" id="subNav" align="right"><a href="#methodSummary">Methods</a></td></tr><tr class="titleTableRow3"><td colspan="3">&nbsp;</td></tr></table><script language="javascript" type="text/javascript" xml:space="preserve">
+				<!--
+				
+					if (!isEclipse() || window.name != ECLIPSE_FRAME_NAME) {titleBar_setSubTitle("IScreen"); titleBar_setSubNav(false,false,false,false,false,false,false,false,true,false,false	,false,false,false,false,false);}	
+				-->
+			</script><div xmlns:fn="http://www.w3.org/2005/xpath-functions" class="MainContent"><table class="classHeaderTable" cellpadding="0" cellspacing="0"><tr><td class="classHeaderTableLabel">Package</td><td><a href="package-detail.html" onclick="javascript:loadClassListFrame('class-list.html')">com.pblabs.screens</a></td></tr><tr><td class="classHeaderTableLabel">Interface</td><td class="classSignature">public  interface  IScreen</td></tr></table><p></p><p></p><p></p>
+     Interface for a screen which can be managed by the ScreenManager.
+     
+     <p>Because we may wish to use DisplayObject subclasses for which we cannot
+     control the inheritance hierarchy, the ScreenManager requires that screens
+     be both a DisplayObject and also that they inherit IScreen. BaseScreen is
+     a simple (and usually sufficient) example of this.</p>
+            <p></p><br/><hr></div><a name="methodSummary"></a><div class="summarySection"><div class="summaryTableTitle">Public Methods </div><table cellspacing="0" cellpadding="3" class="summaryTable " id="summaryTableMethod"><tr><th>&nbsp;</th><th colspan="2">Method</th><th class="summaryTableOwnerCol">Defined By</th></tr><tr class=""><td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><div class="summarySignature"><a href="#onFrame()" class="signatureLink">onFrame</a>(delta:Number):void</div><div class="summaryTableDescription">
+         While the screen is visible, this is called every frame to allow
+         it to easily update itself.</div></td><td class="summaryTableOwnerCol">IScreen</td></tr><tr class=""><td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><div class="summarySignature"><a href="#onHide()" class="signatureLink">onHide</a>():void</div><div class="summaryTableDescription">
+         Called when the screen is no longer visible.</div></td><td class="summaryTableOwnerCol">IScreen</td></tr><tr class=""><td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><div class="summarySignature"><a href="#onShow()" class="signatureLink">onShow</a>():void</div><div class="summaryTableDescription">
+         Called when the screen becomes visible.</div></td><td class="summaryTableOwnerCol">IScreen</td></tr><tr class=""><td class="summaryTablePaddingCol">&nbsp;</td><td class="summaryTableInheritanceCol">&nbsp;</td><td class="summaryTableSignatureCol"><div class="summarySignature"><a href="#onTick()" class="signatureLink">onTick</a>(delta:Number):void</div><div class="summaryTableDescription">
+         While the screen is visible, this is called every tick to allow
+         it to update based on per-tick activities like gameplay.</div></td><td class="summaryTableOwnerCol">IScreen</td></tr></table></div><script language="javascript" type="text/javascript"><!--
+										showHideInherited();
+										--></script><div class="MainContent"><a name="methodDetail"></a><div class="detailSectionHeader">Method Detail</div><a name="onFrame()"></a><a name="onFrame(Number)"></a><table class="detailHeader" cellpadding="0" cellspacing="0"><tr><td class="detailHeaderName">onFrame</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td></tr></table><div class="detailBody"><code> public function onFrame(delta:Number):void</code><p></p><p></p><p>
+         While the screen is visible, this is called every frame to allow
+         it to easily update itself.
+         </p><p><span class="label"> Parameters </span><table cellpadding="0" cellspacing="0" border="0"><tr><td width="20px"></td><td><code><span class="label">delta</span>:Number</code></td></tr></table></p></div><a name="onHide()"></a><table class="detailHeader" cellpadding="0" cellspacing="0"><tr><td class="detailHeaderName">onHide</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td></tr></table><div class="detailBody"><code> public function onHide():void</code><p></p><p></p><p>
+         Called when the screen is no longer visible.
+         
+         <p>Note that the ScreenManager is responsible for adding/removing
+         the screen from the display list, but you may wish to turn things
+         on or off as a result.</p>
+         </p></div><a name="onShow()"></a><table class="detailHeader" cellpadding="0" cellspacing="0"><tr><td class="detailHeaderName">onShow</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td></tr></table><div class="detailBody"><code> public function onShow():void</code><p></p><p></p><p>
+         Called when the screen becomes visible.
+         
+         <p>Note that the ScreenManager is responsible for adding/removing
+         the screen from the display list, but you may wish to turn things
+         on or off as a result.</p>
+         </p></div><a name="onTick()"></a><a name="onTick(Number)"></a><table class="detailHeader" cellpadding="0" cellspacing="0"><tr><td class="detailHeaderName">onTick</td><td class="detailHeaderParens">()</td><td class="detailHeaderType">method</td><td class="detailHeaderRule">&nbsp;</td></tr></table><div class="detailBody"><code> public function onTick(delta:Number):void</code><p></p><p></p><p>
+         While the screen is visible, this is called every tick to allow
+         it to update based on per-tick activities like gameplay.
+         </p><p><span class="label"> Parameters </span><table cellpadding="0" cellspacing="0" border="0"><tr><td width="20px"></td><td><code><span class="label">delta</span>:Number</code></td></tr></table></p></div><br/><br/><hr><br/><p></p><center class="copyright"><footer></footer><br/>Tue Jan 3 2012, 09:55 AM -02:00  </center></div></body></html><!--<br/>Tue Jan 3 2012, 09:55 AM -02:00  -->
