@@ -439,13 +439,20 @@ package com.ffcreations.ui.mouse
 				{
 					s = _size;
 				}
-				else if (_renderer.size)
+				else if (_renderer)
 				{
-					s = _renderer.size;
-				}
-				else if (_renderer && _renderer.displayObject)
-				{
-					s = new Point(_renderer.displayObject.width, _renderer.displayObject.height);
+					if (_renderer.size)
+					{
+						s = _renderer.size;
+					}
+					else if (_renderer.displayObject)
+					{
+						s = new Point(_renderer.displayObject.width, _renderer.displayObject.height);
+					}
+					else
+					{
+						return;
+					}
 				}
 				else
 				{

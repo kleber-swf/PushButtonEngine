@@ -8,6 +8,7 @@ package com.ffcreations.rendering2D
 	import flash.display.BitmapData;
 	import flash.display.Graphics;
 	import flash.display.Sprite;
+	import flash.geom.Matrix;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
@@ -32,6 +33,9 @@ package com.ffcreations.rendering2D
 		protected var _scaleDirty:Boolean;
 		protected var _scale9Grid:Rectangle;
 		protected var _source:BitmapData;
+		protected var _flipDirty:uint = 0;
+		protected var _flipHorizontally:Boolean;
+		protected var _flipVertically:Boolean;
 		
 		
 		//==========================================================
@@ -72,6 +76,50 @@ package com.ffcreations.rendering2D
 				// Tell the ResourceManager to load the ImageResource
 				PBE.resourceManager.load(_fileName, ImageResource, imageLoadCompleted, imageLoadFailed, false);
 			}
+		}
+		
+		/**
+		 * Flips the display object horizontally.
+		 */
+		public function get flipHorizontally():Boolean
+		{
+			return _flipHorizontally;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set flipHorizontally(value:Boolean):void
+		{
+			if (_flipHorizontally == value)
+			{
+				return;
+			}
+			_flipHorizontally = value;
+			_flipDirty |= 0x01;
+			_scaleDirty = true;
+		}
+		
+		/**
+		 * Flips the display object vertically.
+		 */
+		public function get flipVertically():Boolean
+		{
+			return _flipVertically;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set flipVertically(value:Boolean):void
+		{
+			if (_flipVertically == value)
+			{
+				return;
+			}
+			_flipHorizontally = value;
+			_flipDirty |= 0x02;
+			_scaleDirty = true;
 		}
 		
 		/**
@@ -212,7 +260,33 @@ package com.ffcreations.rendering2D
 				return;
 			}
 			
-			var graphics:Graphics = (_displayObject as Sprite).graphics;
+			var graphics:Graphics = Sprite(_displayObject).graphics;
+			
+			if (_flipDirty != 0)
+			{
+				var m:Matrix = new Matrix();
+				var s:BitmapData = new BitmapData(_source.width, _source.height, true, 0);
+				
+				if ((_flipDirty & 0x01) == 0x01)
+				{
+					m.scale(-1, 1);
+					m.translate(_source.width, 0);
+					s.draw(_source, m);
+					_source = new BitmapData(s.width, s.height, true, 0);
+					_source.draw(s);
+					_scale9Grid.x = _source.width - _scale9Grid.right;
+				}
+				if ((_flipDirty & 0x02) == 0x02)
+				{
+					m.scale(1, -1);
+					m.translate(0, _source.height);
+					s.draw(_source, m);
+					_source = new BitmapData(s.width, s.height, true, 0);
+					_source.draw(s);
+					_scale9Grid.y = _source.height - _scale9Grid.bottom;
+				}
+				_flipDirty = 0;
+			}
 			
 			if (!_scale9Grid)
 			{
