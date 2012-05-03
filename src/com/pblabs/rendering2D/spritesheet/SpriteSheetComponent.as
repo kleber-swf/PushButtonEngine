@@ -117,7 +117,9 @@ package com.pblabs.rendering2D.spritesheet
         public function set image(value:ImageResource):void
         {
             _image = value;
-			_imageFilename = _image.filename;
+			if (_image) {
+				_imageFilename = _image.filename;
+			}
             deleteFrames();
         }
         

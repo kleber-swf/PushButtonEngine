@@ -228,7 +228,7 @@ package com.ffcreations.ui.textfield
 		 */
 		public function set htmlText(value:String):void
 		{
-			_htmlText = value;
+			_htmlText = value.replace(/\[([^\]]+)\]/g, "<$1>")
 			_transformDirty = true;
 		}
 		
@@ -266,7 +266,7 @@ package com.ffcreations.ui.textfield
 		}
 		
 		/**
-		 * Text field minimum size (pixels). 
+		 * Text field minimum size (pixels).
 		 */
 		public function get minSize():Point
 		{
@@ -603,7 +603,7 @@ package com.ffcreations.ui.textfield
 		}
 		
 		/**
-		 * Requires the stage focus to this text field. 
+		 * Requires the stage focus to this text field.
 		 */
 		public function focus():void
 		{
