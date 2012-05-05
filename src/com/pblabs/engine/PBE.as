@@ -8,6 +8,7 @@
  ******************************************************************************/
 package com.pblabs.engine
 {
+	import com.ffcreations.action.ActionCenter;
 	import com.ffcreations.ui.mouse.MouseInputManager;
 	import com.pblabs.engine.core.*;
 	import com.pblabs.engine.debug.*;
@@ -71,7 +72,7 @@ package com.pblabs.engine
         protected static var _rootGroup:PBGroup = null;
         protected static var _currentGroup:PBGroup = null;
 		protected static var _mouseInputManager:MouseInputManager;
-		
+		protected static var _actionCenter:ActionCenter;
         
         /**
          * Register a type with PushButton Engine so that it can be deserialized,
@@ -221,9 +222,10 @@ package com.pblabs.engine
                 _inputManager = new InputManager();
         
 			if (!_mouseInputManager)
-			{
 				_mouseInputManager = new MouseInputManager();
-			}
+			
+			if (!_actionCenter)
+				_actionCenter = new ActionCenter(_inputManager);
 		}
 		
         
@@ -489,9 +491,19 @@ package com.pblabs.engine
             return _inputManager;
         }
         
+		/**
+		 * Returns the MouseInputManager instance
+		 */
 		public static function get mouseInputManager():MouseInputManager
 		{
 			return _mouseInputManager;
+		}
+		
+		/**
+		 * Returns the ActionCenter instance;
+		 */
+		public static function get actionCenter():ActionCenter {
+			return _actionCenter;
 		}
 		
         /**

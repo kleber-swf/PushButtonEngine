@@ -1,15 +1,14 @@
 package br.com.stimuli.loading.loadingtypes {
 	
-	import br.com.stimuli.loading.loadingtypes.LoadingItem;
 	import br.com.stimuli.loading.BulkLoader;
+	import br.com.stimuli.loading.loadingtypes.LoadingItem;
 	
+	import com.adobe.serialization.json.JSONs;
 	
 	import flash.display.*;
-    import flash.net.*;
-    import flash.events.*;
-    import flash.utils.*;
-	
-    import com.adobe.serialization.json.JSON;
+	import flash.events.*;
+	import flash.net.*;
+	import flash.utils.*;
     
 	/** @private */
 	public class JSONItem extends LoadingItem {
@@ -51,7 +50,7 @@ package br.com.stimuli.loading.loadingtypes {
         
         override public function onCompleteHandler(evt : Event) : void {
             try{
-                _content = JSON.decode(loader.data);
+                _content = JSONs.decode(loader.data);
             }catch(e  : Error){
                 _content = null;
                 status = STATUS_ERROR;  

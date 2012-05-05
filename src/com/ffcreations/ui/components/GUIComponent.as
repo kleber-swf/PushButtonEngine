@@ -466,10 +466,22 @@ package com.ffcreations.ui.components
 			{
 				return;
 			}
-			_eventDispatcher.addEventListener(MouseInputEvent.MOUSE_OVER, onMouseInput, false, int.MIN_VALUE, true);
-			_eventDispatcher.addEventListener(MouseInputEvent.MOUSE_OUT, onMouseInput, false, int.MIN_VALUE, true);
-			_eventDispatcher.addEventListener(MouseInputEvent.MOUSE_DOWN, onMouseInput, false, int.MIN_VALUE, true);
-			_eventDispatcher.addEventListener(MouseInputEvent.MOUSE_UP, onMouseInput, false, int.MIN_VALUE, true);
+			if (PBE.inputManager.mouseOverEnabled)
+			{
+				_eventDispatcher.addEventListener(MouseInputEvent.MOUSE_OVER, onMouseInput, false, int.MIN_VALUE, true);
+			}
+			if (PBE.inputManager.mouseOutEnabled)
+			{
+				_eventDispatcher.addEventListener(MouseInputEvent.MOUSE_OUT, onMouseInput, false, int.MIN_VALUE, true);
+			}
+			if (PBE.inputManager.mouseDownEnabled)
+			{
+				_eventDispatcher.addEventListener(MouseInputEvent.MOUSE_DOWN, onMouseInput, false, int.MIN_VALUE, true);
+			}
+			if (PBE.inputManager.mouseUpEnabled)
+			{
+				_eventDispatcher.addEventListener(MouseInputEvent.MOUSE_UP, onMouseInput, false, int.MIN_VALUE, true);
+			}
 			if (_visible)
 			{
 				PBE.mouseInputManager.addComponent(this);
@@ -556,6 +568,12 @@ package com.ffcreations.ui.components
 			{
 				updateState();
 			}
+		}
+		
+		protected override function onImageLoadComplete():void
+		{
+			super.onImageLoadComplete();
+			_stateDirty = true;
 		}
 		
 		protected override function updateProperties():void
@@ -684,7 +702,7 @@ package com.ffcreations.ui.components
 		//   Event handlers 
 		//--------------------------------------
 		
-		private function onMouseInput(data:MouseInputEvent):void
+		protected function onMouseInput(data:MouseInputEvent):void
 		{
 			state = data.type;
 			data.stopImmediatePropagation();

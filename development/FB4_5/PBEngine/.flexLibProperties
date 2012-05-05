@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
-  <includeClasses/>
+  <includeClasses>
+    <classEntry path="com.ffcreations.action.ActionCenter"/>
+    <classEntry path="com.ffcreations.action.Action"/>
+    <classEntry path="com.ffcreations.ui.components.ActionButton"/>
+  </includeClasses>
   <includeResources/>
   <namespaceManifests/>
 </flexLibProperties>

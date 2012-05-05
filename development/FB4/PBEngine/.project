@@ -19,7 +19,7 @@
 		<link>
 			<name>[source path] src</name>
 			<type>2</type>
-			<locationURI>PBE/src</locationURI>
+			<location>D:/Projects/PushButtonEngine/src</location>
 		</link>
 	</linkedResources>
 </projectDescription>
