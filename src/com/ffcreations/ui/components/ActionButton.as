@@ -9,18 +9,10 @@ package com.ffcreations.ui.components
 		
 		
 		//==========================================================
-		//   Static 
-		//==========================================================
-		
-		public static const SOUND_CATEGORY:String = "gui";
-		
-		
-		//==========================================================
 		//   Fields 
 		//==========================================================
 		
 		private var _action:Action;
-		public var clickSound:String;
 		
 		
 		//==========================================================
@@ -61,14 +53,6 @@ package com.ffcreations.ui.components
 			if (enabled)
 			{
 				if (data.type == MouseInputEvent.MOUSE_DOWN)
-				{
-					if (clickSound)
-					{
-						PBE.soundManager.play(clickSound, SOUND_CATEGORY);
-					}
-				}
-				
-				if (data.type == MouseInputEvent.MOUSE_UP)
 				{
 					if (action)
 					{

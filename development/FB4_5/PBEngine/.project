@@ -17,14 +17,14 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>bin-debug</name>
+			<name>bin</name>
 			<type>2</type>
-			<location>D:/Projects/PushButtonEngine/bin</location>
+			<locationURI>PARENT-3-PROJECT_LOC/bin</locationURI>
 		</link>
 		<link>
 			<name>src</name>
 			<type>2</type>
-			<location>D:/Projects/PushButtonEngine/src</location>
+			<locationURI>PARENT-3-PROJECT_LOC/src</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
