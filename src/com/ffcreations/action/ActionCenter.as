@@ -34,7 +34,7 @@ package com.ffcreations.action
 		
 		public function addAction(action:Action):void
 		{
-			_actions[action] = action;
+			_actions[action.id] = action;
 		}
 		
 		public function executeAction(id:String):void
@@ -79,11 +79,11 @@ package com.ffcreations.action
 		
 		public function onTick(deltaTime:Number):void
 		{
-			for each (var action:Action in _actions)
+			for (var a:String in _actions)
 			{
-				if (_inputManager.keyJustPressed(action.shortcutCode))
+				if (_inputManager.keyJustPressed(_actions[a].shortcutCode))
 				{
-					action.execute();
+					_actions[a].execute();
 				}
 			}
 		}

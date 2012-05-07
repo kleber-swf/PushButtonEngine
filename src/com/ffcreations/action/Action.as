@@ -12,11 +12,11 @@ package com.ffcreations.action
 		//   Fields 
 		//==========================================================
 		
-		private var id:String;
-		
 		private var _callback:Function;
 		private var _shortcutCode:int;
 		private var _enabled:Boolean = true;
+		
+		private var _id:String;
 		
 		
 		//==========================================================
@@ -38,9 +38,24 @@ package com.ffcreations.action
 			_enabled = value;
 		}
 		
-		public function set shortcut(value:InputKey):void
+		public function get id():String
 		{
-			_shortcutCode = value.keyCode;
+			return _id;
+		}
+		
+		public function set id(value:String):void
+		{
+			if (_id)
+			{
+				PBE.actionCenter.removeAction(_id);
+			}
+			_id = value;
+			PBE.actionCenter.addAction(this);
+		}
+		
+		public function set shortcut(value:String):void
+		{
+			_shortcutCode = InputKey.stringToKey(value).keyCode;
 		}
 		
 		public function get shortcutCode():int
@@ -52,12 +67,6 @@ package com.ffcreations.action
 		//==========================================================
 		//   Functions 
 		//==========================================================
-		
-		protected override function onAdd():void
-		{
-			super.onAdd();
-			PBE.actionCenter.addAction(this);
-		}
 		
 		public function execute():void
 		{
