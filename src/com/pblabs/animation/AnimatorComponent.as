@@ -49,8 +49,9 @@ package com.pblabs.animation
         {
             if (_currentAnimation)
             {
-                _currentAnimation.animate(elapsed);                               
-                owner.setProperty(reference, _currentAnimation.currentValue);
+                _currentAnimation.animate(elapsed);    
+				if (_currentAnimation)
+					owner.setProperty(reference, _currentAnimation.currentValue);
             }
         }
 

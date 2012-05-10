@@ -5,6 +5,11 @@ package com.ffcreations.action
 	import com.pblabs.engine.core.InputManager;
 	import com.pblabs.engine.debug.Logger;
 	
+	/**
+	 * Centralized place to register and execute Actions.
+	 * @see com.ffcreations.action.Action
+	 * @author Kleber
+	 */
 	public final class ActionCenter implements ITickedObject
 	{
 		
@@ -21,6 +26,11 @@ package com.ffcreations.action
 		//   Constructor 
 		//==========================================================
 		
+		/**
+		 * Creates an Action Center instance.
+		 * @param inputManager	The InputManager to check for keyboard events.
+		 * @see com.pblabs.engine.core.InputManager
+		 */
 		public function ActionCenter(inputManager:InputManager)
 		{
 			_inputManager = inputManager;
@@ -32,11 +42,19 @@ package com.ffcreations.action
 		//   Functions 
 		//==========================================================
 		
-		public function addAction(action:Action):void
+		/**
+		 * Register the given Action to the actions list.
+		 * @param action	The Action to register.
+		 */
+		public function registerAction(action:Action):void
 		{
 			_actions[action.id] = action;
 		}
 		
+		/**
+		 * Executes the Action with given id.
+		 * @param id	The Action id to execute.
+		 */
 		public function executeAction(id:String):void
 		{
 			if (_actions.hasOwnProperty(id))
@@ -45,16 +63,10 @@ package com.ffcreations.action
 			}
 		}
 		
-		//		public function createAction(id:String):Action
-		//		{
-		//			if (_actions.hasOwnProperty(id))
-		//			{
-		//				return _actions[id];
-		//			}
-		//			_actions[id] = new Action(id);
-		//			return _actions[id];
-		//		}
-		
+		/**
+		 * Removes the Action with given id.
+		 * @param id	The id of the Action to remove.
+		 */
 		public function removeAction(id:String):void
 		{
 			if (_actions.hasOwnProperty(id))
@@ -63,11 +75,22 @@ package com.ffcreations.action
 			}
 		}
 		
+		/**
+		 * Returns the Action with given id
+		 * @param id	The Action id.
+		 * @return The Action with given id.
+		 */
 		public function getAction(id:String):Action
 		{
 			return _actions[id];
 		}
 		
+		/**
+		 * Sets the callback to the Action with given id.
+		 * @param id		The Action id.
+		 * @param callback	The callback.
+		 * @see com.ffcreations.action.Action#callback
+		 */
 		public function setActionCallback(id:String, callback:Function):void
 		{
 			if (_actions.hasOwnProperty(id))
@@ -77,6 +100,9 @@ package com.ffcreations.action
 			Logger.warn(this, "setActionCallback", "There is no action with id " + id);
 		}
 		
+		/**
+		 * @inheritDoc
+		 */
 		public function onTick(deltaTime:Number):void
 		{
 			for (var a:String in _actions)
