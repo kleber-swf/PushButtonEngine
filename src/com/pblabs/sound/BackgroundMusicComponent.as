@@ -10,6 +10,7 @@ package com.pblabs.sound
 {
     import com.pblabs.engine.PBE;
     import com.pblabs.engine.components.TickedComponent;
+    import com.pblabs.engine.resource.MP3Resource;
     import com.pblabs.engine.resource.SoundResource;
     
     /**
@@ -19,7 +20,7 @@ package com.pblabs.sound
     {
         protected var handle:SoundHandle;
         
-        public var music:SoundResource;
+        public var music:MP3Resource;
         public var musicUrl:String;
         public var autoStart:Boolean = true;
         

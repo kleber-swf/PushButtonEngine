@@ -23,7 +23,7 @@ package com.pblabs.sound
 	 * @see ISoundHandle See ISoundHandle for documentation on this class.
 	 * @inheritDocs
 	 */
-	internal class SoundHandle implements ISoundHandle
+	public class SoundHandle implements ISoundHandle
 	{
 		
 		
@@ -40,7 +40,7 @@ package com.pblabs.sound
 		internal var channel:SoundChannel;
 		
 		protected var pausedPosition:Number = 0;
-		protected var loopCount:int = 0;
+		public var loopCount:int = 0;
 		protected var _volume:Number = 1;
 		protected var _pan:Number = 0;
 		
@@ -155,7 +155,7 @@ package com.pblabs.sound
 		public function stop():void
 		{
 			pause();
-			
+			loopCount = 0;
 			if (manager.isInPlayingSounds(this))
 			{
 				// Remove from the manager.
@@ -185,6 +185,7 @@ package com.pblabs.sound
 			{
 				// Remove from the manager.
 				manager.removeSoundHandle(this);
+				playing = false;
 			}
 		}
 	}

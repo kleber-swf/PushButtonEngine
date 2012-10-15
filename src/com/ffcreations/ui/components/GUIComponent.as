@@ -100,6 +100,11 @@ package com.ffcreations.ui.components
 		 */
 		public var visibleProperty:PropertyReference;
 		
+		/**
+		 * The sound played when the component is touched.
+		 */
+		public var sound:String;
+		
 		
 		//==========================================================
 		//   Properties 
@@ -705,6 +710,8 @@ package com.ffcreations.ui.components
 		protected function onMouseInput(data:MouseInputEvent):void
 		{
 			state = data.type;
+			if (sound != null && data.type == MouseInputEvent.MOUSE_DOWN)
+				PBE.soundManager.play(sound, "gui");
 			data.stopImmediatePropagation();
 		}
 	}

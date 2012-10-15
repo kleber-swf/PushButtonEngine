@@ -5,6 +5,8 @@ package com.ffcreations.util
 	import com.pblabs.engine.entity.EntityComponent;
 	import com.pblabs.engine.resource.TextResource;
 	
+	import flash.system.System;
+	
 	import mx.utils.StringUtil;
 	
 	/**
@@ -123,7 +125,7 @@ package com.ffcreations.util
 			_failed = false;
 			_resource = res;
 			const text:String = _resource.data;
-			const buffer:Array = text.split("\r\n");
+			const buffer:Array = text.split("\n");
 			const length:int = (!buffer[buffer.length - 1]) ? buffer.length - 1 : buffer.length;
 			
 			if (mapByFirstColumn)
