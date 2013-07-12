@@ -1,5 +1,4 @@
-package com.ffcreations.ui.components
-{
+package com.ffcreations.ui.components {
 	import com.ffcreations.rendering2D.ScaleSpriteRenderer;
 	import com.ffcreations.ui.mouse.IMouseInputComponent;
 	import com.ffcreations.ui.mouse.MouseInputEvent;
@@ -38,26 +37,16 @@ package com.ffcreations.ui.components
 	 * </ul>
 	 * @author Kleber Lopes da Silva (kleber.swf)
 	 */
-	public class GUIComponent extends ScaleSpriteRenderer implements IMouseInputComponent
-	{
-		
-		
-		//==========================================================
-		//   Static 
-		//==========================================================
+	public class GUIComponent extends ScaleSpriteRenderer implements IMouseInputComponent {
 		
 		private static var zeroPoint:Point = new Point();
 		
 		protected static var _componentStates:Array = new Array("normal", "selected");
 		protected static var _mouseStates:Object = {"out":"mouseOut", "over":"mouseOver", "down":"mouseDown", "up":"mouseUp", "disabled":"disabled"};
 		
-		
-		//==========================================================
-		//   Fields 
-		//==========================================================
-		
 		private var _sceneBounds:Rectangle = new Rectangle();
 		private var _pixelPrecise:Boolean = true;
+		private var _statesArray:Array;
 		
 		protected var _states:Object = {"normal:mouseOut":0,
 				"normal:mouseOver":1,
@@ -90,238 +79,114 @@ package com.ffcreations.ui.components
 		protected var _lockCenter:Boolean;
 		protected var _canDrop:Boolean;
 		
-		/**
-		 * If set, <code>enabled</code> is determined by this property every frame.
-		 */
+		/** If set, <code>enabled</code> is determined by this property every frame. */
 		public var enabledProperty:PropertyReference;
 		
-		/**
-		 * If set, <code>visible</code> is determined by this property every frame.
-		 */
+		/** If set, <code>visible</code> is determined by this property every frame. */
 		public var visibleProperty:PropertyReference;
 		
-		/**
-		 * The sound played when the component is touched.
-		 */
-		public var sound:String;
+		/** If set, <code>selected</code> is determined by this property every frame. */
+		public var selectedProperty:PropertyReference;
 		
+		/** @inheritDoc */
+		public function get acceptDrop():Boolean { return _acceptDrop; }
 		
-		//==========================================================
-		//   Properties 
-		//==========================================================
+		/** @inheritDoc */
+		public function set acceptDrop(value:Boolean):void { _acceptDrop = value; }
 		
-		/**
-		 * @inheritDoc
-		 */
-		public function get acceptDrop():Boolean
-		{
-			return _acceptDrop;
-		}
+		/** @inheritDoc */
+		public function get canDrop():Boolean { return _canDrop; }
 		
-		/**
-		 * @inheritDoc
-		 */
-		public function set acceptDrop(value:Boolean):void
-		{
-			_acceptDrop = value;
-		}
+		/** @inheritDoc */
+		public function set canDrop(value:Boolean):void { _canDrop = value; }
 		
-		/**
-		 * @inheritDoc
-		 */
-		public function get canDrop():Boolean
-		{
-			return _canDrop;
-		}
+		/** @inheritDoc */
+		public function get container():IMouseInputComponent { return _container; }
 		
-		/**
-		 * @inheritDoc
-		 */
-		public function set canDrop(value:Boolean):void
-		{
-			_canDrop = value;
-		}
+		/** @inheritDoc */
+		public function set container(value:IMouseInputComponent):void { _container = value; }
 		
-		/**
-		 * @inheritDoc
-		 */
-		public function get container():IMouseInputComponent
-		{
-			return _container;
-		}
+		/** @inheritDoc */
+		public function get draggable():Boolean { return _draggable; }
 		
-		/**
-		 * @inheritDoc
-		 */
-		public function set container(value:IMouseInputComponent):void
-		{
-			_container = value;
-		}
+		/** @inheritDoc */
+		public function set draggable(value:Boolean):void { _draggable = value; }
 		
-		/**
-		 * @inheritDoc
-		 */
-		public function get draggable():Boolean
-		{
-			return _draggable;
-		}
+		/** @inheritDoc */
+		public function get dragging():Boolean { return _dragging; }
 		
-		/**
-		 * @inheritDoc
-		 */
-		public function set draggable(value:Boolean):void
-		{
-			_draggable = value;
-		}
+		/** @inheritDoc */
+		public function set dragging(value:Boolean):void { _dragging = value; }
 		
-		/**
-		 * @inheritDoc
-		 */
-		public function get dragging():Boolean
-		{
-			return _dragging;
-		}
+		/** @inheritDoc */
+		public function get enabled():Boolean { return _enabled && _alpha > 0; }
 		
-		/**
-		 * @inheritDoc
-		 */
-		public function set dragging(value:Boolean):void
-		{
-			_dragging = value;
-		}
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get enabled():Boolean
-		{
-			return _enabled && _alpha > 0;
-		}
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function set enabled(value:Boolean):void
-		{
+		/** @inheritDoc */
+		public function set enabled(value:Boolean):void {
 			_enabled = value;
 			_stateDirty = true;
 		}
 		
-		/**
-		 * @inheritDoc
-		 */
-		public function get eventDispatcher():IEventDispatcher
-		{
-			return _eventDispatcher;
-		}
+		/** @inheritDoc */
+		public function get eventDispatcher():IEventDispatcher { return _eventDispatcher; }
 		
-		/**
-		 * Columns count (x) and rows count (y) of the image.
-		 */
-		public function set imageDivider(value:Point):void
-		{
+		/** Columns count (x) and rows count (y) of the image. */
+		public function get imageDivider():Point { return _grid; }
+		
+		/** @private */
+		public function set imageDivider(value:Point):void {
 			_grid = value;
 			updateSourceRect();
 		}
 		
-		/**
-		 * @inheritDoc
-		 */
-		public function get inputBounds():Rectangle
-		{
-			return _inputBounds;
-		}
+		/** @inheritDoc */
+		public function get inputBounds():Rectangle { return _inputBounds; }
 		
-		/**
-		 * @inheritDoc
-		 */
-		public function set inputBounds(value:Rectangle):void
-		{
+		/** @inheritDoc */
+		public function set inputBounds(value:Rectangle):void {
 			_inputBounds = value;
 			_transformDirty = true;
 			_pixelPrecise = value != null
 		}
 		
-		/**
-		 * @inheritDoc
-		 */
-		public function get lockCenter():Boolean
-		{
-			return _lockCenter;
-		}
+		/** @inheritDoc */
+		public function get lockCenter():Boolean { return _lockCenter; }
 		
-		/**
-		 * @inheritDoc
-		 */
-		public function set lockCenter(value:Boolean):void
-		{
-			_lockCenter = value;
-		}
+		/** @inheritDoc */
+		public function set lockCenter(value:Boolean):void { _lockCenter = value; }
 		
-		/**
-		 * @inheritDoc
-		 */
-		public function get pixelPrecise():Boolean
-		{
-			return _pixelPrecise;
-		}
+		/** @inheritDoc */
+		public function get pixelPrecise():Boolean { return _pixelPrecise; }
 		
-		/**
-		 * @inheritDoc
-		 */
-		public function set pixelPrecise(value:Boolean):void
-		{
-			_pixelPrecise = value;
-		}
+		/** @inheritDoc */
+		public function set pixelPrecise(value:Boolean):void { _pixelPrecise = value; }
 		
-		/**
-		 * @inheritDoc
-		 */
-		public function get priority():int
-		{
-			return _priority;
-		}
+		/** @inheritDoc */
+		public function get priority():int { return _priority; }
 		
-		/**
-		 * @inheritDoc
-		 */
-		public function set priority(value:int):void
-		{
+		/** @inheritDoc */
+		public function set priority(value:int):void {
 			_priority = value;
 			if (isRegistered)
-			{
 				PBE.mouseInputManager.updatePriority(this);
-			}
 		}
 		
-		public override function get sceneBounds():Rectangle
-		{
-			return _sceneBounds;
-		}
+		public override function get sceneBounds():Rectangle { return _sceneBounds; }
 		
 		/**
 		 * Whether the component is selected.
 		 * @return
 		 */
-		public function get selected():Boolean
-		{
-			return _selected;
-		}
+		public function get selected():Boolean { return _selected; }
 		
-		/**
-		 * @private
-		 */
-		public function set selected(value:Boolean):void
-		{
+		/** @private */
+		public function set selected(value:Boolean):void {
 			if (_selected == value)
-			{
 				return;
-			}
 			_selected = value;
 			_eventDispatcher.dispatchEvent(new PropertyChangedEvent(PropertyChangedEvent.SELECTED, value));
 			_stateDirty = true;
 		}
-		
 		
 		/**
 		 * Gets/sets the state of the component.
@@ -332,16 +197,10 @@ package com.ffcreations.ui.components
 		 * @see #selected
 		 * @see #enabled
 		 */
-		public function get state():String
-		{
-			return _state;
-		}
+		public function get state():String { return _state; }
 		
-		/**
-		 * @private
-		 */
-		public function set state(value:String):void
-		{
+		/** @private */
+		public function set state(value:String):void {
 			_state = value;
 			_stateDirty = true;
 		}
@@ -394,30 +253,27 @@ package com.ffcreations.ui.components
 		 * 		"selected:disabled"             // index 7 of the sprite sheet (1,3)
 		 * ];
 		 * </listing>
-		 * @default
 		 */
-		public function set states(value:Array):void
-		{
-			if (value == null)
-			{
+		public function get states():Array { return _statesArray; }
+		
+		/** @private */
+		public function set states(value:Array):void {
+			if (value == null) {
 				_states = new Object();
 				return;
 			}
-			for (var i:int = 0; i < value.length; i++)
-			{
+			_statesArray = value;
+			for (var i:int = 0; i < value.length; i++) {
 				var states:Array = value[i].split(",");
-				for each (var state:String in states)
-				{
+				for each (var state:String in states) {
 					var s:Array = state.split(":");
-					if (s.length != 2)
-					{
+					if (s.length != 2) {
 						Logger.warn(this, "states", "State must be a string like 'normal:out' or 'selected:over'.");
 						continue;
 					}
 					var csi:int = _componentStates.indexOf(StringUtil.trim(s[0]));
 					var st:String = StringUtil.trim(s[1]);
-					if (csi < 0 || !_mouseStates.hasOwnProperty(st))
-					{
+					if (csi < 0 || !_mouseStates.hasOwnProperty(st)) {
 						Logger.warn(this, "states", "Wrong state: '" + state + "'.");
 						continue;
 					}
@@ -426,81 +282,43 @@ package com.ffcreations.ui.components
 			}
 		}
 		
-		/**
-		 * Whether the component is visible.
-		 */
-		public function get visible():Boolean
-		{
-			return _visible;
-		}
+		/** Whether the component is visible. */
+		public function get visible():Boolean { return _visible; }
 		
-		/**
-		 * @private
-		 */
-		public function set visible(value:Boolean):void
-		{
+		/** @private */
+		public function set visible(value:Boolean):void {
 			if (_visible == value)
-			{
 				return;
-			}
 			_visible = value;
 			alpha = value ? 1 : 0;
 			if (value)
-			{
 				PBE.mouseInputManager.addComponent(this);
-			}
 			else
-			{
 				PBE.mouseInputManager.removeComponent(this);
-			}
 		}
 		
-		
-		//==========================================================
-		//   Functions 
-		//==========================================================
-		
-		/**
-		 * @inheritDoc
-		 */
-		protected override function addToScene():void
-		{
+		/** @inheritDoc */
+		protected override function addToScene():void {
 			var previousInScene:Boolean = _inScene;
 			super.addToScene();
 			if (!_scene || !_displayObject || previousInScene)
-			{
 				return;
-			}
 			if (PBE.inputManager.mouseOverEnabled)
-			{
 				_eventDispatcher.addEventListener(MouseInputEvent.MOUSE_OVER, onMouseInput, false, int.MIN_VALUE, true);
-			}
 			if (PBE.inputManager.mouseOutEnabled)
-			{
 				_eventDispatcher.addEventListener(MouseInputEvent.MOUSE_OUT, onMouseInput, false, int.MIN_VALUE, true);
-			}
 			if (PBE.inputManager.mouseDownEnabled)
-			{
 				_eventDispatcher.addEventListener(MouseInputEvent.MOUSE_DOWN, onMouseInput, false, int.MIN_VALUE, true);
-			}
 			if (PBE.inputManager.mouseUpEnabled)
-			{
 				_eventDispatcher.addEventListener(MouseInputEvent.MOUSE_UP, onMouseInput, false, int.MIN_VALUE, true);
-			}
 			if (_visible)
-			{
 				PBE.mouseInputManager.addComponent(this);
-			}
 			updateSourceRect();
 		}
 		
-		/**
-		 * @inheritDoc
-		 */
-		protected override function removeFromScene():void
-		{
-			if (_scene && _displayObject && _inScene)
-			{
+		/** @inheritDoc */
+		protected override function removeFromScene():void {
+			if (_scene && _displayObject && _inScene) {
 				_eventDispatcher.removeEventListener(MouseInputEvent.MOUSE_OVER, onMouseInput);
 				_eventDispatcher.removeEventListener(MouseInputEvent.MOUSE_OUT, onMouseInput);
 				_eventDispatcher.removeEventListener(MouseInputEvent.MOUSE_DOWN, onMouseInput);
@@ -510,38 +328,25 @@ package com.ffcreations.ui.components
 			super.removeFromScene();
 		}
 		
-		/**
-		 * @inheritDoc
-		 */
-		protected override function onRemove():void
-		{
+		/** @inheritDoc */
+		protected override function onRemove():void {
 			_target = null;
 			_sourceRect = null;
 			_state = null;
 			super.onRemove();
 		}
 		
-		/**
-		 * Updates the state when <code>_stateDirty</code> is set.
-		 */
-		protected function updateState():void
-		{
+		/** Updates the state when <code>_stateDirty</code> is set. */
+		protected function updateState():void {
 			if (!_sourceRect)
-			{
 				return;
-			}
 			var state:String;
 			if (_enabled)
-			{
 				state = (_selected ? "selected" : "normal") + ":" + _state;
-			}
 			else
-			{
 				state = (_selected ? "selected" : "normal") + ":disabled";
-			}
 			
-			if (_states.hasOwnProperty(state))
-			{
+			if (_states.hasOwnProperty(state) && _state != state) {
 				var index:int = _states[state];
 				_sourceRect.x = int(_sourceRect.width * (index % _grid.x));
 				_sourceRect.y = int(_sourceRect.height * int(index / _grid.x));
@@ -552,68 +357,57 @@ package com.ffcreations.ui.components
 			_stateDirty = false;
 		}
 		
-		private function updateSourceRect():void
-		{
+		private function updateSourceRect():void {
 			if (!_source)
-			{
 				return;
-			}
 			_sourceRect = new Rectangle(0, 0, int(_source.width * (1 / _grid.x)), int(_source.height * (1 / _grid.y)));
 			_target = new BitmapData(_sourceRect.width, _sourceRect.height, true, 0);
 			_registrationPoint = new Point(_sourceRect.width * 0.5, _sourceRect.height * 0.5);
 		}
 		
-		/**
-		 * @inheritDoc
-		 */
-		public override function onFrame(elapsed:Number):void
-		{
+		/** @inheritDoc */
+		public override function onFrame(elapsed:Number):void {
 			super.onFrame(elapsed);
 			if (_stateDirty)
-			{
 				updateState();
-			}
 		}
 		
-		protected override function onImageLoadComplete():void
-		{
+		/** @inheritDoc */
+		protected override function onImageLoadComplete():void {
 			super.onImageLoadComplete();
 			_stateDirty = true;
 		}
 		
-		protected override function updateProperties():void
-		{
+		/** @inheritDoc */
+		protected override function updateProperties():void {
 			super.updateProperties();
-			if (visibleProperty)
-			{
+			if (visibleProperty) {
 				var e:Boolean = owner.getProperty(visibleProperty);
 				if (e != _visible)
-				{
 					visible = e;
-				}
 			}
 			if (alpha == 0)
-			{
 				return;
-			}
-			if (enabledProperty)
-			{
+			
+			if (enabledProperty) {
 				e = owner.getProperty(enabledProperty);
 				if (e != _enabled)
-				{
 					enabled = e;
-				}
+			}
+			if (selectedProperty) {
+				e = owner.getProperty(selectedProperty);
+				if (e != _selected)
+					selected = e;
 			}
 		}
 		
-		public override function updateTransform(updateProps:Boolean = false):void
-		{
+		/** @inheritDoc */
+		public override function updateTransform(updateProps:Boolean = false):void {
 			super.updateTransform(updateProps);
 			_sceneBounds = _inputBounds ? _inputBounds.clone() : super.sceneBounds;
 		}
 		
-		protected function updateInputBounds():void
-		{
+		protected function updateInputBounds():void {
 			var pos:Point = _position.add(_positionOffset);
 			_sceneBounds.x = pos.x + _inputBounds.x;
 			_sceneBounds.y = pos.y + _inputBounds.y;
@@ -621,20 +415,16 @@ package com.ffcreations.ui.components
 			_sceneBounds.height = _inputBounds.height;
 		}
 		
-		/**
-		 * @inheritDoc
-		 */
-		protected override function redraw():void
-		{
-			if (!isRegistered || !_source || !_target)
-			{
+		/** @inheritDoc */
+		protected override function redraw():void {
+			if (!isRegistered || !_source)
 				return;
-			}
+			if (!_target)
+				updateSourceRect();
 			
 			var graphics:Graphics = (_displayObject as Sprite).graphics;
 			
-			if (!_scale9Grid)
-			{
+			if (!_scale9Grid) {
 				_target.copyPixels(_source, _sourceRect, zeroPoint);
 				graphics.clear();
 				graphics.beginBitmapFill(_target);
@@ -653,11 +443,9 @@ package com.ffcreations.ui.components
 			graphics.clear();
 			
 			var left:int = 0;
-			for (var i:int = 0; i < 3; i++)
-			{
+			for (var i:int = 0; i < 3; i++) {
 				var top:int = 0;
-				for (var j:int = 0; j < 3; j++)
-				{
+				for (var j:int = 0; j < 3; j++) {
 					graphics.beginBitmapFill(_target);
 					graphics.drawRect(left, top, gridX[i] - left, gridY[j] - top);
 					graphics.endFill();
@@ -676,8 +464,7 @@ package com.ffcreations.ui.components
 		 * @return <code>True</code> if can be dragged, or <code>false</code> otherwise.
 		 * @default The value in <code>draggable</code> field.
 		 */
-		public function canDrag():Boolean
-		{
+		public function canDrag():Boolean {
 			return _draggable;
 		}
 		
@@ -689,29 +476,23 @@ package com.ffcreations.ui.components
 		 * this component or <code>false</code> otherwise.
 		 * @default The value in <code>acceptDrop</code> field.
 		 */
-		public function canDropItem(component:IMouseInputComponent):Boolean
-		{
+		public function canDropItem(component:IMouseInputComponent):Boolean {
 			return _acceptDrop;
 		}
 		
-		/**
-		 * @inheritDoc
-		 */
-		public function contains(point:Point):Boolean
-		{
+		/** @inheritDoc */
+		public function contains(point:Point):Boolean {
 			return _pixelPrecise ? pointOccupied(point, null) : _sceneBounds.containsPoint(point);
 			//			return _sceneInputBounds && !_pixelPrecise ? _sceneInputBounds.containsPoint(point) : pointOccupied(point, null);
 		}
 		
-		//--------------------------------------
-		//   Event handlers 
-		//--------------------------------------
+		/** @inheritDoc */
+		public function cancelInput():void {
+			state = MouseInputEvent.MOUSE_UP;
+		}
 		
-		protected function onMouseInput(data:MouseInputEvent):void
-		{
+		protected function onMouseInput(data:MouseInputEvent):void {
 			state = data.type;
-			if (sound != null && data.type == MouseInputEvent.MOUSE_DOWN)
-				PBE.soundManager.play(sound, "gui");
 			data.stopImmediatePropagation();
 		}
 	}

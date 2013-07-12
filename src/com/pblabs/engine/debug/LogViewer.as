@@ -6,8 +6,7 @@
  * This file is licensed under the terms of the MIT license, which is included
  * in the License.html file at the root directory of this SDK.
  ******************************************************************************/
-package com.pblabs.engine.debug
-{
+package com.pblabs.engine.debug {
 	import com.pblabs.engine.PBE;
 	import com.pblabs.engine.PBUtil;
 	import com.pblabs.engine.core.IAnimatedObject;
@@ -24,21 +23,19 @@ package com.pblabs.engine.debug
 	import flash.text.TextFormat;
 	import flash.ui.Keyboard;
 	
+	import mx.core.Application;
+	
 	/**
 	 * Console UI, which shows console log activity in-game, and also accepts input from the user.
 	 */
-	public class LogViewer extends Sprite implements ILogAppender, IAnimatedObject
-	{
+	public class LogViewer extends Sprite implements ILogAppender, IAnimatedObject {
 		public static var BottomLayout:Boolean = false;
 		
 		protected static var _ScreenSizeHeightDivider:uint = 3;
 		
-		public static function set ScreenSizeHeightDivider(value:uint):void
-		{
+		public static function set ScreenSizeHeightDivider(value:uint):void {
 			if (value == 0 || value > 10)
-			{
 				return;
-			}
 			_ScreenSizeHeightDivider = value;
 		}
 		
@@ -68,8 +65,7 @@ package com.pblabs.engine.debug
 		
 		protected var _state:int = 0;
 		
-		public function LogViewer():void
-		{
+		public function LogViewer():void {
 			layout();
 			addListeners();
 			
@@ -80,18 +76,16 @@ package com.pblabs.engine.debug
 			PBE.processManager.addAnimatedObject(this);
 		}
 		
-		protected function layout():void
-		{
+		protected function layout():void {
 			if (!_input)
 				createInputField();
 			
 			resize();
 			
-			if (!contains(_outputBitmap))
-			{
+			if (!contains(_outputBitmap)) {
 				_outputBitmap.name = "ConsoleOutput";
-				addEventListener(MouseEvent.CLICK, onBitmapClick, false, 0, true);
-				addEventListener(MouseEvent.DOUBLE_CLICK, onBitmapDoubleClick, false, 0, true);
+				addEventListener(MouseEvent.CLICK, onBitmapClick);
+				addEventListener(MouseEvent.DOUBLE_CLICK, onBitmapDoubleClick);
 				
 				addChild(_outputBitmap);
 				addChild(_input);
@@ -108,30 +102,24 @@ package com.pblabs.engine.debug
 			_dirtyConsole = true;
 		}
 		
-		protected function addListeners():void
-		{
+		protected function addListeners():void {
 			_input.addEventListener(KeyboardEvent.KEY_DOWN, onInputKeyDown, false, 1, true);
 		}
 		
-		protected function removeListeners():void
-		{
+		protected function removeListeners():void {
 			_input.removeEventListener(KeyboardEvent.KEY_DOWN, onInputKeyDown);
 		}
 		
-		protected function onBitmapClick(me:MouseEvent):void
-		{
+		protected function onBitmapClick(me:MouseEvent):void {
 			// Give focus to input.
 			PBE.mainStage.focus = _input;
 		}
 		
-		protected function onBitmapDoubleClick(me:MouseEvent = null):void
-		{
+		protected function onBitmapDoubleClick(me:MouseEvent = null):void {
 			// Put everything into a monster string.
 			var logString:String = "";
 			for (var i:int = 0; i < logCache.length; i++)
-			{
 				logString += logCache[i].text + "\n";
-			}
 			
 			// Copy content.
 			System.setClipboard(logString);
@@ -142,24 +130,20 @@ package com.pblabs.engine.debug
 		/**
 		 * Wipe the displayed console output.
 		 */
-		protected function onClearCommand():void
-		{
+		protected function onClearCommand():void {
 			logCache = [];
 			bottomLineIndex = -1;
 			_dirtyConsole = true;
 		}
 		
-		protected function resize():void
-		{
+		protected function resize():void {
 			_outputBitmap.x = 5;
 			_outputBitmap.y = 0;
 			_input.x = 5;
 			
-			if (stage)
-			{
+			if (stage) {
 				_width = stage.stageWidth - 1;
-				switch (_state)
-				{
+				switch (_state) {
 					case 0:
 						_height = (stage.stageHeight / _ScreenSizeHeightDivider) * 2;
 						break;
@@ -176,31 +160,24 @@ package com.pblabs.engine.debug
 			Profiler.enter("LogViewer_resizeBitmap");
 			_outputBitmap.bitmapData.dispose();
 			
-			if (_state != -1)
-			{
+			if (_state != -1) {
 				_outputBitmap.bitmapData = new BitmapData(_width - 10, _height - 30, true, 0x0);
 				_outputBitmap.alpha = 0.5;
 				_input.y = _outputBitmap.height + 7;
-			}
-			else
-			{
+			} else
 				_input.y = 7;
-			}
 			Profiler.exit("LogViewer_resizeBitmap");
 			
 			_input.height = 18;
 			_input.width = _width - 10;
 			
 			if (stage)
-			{
 				this.y = BottomLayout ? stage.stageHeight - _height : 0;
-			}
 			
 			_dirtyConsole = true;
 		}
 		
-		protected function createInputField():TextField
-		{
+		protected function createInputField():TextField {
 			_input = new TextField();
 			_input.type = TextFieldType.INPUT;
 			_input.border = true;
@@ -220,8 +197,7 @@ package com.pblabs.engine.debug
 			return _input;
 		}
 		
-		protected function setHistory(old:String):void
-		{
+		protected function setHistory(old:String):void {
 			_input.text = old;
 			PBE.callLater(function():void
 			{
@@ -229,21 +205,17 @@ package com.pblabs.engine.debug
 			});
 		}
 		
-		protected function onInputKeyDown(event:KeyboardEvent):void
-		{
+		protected function onInputKeyDown(event:KeyboardEvent):void {
 			// If this was a non-tab input, clear tab completion state.
-			if (event.keyCode != Keyboard.TAB && event.keyCode != Keyboard.SHIFT)
-			{
+			if (event.keyCode != Keyboard.TAB && event.keyCode != Keyboard.SHIFT) {
 				tabCompletionPrefix = _input.text;
 				tabCompletionCurrentStart = -1;
 				tabCompletionCurrentOffset = 0;
 			}
-			switch (event.keyCode)
-			{
+			switch (event.keyCode) {
 				case Keyboard.ENTER:
 					// Execute an entered command.
-					if (_input.text.length <= 0)
-					{
+					if (_input.text.length <= 0) {
 						// display a blank line
 						addLogMessage("CMD", ">", _input.text);
 						return;
@@ -256,13 +228,9 @@ package com.pblabs.engine.debug
 				case Keyboard.UP:
 					// Go to previous command.
 					if (_historyIndex > 0)
-					{
 						setHistory(_consoleHistory[--_historyIndex]);
-					}
 					else if (_consoleHistory.length > 0)
-					{
 						setHistory(_consoleHistory[0]);
-					}
 					
 					event.preventDefault();
 					break;
@@ -270,44 +238,33 @@ package com.pblabs.engine.debug
 				case Keyboard.DOWN:
 					// Go to next command.
 					if (_historyIndex < _consoleHistory.length - 1)
-					{
 						setHistory(_consoleHistory[++_historyIndex]);
-					}
 					else if (_historyIndex == _consoleHistory.length - 1)
-					{
 						_input.text = "";
-					}
 					
 					event.preventDefault();
 					break;
 				
 				case Keyboard.PAGE_UP:
-					if (event.ctrlKey)
-					{
-						switch (_state)
-						{
-						case 0:
-							if (_ScreenSizeHeightDivider > 2)
-							{
-								_ScreenSizeHeightDivider--;
-							}
-							else
-							{
+					if (event.ctrlKey) {
+						switch (_state) {
+							case 0:
+								if (_ScreenSizeHeightDivider > 2)
+									_ScreenSizeHeightDivider--;
+								else {
+									_ScreenSizeHeightDivider = 10;
+									_state = 1;
+								}
+								break;
+							case 1:
+								break;
+							case -1:
 								_ScreenSizeHeightDivider = 10;
-								_state = 1;
-							}
-							break;
-						case 1:
-							break;
-						case -1:
-							_ScreenSizeHeightDivider = 10;
-							_state = 0;
-							break;
+								_state = 0;
+								break;
 						}
 						layout();
-					}
-					else
-					{
+					} else {
 						// Page the console view up.
 						if (bottomLineIndex == int.MAX_VALUE)
 							bottomLineIndex = logCache.length - 1;
@@ -320,17 +277,12 @@ package com.pblabs.engine.debug
 					break;
 				
 				case Keyboard.PAGE_DOWN:
-					if (event.ctrlKey)
-					{
-						switch (_state)
-						{
+					if (event.ctrlKey) {
+						switch (_state) {
 							case 0:
 								if (_ScreenSizeHeightDivider < 10)
-								{
 									_ScreenSizeHeightDivider++;
-								}
-								else
-								{
+								else {
 									_ScreenSizeHeightDivider = 0;
 									_state = -1;
 								}
@@ -343,12 +295,9 @@ package com.pblabs.engine.debug
 								break;
 						}
 						layout();
-					}
-					else
-					{
+					} else {
 						// Page the console view down.
-						if (bottomLineIndex != int.MAX_VALUE)
-						{
+						if (bottomLineIndex != int.MAX_VALUE) {
 							bottomLineIndex += getScreenHeightInLines() - 2;
 							
 							if (bottomLineIndex + getScreenHeightInLines() >= logCache.length)
@@ -363,17 +312,14 @@ package com.pblabs.engine.debug
 					
 					// Is this the first step?
 					var isFirst:Boolean = false;
-					if (tabCompletionCurrentStart == -1)
-					{
+					if (tabCompletionCurrentStart == -1) {
 						tabCompletionPrefix = _input.text.toLowerCase();
 						tabCompletionCurrentStart = int.MAX_VALUE;
 						tabCompletionCurrentEnd = -1;
 						
-						for (var i:int = 0; i < list.length; i++)
-						{
+						for (var i:int = 0; i < list.length; i++) {
 							// If we found a prefix match...
-							if (list[i].name.substr(0, tabCompletionPrefix.length).toString().toLowerCase() == tabCompletionPrefix)
-							{
+							if (list[i].name.substr(0, tabCompletionPrefix.length).toString().toLowerCase() == tabCompletionPrefix) {
 								// Note it.
 								if (i < tabCompletionCurrentStart)
 									tabCompletionCurrentStart = i;
@@ -388,11 +334,9 @@ package com.pblabs.engine.debug
 					}
 					
 					// If there is a match, tab complete.
-					if (tabCompletionCurrentEnd != -1)
-					{
+					if (tabCompletionCurrentEnd != -1) {
 						// Update offset if appropriate.
-						if (!isFirst)
-						{
+						if (!isFirst) {
 							if (event.shiftKey)
 								tabCompletionCurrentOffset--;
 							else
@@ -400,13 +344,9 @@ package com.pblabs.engine.debug
 							
 							// Wrap the offset.
 							if (tabCompletionCurrentOffset < tabCompletionCurrentStart)
-							{
 								tabCompletionCurrentOffset = tabCompletionCurrentEnd;
-							}
 							else if (tabCompletionCurrentOffset > tabCompletionCurrentEnd)
-							{
 								tabCompletionCurrentOffset = tabCompletionCurrentStart;
-							}
 						}
 						
 						// Get the match.
@@ -428,22 +368,16 @@ package com.pblabs.engine.debug
 					break;
 				
 				case Keyboard.NUMPAD_ADD:
-					if (event.ctrlKey)
-					{
+					if (event.ctrlKey) {
 						if (alpha < 1)
-						{
 							alpha += 0.1;
-						}
 					}
 					break;
 				
 				case Keyboard.NUMPAD_SUBTRACT:
-					if (event.ctrlKey)
-					{
+					if (event.ctrlKey) {
 						if (alpha > 0)
-						{
 							alpha -= 0.1;
-						}
 					}
 					break;
 				
@@ -454,13 +388,9 @@ package com.pblabs.engine.debug
 				
 				case Keyboard.F11:
 					if (_state < 1)
-					{
 						_state++;
-					}
 					else
-					{
 						_state = -1;
-					}
 					layout();
 					break;
 				
@@ -477,8 +407,7 @@ package com.pblabs.engine.debug
 			event.stopImmediatePropagation();
 		}
 		
-		protected function processCommand():void
-		{
+		protected function processCommand():void {
 			addLogMessage("CMD", ">", _input.text);
 			Console.processLine(_input.text);
 			_consoleHistory.push(_input.text);
@@ -488,14 +417,12 @@ package com.pblabs.engine.debug
 			_dirtyConsole = true;
 		}
 		
-		public function getScreenHeightInLines():int
-		{
+		public function getScreenHeightInLines():int {
 			var roundedHeight:int = _state != -1 ? _outputBitmap.bitmapData.height : 0;
 			return int(roundedHeight / glyphCache.getLineHeight()); //Math.floor(roundedHeight / glyphCache.getLineHeight());
 		}
 		
-		public function onFrame(dt:Number):void
-		{
+		public function onFrame(dt:Number):void {
 			// Don't draw if we are clean or invisible.
 			if (_dirtyConsole == false || parent == null)
 				return;
@@ -517,14 +444,12 @@ package com.pblabs.engine.debug
 			startLine--;
 			
 			// Wipe it.
-			if (_state != -1)
-			{
+			if (_state != -1) {
 				var bd:BitmapData = _outputBitmap.bitmapData;
 				bd.fillRect(bd.rect, 0x0);
 				
 				// Draw lines.
-				for (var i:int = endLine; i >= startLine; i--)
-				{
+				for (var i:int = endLine; i >= startLine; i--) {
 					// Skip empty.
 					if (!logCache[i])
 						continue;
@@ -532,17 +457,14 @@ package com.pblabs.engine.debug
 					glyphCache.drawLineToBitmap(logCache[i].text, 0, _outputBitmap.height - (endLine + 1 - i) * glyphCache.getLineHeight(), logCache[i].color, _outputBitmap.bitmapData);
 				}
 			}
-			
 			Profiler.exit("LogViewer.redrawLog");
 		}
 		
-		public function addLogMessage(level:String, loggerName:String, message:String):void
-		{
+		public function addLogMessage(level:String, loggerName:String, message:String):void {
 			var color:String = LogColor.getColor(level);
 			
 			// Cut down on the logger level if verbosity requests.
-			if (Console.verbosity < 2)
-			{
+			if (Console.verbosity < 2) {
 				var dotIdx:int = loggerName.lastIndexOf("::");
 				if (dotIdx != -1)
 					loggerName = loggerName.substr(dotIdx + 2);
@@ -550,8 +472,7 @@ package com.pblabs.engine.debug
 			
 			// Split message by newline and add to the list.
 			var messages:Array = message.split("\n");
-			for each (var msg:String in messages)
-			{
+			for each (var msg:String in messages) {
 				var text:String = ((Console.verbosity > 0) ? level + ": " : "") + loggerName + " - " + msg;
 				logCache.push({"color":parseInt(color.substr(1), 16), "text":text});
 			}
@@ -559,28 +480,20 @@ package com.pblabs.engine.debug
 			_dirtyConsole = true;
 		}
 		
-		public function activate():void
-		{
+		public function activate():void {
 			layout();
 			_input.text = "";
 			addListeners();
 			PBE.mainStage.focus = _input;
 		}
 		
-		public function deactivate():void
-		{
+		public function deactivate():void {
 			removeListeners();
 			PBE.mainStage.focus = null;
 		}
 		
-		public function set restrict(value:String):void
-		{
-			_input.restrict = value;
-		}
+		public function set restrict(value:String):void { _input.restrict = value; }
 		
-		public function get restrict():String
-		{
-			return _input.restrict;
-		}
+		public function get restrict():String { return _input.restrict; }
 	}
 }

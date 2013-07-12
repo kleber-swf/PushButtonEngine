@@ -6,8 +6,7 @@
  * This file is licensed under the terms of the MIT license, which is included
  * in the License.html file at the root directory of this SDK.
  ******************************************************************************/
-package com.pblabs.engine.core
-{
+package com.pblabs.engine.core {
 	import com.pblabs.engine.PBE;
 	
 	import flash.events.EventDispatcher;
@@ -26,13 +25,7 @@ package com.pblabs.engine.core
 	 *
 	 * @see InputMap
 	 */
-	public class InputManager extends EventDispatcher implements ITickedObject
-	{
-		
-		
-		//==========================================================
-		//   Fields 
-		//==========================================================
+	public class InputManager extends EventDispatcher implements ITickedObject {
 		
 		private var _keyState:Array = new Array(); // The most recent information on key states
 		private var _keyStateOld:Array = new Array(); // The state of the keys on the previous tick
@@ -41,130 +34,79 @@ package com.pblabs.engine.core
 		public var mouseLocked:Boolean = false;
 		public var keyLocked:Boolean = false;
 		
-		
-		//==========================================================
-		//   Properties 
-		//==========================================================
-		
 		private var _mouseEnabled:Object = new Object();
 		
 		/**
 		 * Whether the mouse input is enabled.
 		 */
-		public function get mouseMoveEnabled():Boolean
-		{
-			return _mouseEnabled[MouseEvent.MOUSE_MOVE];
-		}
+		public function get mouseMoveEnabled():Boolean { return _mouseEnabled[MouseEvent.MOUSE_MOVE]; }
 		
 		/**
 		 * @private
 		 */
-		public function set mouseMoveEnabled(value:Boolean):void
-		{
-			enableMouseProperty(MouseEvent.MOUSE_MOVE, value);
-		}
+		public function set mouseMoveEnabled(value:Boolean):void { enableMouseProperty(MouseEvent.MOUSE_MOVE, value); }
 		
 		/**
 		 * Whether the mouse out state is enabled.
 		 */
-		public function get mouseOutEnabled():Boolean
-		{
-			return _mouseEnabled[MouseEvent.MOUSE_OUT];
-		}
+		public function get mouseOutEnabled():Boolean { return _mouseEnabled[MouseEvent.MOUSE_OUT]; }
 		
 		/**
 		 * @private
 		 */
-		public function set mouseOutEnabled(value:Boolean):void
-		{
-			enableMouseProperty(MouseEvent.MOUSE_OUT, value);
-		}
+		public function set mouseOutEnabled(value:Boolean):void { enableMouseProperty(MouseEvent.MOUSE_OUT, value); }
 		
 		/**
 		 * Whether the mouse over state is enabled.
 		 */
-		public function get mouseOverEnabled():Boolean
-		{
-			return _mouseEnabled[MouseEvent.MOUSE_OVER];
-		}
+		public function get mouseOverEnabled():Boolean { return _mouseEnabled[MouseEvent.MOUSE_OVER]; }
 		
 		/**
 		 * @private
 		 */
-		public function set mouseOverEnabled(value:Boolean):void
-		{
-			enableMouseProperty(MouseEvent.MOUSE_OVER, value);
-		}
+		public function set mouseOverEnabled(value:Boolean):void { enableMouseProperty(MouseEvent.MOUSE_OVER, value); }
 		
 		/**
 		 * Whether the mouse wheel state is enabled.
 		 */
-		public function get mouseWheelEnabled():Boolean
-		{
-			return _mouseEnabled[MouseEvent.MOUSE_WHEEL];
-		}
+		public function get mouseWheelEnabled():Boolean { return _mouseEnabled[MouseEvent.MOUSE_WHEEL]; }
 		
 		/**
 		 * @private
 		 */
-		public function set mouseWheelEnabled(value:Boolean):void
-		{
-			enableMouseProperty(MouseEvent.MOUSE_WHEEL, value);
-		}
+		public function set mouseWheelEnabled(value:Boolean):void { enableMouseProperty(MouseEvent.MOUSE_WHEEL, value); }
 		
 		/**
 		 * Whether the mouse up state is enabled.
 		 */
-		public function get mouseUpEnabled():Boolean
-		{
-			return _mouseEnabled[MouseEvent.MOUSE_UP];
-		}
+		public function get mouseUpEnabled():Boolean { return _mouseEnabled[MouseEvent.MOUSE_UP]; }
 		
 		/**
 		 * @private
 		 */
-		public function set mouseUpEnabled(value:Boolean):void
-		{
-			enableMouseProperty(MouseEvent.MOUSE_UP, value);
-		}
+		public function set mouseUpEnabled(value:Boolean):void { enableMouseProperty(MouseEvent.MOUSE_UP, value); }
 		
 		/**
 		 * Whether the mouse down state is enabled.
 		 */
-		public function get mouseDownEnabled():Boolean
-		{
-			return _mouseEnabled[MouseEvent.MOUSE_DOWN];
-		}
+		public function get mouseDownEnabled():Boolean { return _mouseEnabled[MouseEvent.MOUSE_DOWN]; }
 		
 		/**
 		 * @private
 		 */
-		public function set mouseDownEnabled(value:Boolean):void
-		{
-			enableMouseProperty(MouseEvent.MOUSE_DOWN, value);
-		}
+		public function set mouseDownEnabled(value:Boolean):void { enableMouseProperty(MouseEvent.MOUSE_DOWN, value); }
 		
 		private function enableMouseProperty(value:String, enable:Boolean):void {
 			_mouseEnabled[value] = enable;
 			if (value)
-			{
-				PBE.mainClass.parent.addEventListener(value, onMouse, false, 0, true);
-			}
+				PBE.mainClass.parent.addEventListener(value, onMouse);
 			else
-			{
 				PBE.mainClass.parent.removeEventListener(value, onMouse);
-			}
 		}
 		
-		
-		//==========================================================
-		//   Constructor 
-		//==========================================================
-		
-		public function InputManager()
-		{
-			PBE.mainStage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 0, true);
-			PBE.mainStage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp, false, 0, true);
+		public function InputManager() {
+			PBE.mainStage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			PBE.mainStage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
 			
 			mouseDownEnabled = true;
 			mouseUpEnabled = true;
@@ -178,40 +120,25 @@ package com.pblabs.engine.core
 			PBE.processManager.addTickedObject(this, Number.MAX_VALUE);
 		}
 		
-		
-		//==========================================================
-		//   Functions 
-		//==========================================================
-		
 		/**
 		 * @inheritDoc
 		 */
-		public function onTick(deltaTime:Number):void
-		{
+		public function onTick(deltaTime:Number):void {
 			// This function tracks which keys were just pressed (or released) within the last tick.
 			// It should be called at the beginning of the tick to give the most accurate responses possible.
 			
 			var cnt:int;
 			
-			for (cnt = 0; cnt < _keyState.length; cnt++)
-			{
+			for (cnt = 0; cnt < _keyState.length; cnt++) {
 				if (_keyState[cnt] && !_keyStateOld[cnt])
-				{
 					_justPressed[cnt] = true;
-				}
 				else
-				{
 					_justPressed[cnt] = false;
-				}
 				
 				if (!_keyState[cnt] && _keyStateOld[cnt])
-				{
 					_justReleased[cnt] = true;
-				}
 				else
-				{
 					_justReleased[cnt] = false;
-				}
 				
 				_keyStateOld[cnt] = _keyState[cnt];
 			}
@@ -220,38 +147,31 @@ package com.pblabs.engine.core
 		/**
 		 * Returns whether or not a key was pressed since the last tick.
 		 */
-		public function keyJustPressed(keyCode:int):Boolean
-		{
+		public function keyJustPressed(keyCode:int):Boolean {
 			return _justPressed[keyCode];
 		}
 		
 		/**
 		 * Returns whether or not a key was released since the last tick.
 		 */
-		public function keyJustReleased(keyCode:int):Boolean
-		{
+		public function keyJustReleased(keyCode:int):Boolean {
 			return _justReleased[keyCode];
 		}
 		
 		/**
 		 * Returns whether or not a specific key is down.
 		 */
-		public function isKeyDown(keyCode:int):Boolean
-		{
+		public function isKeyDown(keyCode:int):Boolean {
 			return _keyState[keyCode];
 		}
 		
 		/**
 		 * Returns true if any key is down.
 		 */
-		public function isAnyKeyDown():Boolean
-		{
-			for each (var b:Boolean in _keyState)
-			{
+		public function isAnyKeyDown():Boolean {
+			for each (var b:Boolean in _keyState) {
 				if (b)
-				{
 					return true;
-				}
 			}
 			return false;
 		}
@@ -265,8 +185,7 @@ package com.pblabs.engine.core
 		 *
 		 * @see InputMap
 		 */
-		public function simulateKeyDown(keyCode:int):void
-		{
+		public function simulateKeyDown(keyCode:int):void {
 			onKeyDown(new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, false, 0, keyCode));
 		}
 		
@@ -278,24 +197,21 @@ package com.pblabs.engine.core
 		 *
 		 * @see InputMap
 		 */
-		public function simulateKeyUp(keyCode:int):void
-		{
+		public function simulateKeyUp(keyCode:int):void {
 			onKeyUp(new KeyboardEvent(KeyboardEvent.KEY_UP, true, false, 0, keyCode));
 		}
 		
 		/**
 		 * Simulates clicking the mouse button.
 		 */
-		public function simulateMouseDown():void
-		{
+		public function simulateMouseDown():void {
 			onMouse(new MouseEvent(MouseEvent.MOUSE_DOWN));
 		}
 		
 		/**
 		 * Simulates releasing the mouse button.
 		 */
-		public function simulateMouseUp():void
-		{
+		public function simulateMouseUp():void {
 			onMouse(new MouseEvent(MouseEvent.MOUSE_UP));
 		}
 		
@@ -304,8 +220,7 @@ package com.pblabs.engine.core
 		 * move event since there is no way to change the current cursor position
 		 * of the mouse.
 		 */
-		public function simulateMouseMove():void
-		{
+		public function simulateMouseMove():void {
 			onMouse(new MouseEvent(MouseEvent.MOUSE_MOVE, true, false, Math.random() * 100, Math.random() * 100));
 		}
 		
@@ -313,37 +228,26 @@ package com.pblabs.engine.core
 		//   Event handlers 
 		//--------------------------------------
 		
-		private function onKeyDown(event:KeyboardEvent):void
-		{
+		private function onKeyDown(event:KeyboardEvent):void {
 			if (keyLocked || !PBE.processManager.isTicking)
-			{
 				return;
-			}
 			if (_keyState[event.keyCode])
-			{
 				return;
-			}
 			
 			_keyState[event.keyCode] = true;
 			dispatchEvent(event);
 		}
 		
-		private function onKeyUp(event:KeyboardEvent):void
-		{
+		private function onKeyUp(event:KeyboardEvent):void {
 			if (keyLocked || !PBE.processManager.isTicking)
-			{
 				return;
-			}
 			_keyState[event.keyCode] = false;
 			dispatchEvent(event);
 		}
 		
-		private function onMouse(event:MouseEvent):void
-		{
+		private function onMouse(event:MouseEvent):void {
 			if (mouseLocked || !PBE.processManager.isTicking)
-			{
 				return;
-			}
 			event.localX = event.stageX;
 			event.localY = event.stageY;
 			dispatchEvent(event);

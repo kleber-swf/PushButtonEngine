@@ -6,8 +6,7 @@
  * This file is licensed under the terms of the MIT license, which is included
  * in the License.html file at the root directory of this SDK.
  ******************************************************************************/
-package com.pblabs.sound
-{
+package com.pblabs.sound {
 	import com.pblabs.engine.debug.Logger;
 	import com.pblabs.engine.debug.Profiler;
 	
@@ -23,89 +22,8 @@ package com.pblabs.sound
 	 * @see ISoundHandle See ISoundHandle for documentation on this class.
 	 * @inheritDocs
 	 */
-	public class SoundHandle implements ISoundHandle
-	{
-		
-		
-		//==========================================================
-		//   Fields 
-		//==========================================================
-		
-		internal var manager:SoundManager;
-		internal var dirty:Boolean = true;
-		internal var _category:String;
-		internal var playing:Boolean;
-		
-		internal var sound:Sound;
-		internal var channel:SoundChannel;
-		
-		protected var pausedPosition:Number = 0;
-		public var loopCount:int = 0;
-		protected var _volume:Number = 1;
-		protected var _pan:Number = 0;
-		
-		
-		//==========================================================
-		//   Properties 
-		//==========================================================
-		
-		public function get category():String
-		{
-			return _category;
-		}
-		
-		public function get isPlaying():Boolean
-		{
-			return playing;
-		}
-		
-		public function get pan():Number
-		{
-			return _pan;
-		}
-		
-		public function set pan(value:Number):void
-		{
-			dirty = true;
-			_pan = value;
-		}
-		
-		public function get transform():SoundTransform
-		{
-			if (!channel)
-			{
-				return new SoundTransform();
-			}
-			return channel.soundTransform;
-		}
-		
-		public function set transform(value:SoundTransform):void
-		{
-			dirty = true;
-			if (channel)
-			{
-				channel.soundTransform = value;
-			}
-		}
-		
-		public function get volume():Number
-		{
-			return _volume;
-		}
-		
-		public function set volume(value:Number):void
-		{
-			dirty = true;
-			_volume = value;
-		}
-		
-		
-		//==========================================================
-		//   Constructor 
-		//==========================================================
-		
-		public function SoundHandle(_manager:SoundManager, _sound:Sound, __category:String, _pan:Number, _loopCount:int, _startDelay:Number)
-		{
+	public class SoundHandle implements ISoundHandle {
+		public function SoundHandle(_manager:SoundManager, _sound:Sound, __category:String, _pan:Number, _loopCount:int, _startDelay:Number) {
 			manager = _manager;
 			sound = _sound;
 			_category = __category;
@@ -116,77 +34,101 @@ package com.pblabs.sound
 			resume();
 		}
 		
+		public function get transform():SoundTransform {
+			if (!channel)
+				return new SoundTransform();
+			return channel.soundTransform;
+		}
 		
-		//==========================================================
-		//   Functions 
-		//==========================================================
+		public function set transform(value:SoundTransform):void {
+			dirty = true;
+			if (channel)
+				channel.soundTransform = value;
+		}
 		
-		public function pause():void
-		{
+		public function get volume():Number { return _volume; }
+		
+		public function set volume(value:Number):void {
+			dirty = true;
+			_volume = value;
+		}
+		
+		public function get pan():Number { return _pan; }
+		
+		public function set pan(value:Number):void {
+			dirty = true;
+			_pan = value;
+		}
+		
+		public function get category():String { return _category; }
+		
+		public function pause():void {
 			pausedPosition = channel.position;
 			channel.stop();
 			playing = false;
 		}
 		
-		public function resume():void
-		{
+		public function resume():void {
 			Profiler.enter("SoundHandle.resume");
 			
 			dirty = true;
 			
 			// Note: if pausedPosition is anything but zero, the loops will not reset properly.
 			// For now, the ability to "pause" should be avoided.
-			try
-			{
+			try {
 				channel = sound.play(pausedPosition, loopCount);
 				playing = true;
 				
 				// notify when this sound is done (all loops completed)
-				channel.addEventListener(Event.SOUND_COMPLETE, onSoundComplete, false, 0, true);
-			}
-			catch (e:Error)
-			{
+				channel.addEventListener(Event.SOUND_COMPLETE, onSoundComplete);
+			} catch (e:Error) {
 				Logger.error(this, "resume", "Error starting sound playback: " + e.toString());
 			}
 			
 			Profiler.exit("SoundHandle.resume");
 		}
 		
-		public function stop():void
-		{
-			pause();
-			loopCount = 0;
-			if (manager.isInPlayingSounds(this))
-			{
-				// Remove from the manager.
-				manager.removeSoundHandle(this);
-			}
-		}
-		
-		//--------------------------------------
-		//   Event handlers 
-		//--------------------------------------
-		
 		/**
 		 * To correctly handle the pause scenario, we need to be notified at the end of each loop,
 		 * so that we can reset the sound's starting position to 0.
 		 */
-		private function onSoundComplete(e:Event):void
-		{
+		private function onSoundComplete(e:Event):void {
 			// since we're tracking the number of loops, decrement the count
 			loopCount -= 1;
 			
-			if (loopCount > 0)
-			{
+			if (loopCount > 0) {
 				pausedPosition = 0;
 				resume();
-			}
-			else if (manager.isInPlayingSounds(this))
-			{
+			} else if (manager.isInPlayingSounds(this)) {
 				// Remove from the manager.
 				manager.removeSoundHandle(this);
 				playing = false;
 			}
 		}
+		
+		public function stop():void {
+			pause();
+			
+			if (manager.isInPlayingSounds(this)) {
+				// Remove from the manager.
+				manager.removeSoundHandle(this);
+			}
+		}
+		
+		public function get isPlaying():Boolean { return playing; }
+		
+		internal var manager:SoundManager;
+		internal var dirty:Boolean = true;
+		internal var _category:String;
+		internal var playing:Boolean;
+		
+		internal var sound:Sound;
+		internal var channel:SoundChannel;
+		
+		protected var pausedPosition:Number = 0;
+		protected var loopCount:int = 0;
+		protected var _volume:Number = 1;
+		protected var _pan:Number = 0;
+	
 	}
 }

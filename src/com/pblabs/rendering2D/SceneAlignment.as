@@ -6,19 +6,17 @@
  * This file is licensed under the terms of the MIT license, which is included
  * in the License.html file at the root directory of this SDK.
  ******************************************************************************/
-package com.pblabs.rendering2D
-{
+package com.pblabs.rendering2D {
 	import com.pblabs.engine.serialization.Enumerable;
 	import com.pblabs.engine.serialization.ISerializable;
 	
 	import flash.geom.Point;
 	import flash.utils.Dictionary;
-
-    /**
-     * Helper class for controlling alignment of scene relative to its position.
-     */
-	public final class SceneAlignment extends Enumerable implements ISerializable
-	{
+	
+	/**
+	 * Helper class for controlling alignment of scene relative to its position.
+	 */
+	public final class SceneAlignment extends Enumerable implements ISerializable {
 		
 		private static var _typeMap:Dictionary = null;
 		
@@ -35,10 +33,8 @@ package com.pblabs.rendering2D
 		/**
 		 * @inheritDoc
 		 */
-		override public function get typeMap():Dictionary
-		{
-			if (!_typeMap)
-			{
+		override public function get typeMap():Dictionary {
+			if (!_typeMap) {
 				_typeMap = new Dictionary();
 				_typeMap["TOP_LEFT"] = TOP_LEFT;
 				_typeMap["TOP_RIGHT"] = TOP_RIGHT;
@@ -53,23 +49,18 @@ package com.pblabs.rendering2D
 		/**
 		 * @inheritDoc
 		 */
-		override public function get defaultType():Enumerable
-		{
-			return CENTER;
-		}
+		override public function get defaultType():Enumerable { return CENTER; }
 		
-        /**
-         * Given an alignment constant from this class, calculate 
-         * @param outPoint
-         * @param alignment
-         * @param sceneWidth
-         * @param sceneHeight
-         * 
-         */
-		public static function calculate(outPoint:Point, alignment:SceneAlignment, sceneWidth:int, sceneHeight:int):void
-		{
-			switch(alignment)
-			{
+		/**
+		 * Given an alignment constant from this class, calculate
+		 * @param outPoint
+		 * @param alignment
+		 * @param sceneWidth
+		 * @param sceneHeight
+		 *
+		 */
+		public static function calculate(outPoint:Point, alignment:SceneAlignment, sceneWidth:int, sceneHeight:int):void {
+			switch (alignment) {
 				case CENTER:
 					outPoint.x = sceneWidth * 0.5;
 					outPoint.y = sceneHeight * 0.5;

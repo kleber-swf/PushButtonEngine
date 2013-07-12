@@ -1,5 +1,4 @@
-package com.ffcreations.ui.mouse
-{
+package com.ffcreations.ui.mouse {
 	import com.pblabs.engine.PBE;
 	
 	import flash.events.MouseEvent;
@@ -15,13 +14,7 @@ package com.ffcreations.ui.mouse
 	 *
 	 * @author Kleber Lopes da Silva (kleber.swf)
 	 */
-	public class MouseInputManager
-	{
-		
-		
-		//==========================================================
-		//   Fields 
-		//==========================================================
+	public class MouseInputManager {
 		
 		private var _components:Array = new Array();
 		private var _lockedPriority:int;
@@ -33,69 +26,42 @@ package com.ffcreations.ui.mouse
 		private var _mouseMoveNewList:Array = new Array();
 		
 		// drag and drop
-		private var _mouseDownComponent:IMouseInputComponent;
+		private var _mouseDragComponent:IMouseInputComponent;
 		private var _initialDownLocalPosition:Point;
 		private var _pixelsToStartDrag:int = 10;
 		private var _initialDownScenePosition:Point;
 		private var _dragStarted:Boolean = false;
-		
-		
-		//==========================================================
-		//   Properties 
-		//==========================================================
-		
+		private var _mouseDownComponent:IMouseInputComponent;
 		
 		/**
 		 * Locks the input lower then the given value.
 		 * @param value Minimum priority that components has to have to respond to mouse events.
 		 * @default 0
 		 */
-		public function get lockedPriority():int
-		{
-			return _lockedPriority;
-		}
+		public function get lockedPriority():int { return _lockedPriority; }
 		
-		/**
-		 * @private
-		 */
-		public function set lockedPriority(value:int):void
-		{
-			_lockedPriority = value;
-		}
-		
-		
-		//==========================================================
-		//   Constructor 
-		//==========================================================
+		/** @private */
+		public function set lockedPriority(value:int):void { _lockedPriority = value; }
 		
 		/**
 		 * Called once and automatically by PBE class.
 		 * @see com.pblabs.engine.PBE#mouseInputManager
 		 */
-		public function MouseInputManager()
-		{
+		public function MouseInputManager() {
 			//PBE.mainStage.mouseChildren = false;
-			PBE.inputManager.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown, false, 0, true);
-			PBE.inputManager.addEventListener(MouseEvent.MOUSE_UP, onMouseUp, false, 0, true);
-			PBE.inputManager.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove, false, 0, true);
+			PBE.inputManager.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+			PBE.inputManager.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
+			PBE.inputManager.addEventListener(MouseEvent.MOUSE_MOVE, onMouseMove);
 		}
-		
-		
-		//==========================================================
-		//   Functions 
-		//==========================================================
 		
 		/**
 		 * Adds a <code>IMouseInputComponent</code> to the components list.
 		 * Only componentes added to this list is verified to respond to mouse inputs
 		 * @param component The <code>IMouseInputComponent</code> to add;
 		 */
-		public function addComponent(component:IMouseInputComponent):void
-		{
+		public function addComponent(component:IMouseInputComponent):void {
 			if (_components.indexOf(component) < 0)
-			{
 				_components.splice(getInsertIndex(component.priority, 0, _components.length - 1), 0, component);
-			}
 			//			var s:String = component.priority.toString() + ":";
 			//			for each (var d:IMouseInputComponent in _components) {
 			//				s += " " + d.priority.toString();
@@ -103,22 +69,16 @@ package com.ffcreations.ui.mouse
 			//			trace(s);
 		}
 		
-		private function getInsertIndex(priority:int, start:int, end:int):int
-		{
-			if (end <= start)
-			{
+		private function getInsertIndex(priority:int, start:int, end:int):int {
+			if (end <= start) {
 				return (_components.length > start && _components[start].priority > priority) ? start + 1 : start;
 					//return (start == _components.length - 1 || (_components.length > start && _components[start].priority > priority)) ? start + 1 : start;
 			}
 			var middle:int = start + Math.round((end - start) * 0.5);
 			if (_components[middle].priority == priority)
-			{
 				return middle;
-			}
 			if (_components[middle].priority > priority)
-			{
 				return getInsertIndex(priority, middle + 1, end);
-			}
 			return getInsertIndex(priority, start, middle - 1);
 		}
 		
@@ -126,18 +86,13 @@ package com.ffcreations.ui.mouse
 		 * Removes a <code>IMouseInputComponent</code> from the components list.
 		 * @param component The <code>IMouseInputComponent</code> to remove;
 		 */
-		public function removeComponent(component:IMouseInputComponent):void
-		{
+		public function removeComponent(component:IMouseInputComponent):void {
 			var index:int = _components.indexOf(component);
 			if (index >= 0)
-			{
 				_components.splice(index, 1);
-			}
 			index = _mouseMoveOldList.indexOf(component);
 			if (index >= 0)
-			{
 				_mouseMoveOldList.splice(index, 1);
-			}
 		}
 		
 		/**
@@ -145,41 +100,27 @@ package com.ffcreations.ui.mouse
 		 * components list.
 		 * @param component The <code>IMouseComponent</code> which the priority was updated.
 		 */
-		public function updatePriority(component:IMouseInputComponent):void
-		{
+		public function updatePriority(component:IMouseInputComponent):void {
 			removeComponent(component);
 			addComponent(component);
 		}
 		
-		internal function getComponents():Array
-		{
+		internal function getComponents():Array {
 			return _components;
 		}
 		
-		//--------------------------------------
-		//   Event handlers 
-		//--------------------------------------
-		
-		private function move(event:MouseEvent):void
-		{
+		private function move(event:MouseEvent):void {
 			// Find all components that are under mouse scene position
-			for each (var component:IMouseInputComponent in _components)
-			{
-				if (_lockedPriority <= component.priority && component != _mouseDownComponent && component.enabled && component.contains(_scenePosition))
-				{
+			for each (var component:IMouseInputComponent in _components) {
+				if (_lockedPriority <= component.priority && component != _mouseDragComponent && component.enabled && component.contains(_scenePosition))
 					_mouseMoveNewList.push(component);
-				}
 			}
 			
 			// if there is no component under mouse scene position, then empties the old list
-			if (_mouseMoveNewList.length == 0)
-			{
-				if (_mouseMoveOldList.length > 0)
-				{
+			if (_mouseMoveNewList.length == 0) {
+				if (_mouseMoveOldList.length > 0) {
 					for each (component in _mouseMoveOldList)
-					{
 						component.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseInputEvent.MOUSE_OUT, event, component, _scenePosition));
-					}
 					_mouseMoveOldList.length = 0;
 					_mouseMoveNewList.length = 0;
 				}
@@ -189,18 +130,15 @@ package com.ffcreations.ui.mouse
 			// for each component in new list: 
 			var callMouseMove:Boolean = true;
 			var e:MouseInputEvent;
-			for each (component in _mouseMoveNewList)
-			{
+			for each (component in _mouseMoveNewList) {
 				var index:int = _mouseMoveOldList.indexOf(component);
 				// if it's not in the old list, then mouse just entered (over)
-				if (index < 0)
-				{
+				if (index < 0) {
 					e = new MouseInputEvent(MouseInputEvent.MOUSE_OVER, event, component, _scenePosition);
 					component.eventDispatcher.dispatchEvent(e);
 				}
 				// if it's on the old list, then mouse is moving inside it
-				else if (callMouseMove)
-				{
+				else if (callMouseMove) {
 					e = new MouseInputEvent(MouseInputEvent.MOUSE_MOVE, event, component, _scenePosition);
 					component.eventDispatcher.dispatchEvent(e);
 					callMouseMove = !e._propagationStopped;
@@ -208,174 +146,145 @@ package com.ffcreations.ui.mouse
 			}
 			
 			// for each component in old list:
-			for each (component in _mouseMoveOldList)
-			{
+			for each (component in _mouseMoveOldList) {
 				// if it's not in the new list, then mouse just leave (out)
 				if (_mouseMoveNewList.indexOf(component) < 0)
-				{
 					component.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseInputEvent.MOUSE_OUT, event, component, _scenePosition));
-				}
 			}
 			_mouseMoveOldList = _mouseMoveNewList.slice();
 			_mouseMoveNewList.length = 0;
 		}
 		
-		private function drag(event:MouseEvent):void
-		{
-			if (!_mouseDownComponent)
-			{
+		private function drag(event:MouseEvent):void {
+			if (!_mouseDragComponent)
 				return;
-			}
-			if (_dragStarted)
-			{
-				_mouseDownComponent.position = _scenePosition.subtract(_initialDownLocalPosition);
-				_mouseDownComponent.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseInputEvent.DRAG_MOVE, event, _mouseDownComponent, _scenePosition));
-			}
-			else
-			{
-				if (_initialDownScenePosition.subtract(_scenePosition).length >= _pixelsToStartDrag)
-				{
-					if (_mouseDownComponent.canDrag())
-					{
+			if (_dragStarted) {
+				_mouseDragComponent.position = _scenePosition.subtract(_initialDownLocalPosition);
+				_mouseDragComponent.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseInputEvent.DRAG_MOVE, event, _mouseDragComponent, _scenePosition));
+			} else {
+				if (_initialDownScenePosition.subtract(_scenePosition).length >= _pixelsToStartDrag) {
+					if (_mouseDragComponent.canDrag()) {
 						_dragStarted = true;
-						_mouseDownComponent.dragging = true;
-						if (_mouseDownComponent.container)
-						{
-							_mouseDownComponent.container.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseInputEvent.ITEM_DRAG_START, event, _mouseDownComponent, _scenePosition));
-							_mouseDownComponent.container = null;
+						_mouseDragComponent.dragging = true;
+						if (_mouseDragComponent.container) {
+							_mouseDragComponent.container.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseInputEvent.ITEM_DRAG_START, event, _mouseDragComponent, _scenePosition));
+							_mouseDragComponent.container = null;
 						}
-						_mouseDownComponent.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseInputEvent.DRAG_START, event, _mouseDownComponent, _scenePosition));
+						_mouseDragComponent.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseInputEvent.DRAG_START, event, _mouseDragComponent, _scenePosition));
 					}
 				}
 			}
 		}
 		
-		private function drop(event:MouseEvent):void
-		{
+		private function drop(event:MouseEvent):void {
 			var dropSuccess:Boolean = false;
 			var e:MouseInputEvent;
 			var p:Boolean;
-			for each (var component:IMouseInputComponent in _components)
-			{
-				if (_lockedPriority <= component.priority && component != _mouseDownComponent && component.enabled && component.contains(_scenePosition) && component.acceptDrop && _mouseDownComponent.
-					canDrop && component.canDropItem(_mouseDownComponent))
-				{
+			for each (var component:IMouseInputComponent in _components) {
+				if (_lockedPriority <= component.priority && component != _mouseDragComponent && component.enabled && component.contains(_scenePosition) && component.acceptDrop && _mouseDragComponent.
+					canDrop && component.canDropItem(_mouseDragComponent)) {
 					dropSuccess = true;
-					e = new MouseInputEvent(MouseInputEvent.DROP, event, _mouseDownComponent, _scenePosition);
+					e = new MouseInputEvent(MouseInputEvent.DROP, event, _mouseDragComponent, _scenePosition);
 					component.eventDispatcher.dispatchEvent(e);
 					p = e._propagationStopped;
-					_mouseDownComponent.dragging = false;
-					_mouseDownComponent.container = component;
+					_mouseDragComponent.dragging = false;
+					_mouseDragComponent.container = component;
 					e = new MouseInputEvent(MouseInputEvent.DRAG_STOP, event, component, _scenePosition);
-					_mouseDownComponent.eventDispatcher.dispatchEvent(e);
+					_mouseDragComponent.eventDispatcher.dispatchEvent(e);
 					if (p || e._propagationStopped)
-					{
 						break;
-					}
 				}
 			}
-			if (!dropSuccess)
-			{
-				_mouseDownComponent.dragging = false;
-				_mouseDownComponent.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseInputEvent.DRAG_STOP, event, null, _scenePosition));
-				_mouseDownComponent.container = null;
+			if (!dropSuccess) {
+				_mouseDragComponent.dragging = false;
+				_mouseDragComponent.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseInputEvent.DRAG_STOP, event, null, _scenePosition));
+				_mouseDragComponent.container = null;
 			}
 			//			if (_mouseDownComponent.eventDispatcher)
 			//			{
 			//				_mouseDownComponent.eventDispatcher.dispatchEvent(new MouseInputEvent(MouseInputEvent.MOUSE_UP, event, _mouseDownComponent, _scenePosition));
 			//			}
 			_dragStarted = false;
-			_mouseDownComponent = null;
+			_mouseDragComponent = null;
 		}
 		
-		private function onMouseDown(event:MouseEvent):void
-		{
+		private function onMouseDown(event:MouseEvent):void {
 			if (!PBE.scene)
-			{
 				return;
-			}
 			setupMouseData(event);
 			
-			for each (var component:IMouseInputComponent in _components)
-			{
+			for each (var component:IMouseInputComponent in _components) {
 				if (_lockedPriority > component.priority)
-				{
 					return;
-				}
-				if (component.enabled && component.contains(_scenePosition))
-				{
+				if (component.enabled && component.contains(_scenePosition)) {
 					var e:MouseInputEvent = new MouseInputEvent(event.type, event, component, _scenePosition);
-					if (component.draggable)
-					{
-						_mouseDownComponent = component;
-						_mouseMoveOldList.splice(_mouseMoveOldList.indexOf(_mouseDownComponent), 1);
+					if (component.draggable) {
+						_mouseDragComponent = component;
+						_mouseMoveOldList.splice(_mouseMoveOldList.indexOf(_mouseDragComponent), 1);
 						_initialDownScenePosition = _scenePosition.clone();
-						_initialDownLocalPosition = _mouseDownComponent.lockCenter ? new Point() : e.localPosition.clone();
+						_initialDownLocalPosition = _mouseDragComponent.lockCenter ? new Point() : e.localPosition.clone();
 					}
+					_mouseDownComponent = component;
 					component.eventDispatcher.dispatchEvent(e);
 					if (e._propagationStopped)
-					{
 						return;
-					}
 				}
 			}
 		}
 		
-		private function onMouseMove(event:MouseEvent):void
-		{
+		private function onMouseMove(event:MouseEvent):void {
 			if (!PBE.scene)
-			{
 				return;
-			}
 			setupMouseData(event);
 			drag(event);
 			if (PBE.inputManager.mouseOverEnabled && PBE.inputManager.mouseOutEnabled)
-			{
 				move(event);
-			}
 		}
 		
-		private function onMouseUp(event:MouseEvent):void
-		{
+		private function onMouseUp(event:MouseEvent):void {
 			if (!PBE.scene)
-			{
 				return;
-			}
 			setupMouseData(event);
 			
-			if (_dragStarted)
-			{
+			if (_dragStarted) {
 				drop(event);
 				return;
 			}
 			
-			_mouseDownComponent = null;
+			_mouseDragComponent = null;
+			
+			if (_mouseDownComponent != null) {
+				if (_mouseDownComponent.contains(_scenePosition)) {
+					if (_mouseDownComponent.enabled) {
+						if (_mouseMoveOldList.indexOf(_mouseDownComponent) < 0)
+							_mouseMoveOldList.push(_mouseDownComponent);
+						e = new MouseInputEvent(event.type, event, _mouseDownComponent, _scenePosition);
+						_mouseDownComponent.eventDispatcher.dispatchEvent(e);
+						if (e._propagationStopped)
+							return;
+					}
+				} else
+					_mouseDownComponent.cancelInput();
+				_mouseDownComponent = null;
+				return;
+			}
 			
 			var e:MouseInputEvent;
-			for each (var component:IMouseInputComponent in _components)
-			{
+			for each (var component:IMouseInputComponent in _components) {
 				if (_lockedPriority > component.priority)
-				{
 					return;
-				}
-				if (component.enabled && component.contains(_scenePosition))
-				{
+				if (component.enabled && component.contains(_scenePosition)) {
 					if (_mouseMoveOldList.indexOf(component) < 0)
-					{
 						_mouseMoveOldList.push(component);
-					}
 					e = new MouseInputEvent(event.type, event, component, _scenePosition);
 					component.eventDispatcher.dispatchEvent(e);
 					if (e._propagationStopped)
-					{
 						return;
-					}
 				}
 			}
 		}
 		
-		private function setupMouseData(event:MouseEvent):void
-		{
+		private function setupMouseData(event:MouseEvent):void {
 			_scenePosition.x = event.localX;
 			_scenePosition.y = event.localY;
 			_scenePosition = PBE.scene.transformScreenToScene(_scenePosition);

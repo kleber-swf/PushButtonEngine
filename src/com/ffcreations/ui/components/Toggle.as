@@ -1,18 +1,12 @@
-package com.ffcreations.ui.components
-{
+package com.ffcreations.ui.components {
 	import com.ffcreations.ui.mouse.MouseInputEvent;
+	import com.pblabs.engine.entity.PropertyReference;
 	
 	/**
 	 * A GUIComponent that have its <code>selected</code> property inverted each time it is pressed.
 	 * @author Kleber Lopes da Silva (kleber.swf)
 	 */
-	public class Toggle extends GUIComponent
-	{
-		
-		
-		//==========================================================
-		//   Fields 
-		//==========================================================
+	public class Toggle extends GUIComponent {
 		
 		private var _groupped:Boolean;
 		
@@ -24,17 +18,9 @@ package com.ffcreations.ui.components
 		 */
 		public var value:*;
 		
-		
-		//==========================================================
-		//   Functions 
-		//==========================================================
-		
-		internal function group():void
-		{
+		internal function group():void {
 			if (_groupped)
-			{
 				return;
-			}
 			_groupped = true;
 			_eventDispatcher.removeEventListener(MouseInputEvent.MOUSE_UP, onMouseUp);
 		}
@@ -42,34 +28,23 @@ package com.ffcreations.ui.components
 		/**
 		 * @inheritDoc
 		 */
-		protected override function onAdd():void
-		{
+		protected override function onAdd():void {
 			super.onAdd();
 			if (!_groupped)
-			{
-				_eventDispatcher.addEventListener(MouseInputEvent.MOUSE_UP, onMouseUp, false, 0, true);
-			}
+				_eventDispatcher.addEventListener(MouseInputEvent.MOUSE_UP, onMouseUp);
 		}
 		
 		/**
 		 * @inheritDoc
 		 */
-		protected override function onRemove():void
-		{
+		protected override function onRemove():void {
 			_eventDispatcher.removeEventListener(MouseInputEvent.MOUSE_UP, onMouseUp);
 			super.onRemove();
 		}
 		
-		//--------------------------------------
-		//   Event handlers 
-		//--------------------------------------
-		
-		private function onMouseUp(data:MouseInputEvent):void
-		{
+		protected function onMouseUp(data:MouseInputEvent):void {
 			if (_enabled)
-			{
 				selected = !_selected;
-			}
 		}
 	}
 }

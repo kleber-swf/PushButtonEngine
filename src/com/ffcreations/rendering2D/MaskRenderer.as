@@ -1,5 +1,4 @@
-package com.ffcreations.rendering2D
-{
+package com.ffcreations.rendering2D {
 	import com.pblabs.engine.entity.PropertyReference;
 	import com.pblabs.rendering2D.SpriteRenderer;
 	
@@ -24,47 +23,26 @@ package com.ffcreations.rendering2D
 	 *
 	 * @author Kleber Lopes da Silva (kleber.swf)
 	 */
-	public class MaskRenderer extends SpriteRenderer
-	{
-		
-		
-		//==========================================================
-		//   Fields 
-		//==========================================================
+	public class MaskRenderer extends SpriteRenderer {
 		
 		protected var _maskScale:Point = new Point(1, 1);
 		protected var _maskPosition:Point = new Point();
 		protected var _maskRegistrationPoint:Point = new Point();
 		
-		/**
-		 * Where to get the mask scale property.
-		 */
+		/** Where to get the mask scale property. */
 		public var maskScaleProperty:PropertyReference;
 		
-		/**
-		 * Where to get the mask offset property.
-		 */
+		/** Where to get the mask offset property. */
 		public var maskPositionProperty:PropertyReference;
-		
-		
-		//==========================================================
-		//   Properties 
-		//==========================================================
 		
 		/**
 		 * Mask position relative to the displayObject center.
 		 * Keep the values between -0.5 and 0.5 to get an inner texture position.
 		 */
-		public function get maskPosition():Point
-		{
-			return _maskPosition;
-		}
+		public function get maskPosition():Point { return _maskPosition; }
 		
-		/**
-		 * @private
-		 */
-		public function set maskPosition(value:Point):void
-		{
+		/** @private */
+		public function set maskPosition(value:Point):void {
 			_maskPosition = value;
 			_transformDirty = true;
 		}
@@ -73,78 +51,44 @@ package com.ffcreations.rendering2D
 		 * Mask registration point.
 		 * Keep the values beetween -0.5 and 0.5 to get an inner mask point.
 		 */
-		public function get maskRegistrationPoint():Point
-		{
-			return _maskRegistrationPoint;
-		}
+		public function get maskRegistrationPoint():Point { return _maskRegistrationPoint; }
 		
-		/**
-		 * @private
-		 */
-		public function set maskRegistrationPoint(value:Point):void
-		{
+		/** @private */
+		public function set maskRegistrationPoint(value:Point):void {
 			_maskRegistrationPoint = value;
 			_transformDirty = true;
 		}
 		
-		/**
-		 * Mask scale.
-		 */
-		public function get maskScale():Point
-		{
-			return _maskScale;
-		}
+		/** Mask scale. */
+		public function get maskScale():Point { return _maskScale; }
 		
-		
-		/**
-		 * @private
-		 */
-		public function set maskScale(value:Point):void
-		{
+		/** @private */
+		public function set maskScale(value:Point):void {
 			_maskScale = value;
 			_transformDirty = true;
 		}
 		
-		
-		//==========================================================
-		//   Functions 
-		//==========================================================
-		
-		/**
-		 * @inheritDoc
-		 */
-		protected override function updateProperties():void
-		{
+		/** @inheritDoc */
+		protected override function updateProperties():void {
 			super.updateProperties();
-			if (maskPositionProperty)
-			{
+			if (maskPositionProperty) {
 				var offset:Point = owner.getProperty(maskPositionProperty);
 				if (!(offset.x == _maskPosition.x && offset.y == _maskPosition.y))
-				{
 					maskPosition = offset;
-				}
 			}
-			if (maskScaleProperty)
-			{
+			if (maskScaleProperty) {
 				var size:Point = owner.getProperty(maskScaleProperty);
 				if (!(size.x == _maskScale.x && size.y == _maskScale.y))
-				{
 					maskScale = size;
-				}
 			}
 		}
 		
-		/**
-		 * @inheritDoc
-		 */
-		public override function updateTransform(updateProps:Boolean = false):void
-		{
+		/** @inheritDoc */
+		public override function updateTransform(updateProps:Boolean = false):void {
 			super.updateTransform(updateProps);
 			
 			if (!_displayObject || !bitmapData)
-			{
 				return;
-			}
 			var mask:Sprite = _displayObject.mask as Sprite;
 			
 			var g:Graphics = mask.graphics;
@@ -168,11 +112,8 @@ package com.ffcreations.rendering2D
 			mask.transform.matrix = matrix;
 		}
 		
-		/**
-		 * @inheritDoc
-		 */
-		protected override function onImageLoadComplete():void
-		{
+		/** @inheritDoc */
+		protected override function onImageLoadComplete():void {
 			_displayObject.mask = (_displayObject as Sprite).addChild(new Sprite());
 			_transformDirty = true;
 		}

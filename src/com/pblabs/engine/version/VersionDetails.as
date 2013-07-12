@@ -6,23 +6,18 @@
  * This file is licensed under the terms of the MIT license, which is included
  * in the License.html file at the root directory of this SDK.
  ******************************************************************************/
-package com.pblabs.engine.version
-{
+package com.pblabs.engine.version {
 	import flash.system.Security;
 	
-    /**
-     * Utility class to store version information. 
-     */
-	public class VersionDetails
-	{
+	/**
+	 * Utility class to store version information.
+	 */
+	public class VersionDetails {
 		public var type:String;
 		public var flexVersion:FlexSDKVersion;
 		
-		public function toString():String
-		{
-			return "PushButton Engine - " + BuildVersion.BUILD_NUMBER +" - "
-				+ type + (flexVersion ? " ("+flexVersion+")" : "") 
-				+ " - " + Security.sandboxType;	
+		public function toString():String {
+			return "GameBuilder Studio (PBE Fork) - " + BuildVersion.BUILD_NUMBER + " - " + type + (flexVersion ? " (" + flexVersion + ")" : "") + " - " + Security.sandboxType;
 		}
 	}
 }

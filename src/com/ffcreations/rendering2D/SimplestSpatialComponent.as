@@ -1,11 +1,9 @@
-package com.ffcreations.rendering2D
-{
+package com.ffcreations.rendering2D {
 	import com.pblabs.engine.entity.EntityComponent;
 	
 	import flash.geom.Point;
 	
-	public class SimplestSpatialComponent extends EntityComponent
-	{
+	public class SimplestSpatialComponent extends EntityComponent {
 		/**
 		 * Component position.
 		 */
@@ -14,6 +12,6 @@ package com.ffcreations.rendering2D
 		/**
 		 * Component size.
 		 */
-		public var size:Point = new Point(100,100);
+		public var size:Point = new Point(100, 100);
 	}
 }

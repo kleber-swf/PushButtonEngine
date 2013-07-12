@@ -6,13 +6,12 @@
  * This file is licensed under the terms of the MIT license, which is included
  * in the License.html file at the root directory of this SDK.
  ******************************************************************************/
-package com.pblabs.engine.version
-{
-    /**
-     * Utility class to parse Flex SDK version strings.  
-     */
-	public class FlexSDKVersion
-	{
+package com.pblabs.engine.version {
+	
+	/**
+	 * Utility class to parse Flex SDK version strings.
+	 */
+	public class FlexSDKVersion {
 		public var major:uint;
 		public var minor:uint;
 		public var update:uint;
@@ -20,14 +19,12 @@ package com.pblabs.engine.version
 		
 		protected var _versionString:String;
 		
-		public function FlexSDKVersion(versionString:String)
-		{
+		public function FlexSDKVersion(versionString:String) {
 			parseVersionString(versionString);
 			_versionString = versionString;
 		}
 		
-		protected function parseVersionString(value:String):void
-		{
+		protected function parseVersionString(value:String):void {
 			var pieces:Array = value.split(".");
 			
 			major = parseInt(pieces[0]);
@@ -36,8 +33,7 @@ package com.pblabs.engine.version
 			build = parseInt(pieces[3]);
 		}
 		
-		public function toString():String
-		{
+		public function toString():String {
 			return _versionString;
 		}
 	}

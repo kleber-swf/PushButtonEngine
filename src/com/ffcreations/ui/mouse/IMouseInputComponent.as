@@ -1,5 +1,4 @@
-package com.ffcreations.ui.mouse
-{
+package com.ffcreations.ui.mouse {
 	import com.pblabs.engine.entity.IEntityComponent;
 	
 	import flash.events.IEventDispatcher;
@@ -21,8 +20,7 @@ package com.ffcreations.ui.mouse
 	 *
 	 * @author Kleber Lopes da Silva (kleber.swf)
 	 */
-	public interface IMouseInputComponent extends IEntityComponent
-	{
+	public interface IMouseInputComponent extends IEntityComponent {
 		/** Whether the component should accept drop of other <code>IMouseInputComponent</code>'s. @default false */
 		function get acceptDrop():Boolean;
 		/** @private */
@@ -113,5 +111,11 @@ package com.ffcreations.ui.mouse
 		 * this component or <code>false</code> otherwise.
 		 */
 		function canDropItem(component:IMouseInputComponent):Boolean;
+		
+		/**
+		 * Called when the click is canceled.
+		 * User presses the mouse inside the component, and release it outside of it.
+		 */
+		function cancelInput():void;
 	}
 }

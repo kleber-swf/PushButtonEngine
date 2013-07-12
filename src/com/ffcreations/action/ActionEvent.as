@@ -1,41 +1,23 @@
-package com.ffcreations.action
-{
+package com.ffcreations.action {
 	
 	/**
 	 * Event dispatched as parameter of the Action callback.
 	 * @author Kleber
 	 */
-	public class ActionEvent
-	{
-		
-		
-		//==========================================================
-		//   Fields 
-		//==========================================================
+	public class ActionEvent {
 		
 		private var _action:Action;
+		private var _obj:Object;
 		
+		/** The executed Action. */
+		public function get action():Action { return _action; }
 		
-		//==========================================================
-		//   Properties 
-		//==========================================================
+		/** The object that triggered the action. */
+		public function get object():Object { return _obj; }
 		
-		/**
-		 * The executed Action.
-		 */
-		public function get action():Action
-		{
-			return _action;
-		}
-		
-		
-		//==========================================================
-		//   Constructor 
-		//==========================================================
-		
-		public function ActionEvent(action:Action)
-		{
+		public function ActionEvent(action:Action, obj:Object) {
 			_action = action;
+			_obj = obj;
 		}
 	}
 }

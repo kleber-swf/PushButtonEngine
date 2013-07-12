@@ -1,5 +1,4 @@
-package com.ffcreations.ui.mouse
-{
+package com.ffcreations.ui.mouse {
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
@@ -10,13 +9,7 @@ package com.ffcreations.ui.mouse
 	 * @see com.ffcreations.ui.mouse.MouseInputManager
 	 * @author Kleber Lopes da Silva (kleber.swf)
 	 */
-	public final class MouseInputEvent extends Event
-	{
-		
-		
-		//==========================================================
-		//   Static 
-		//==========================================================
+	public final class MouseInputEvent extends Event {
 		
 		/**
 		 * Event type dispatched when mouse is just released inside a component.
@@ -74,11 +67,6 @@ package com.ffcreations.ui.mouse
 		 */
 		public static const DROP:String = "drop";
 		
-		
-		//==========================================================
-		//   Fields 
-		//==========================================================
-		
 		internal var _propagationStopped:Boolean;
 		
 		/**
@@ -101,34 +89,21 @@ package com.ffcreations.ui.mouse
 		 */
 		public var component:IMouseInputComponent;
 		
-		
-		//==========================================================
-		//   Constructor 
-		//==========================================================
-		
-		public function MouseInputEvent(type:String, event:MouseEvent, component:IMouseInputComponent, scenePosition:Point):void
-		{
+		public function MouseInputEvent(type:String, event:MouseEvent, component:IMouseInputComponent, scenePosition:Point):void {
 			super(type, event.bubbles, event.cancelable);
 			this.event = event;
 			this.component = component;
 			this.scenePosition = scenePosition;
-			if (component && component.position)
-			{
+			if (component && component.position) {
 				var bounds:Rectangle = component.sceneBounds;
 				this.localPosition = new Point(scenePosition.x - (bounds.x + bounds.width * 0.5), scenePosition.y - (bounds.y + bounds.height * 0.5));
 			}
 		}
 		
-		
-		//==========================================================
-		//   Functions 
-		//==========================================================
-		
 		/**
 		 * @inheritDoc
 		 */
-		public override function stopImmediatePropagation():void
-		{
+		public override function stopImmediatePropagation():void {
 			super.stopImmediatePropagation();
 			_propagationStopped = true;
 		}

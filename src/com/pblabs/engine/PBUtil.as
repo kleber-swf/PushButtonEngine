@@ -6,8 +6,7 @@
  * This file is licensed under the terms of the MIT license, which is included
  * in the License.html file at the root directory of this SDK.
  ******************************************************************************/
-package com.pblabs.engine
-{
+package com.pblabs.engine {
 	import com.pblabs.engine.debug.Logger;
 	
 	import flash.display.DisplayObject;
@@ -16,17 +15,14 @@ package com.pblabs.engine
 	/**
 	 * Contains math related utility methods.
 	 */
-	public class PBUtil
-	{
+	public class PBUtil {
 		public static const FLIP_HORIZONTAL:String = "flipHorizontal";
 		public static const FLIP_VERTICAL:String = "flipVertical";
-		
-		public static const PI:Number = Math.PI;
 		
 		/**
 		 * Two times PI.
 		 */
-		public static const TWO_PI:Number = 2.0 * PI;
+		public static const TWO_PI:Number = 2.0 * Math.PI;
 		
 		/**
 		 * Converts an angle in radians to an angle in degrees.
@@ -35,9 +31,8 @@ package com.pblabs.engine
 		 *
 		 * @return The converted value.
 		 */
-		public static function getDegreesFromRadians(radians:Number):Number
-		{
-			return radians * 180 / PI;
+		public static function getDegreesFromRadians(radians:Number):Number {
+			return radians * 180 / Math.PI;
 		}
 		
 		/**
@@ -47,18 +42,18 @@ package com.pblabs.engine
 		 *
 		 * @return The converted value.
 		 */
-		public static function getRadiansFromDegrees(degrees:Number):Number
-		{
-			return degrees * PI / 180;
+		public static function getRadiansFromDegrees(degrees:Number):Number {
+			return degrees * Math.PI / 180;
 		}
 		
 		/**
 		 * Keep a number between a min and a max.
 		 */
-		public static function clamp(v:Number, min:Number=0, max:Number=1):Number
-		{
-			if (v < min) return min;
-			if (v > max) return max;
+		public static function clamp(v:Number, min:Number = 0, max:Number = 1):Number {
+			if (v < min)
+				return min;
+			if (v > max)
+				return max;
 			return v;
 		}
 		
@@ -67,13 +62,11 @@ package com.pblabs.engine
 		 * @param array Array to clone.
 		 * @return a cloned array.
 		 */
-		public static function cloneArray(array:Array):Array
-		{
-			var newArray:Array = new Array(array.length);
+		public static function cloneArray(array:Array):Array {
+			var newArray:Array = [];
 			
-			var i:int = 0;
 			for each (var item:* in array)
-				newArray[i++] = item;
+				newArray.push(item);
 			
 			return newArray;
 		}
@@ -81,12 +74,11 @@ package com.pblabs.engine
 		/**
 		 * Take a radian measure and make sure it is between -pi..pi.
 		 */
-		public static function unwrapRadian(r:Number):Number
-		{
+		public static function unwrapRadian(r:Number):Number {
 			r = r % TWO_PI;
-			if (r > PI)
+			if (r > Math.PI)
 				r -= TWO_PI;
-			if (r < -PI)
+			if (r < -Math.PI)
 				r += TWO_PI;
 			return r;
 		}
@@ -94,8 +86,7 @@ package com.pblabs.engine
 		/**
 		 * Take a degree measure and make sure it is between -180..180.
 		 */
-		public static function unwrapDegrees(r:Number):Number
-		{
+		public static function unwrapDegrees(r:Number):Number {
 			r = r % 360;
 			if (r > 180)
 				r -= 360;
@@ -107,8 +98,7 @@ package com.pblabs.engine
 		/**
 		 * Return the shortest distance to get from from to to, in radians.
 		 */
-		public static function getRadianShortDelta(from:Number, to:Number):Number
-		{
+		public static function getRadianShortDelta(from:Number, to:Number):Number {
 			// Unwrap both from and to.
 			from = unwrapRadian(from);
 			to = unwrapRadian(to);
@@ -117,9 +107,9 @@ package com.pblabs.engine
 			var delta:Number = to - from;
 			
 			// Make sure delta is shortest path around circle.
-			if (delta > PI)
+			if (delta > Math.PI)
 				delta -= TWO_PI;
-			if (delta < -PI)
+			if (delta < -Math.PI)
 				delta += TWO_PI;
 			
 			// Done
@@ -129,8 +119,7 @@ package com.pblabs.engine
 		/**
 		 * Return the shortest distance to get from from to to, in degrees.
 		 */
-		public static function getDegreesShortDelta(from:Number, to:Number):Number
-		{
+		public static function getDegreesShortDelta(from:Number, to:Number):Number {
 			// Unwrap both from and to.
 			from = unwrapDegrees(from);
 			to = unwrapDegrees(to);
@@ -154,16 +143,17 @@ package com.pblabs.engine
 		 * @param max The maximum value to be able to be encoded.
 		 * @return Bitcount required to encode max value.
 		 */
-		public static function getBitCountForRange(max:int):int
-		{
+		public static function getBitCountForRange(max:int):int {
 			var count:int = 0;
 			
 			// Unfortunately this is a bug with this method... and requires this special
 			// case (same issue with the old method log calculation)
-			if (max == 1) return 1;
+			if (max == 1)
+				return 1;
 			
 			max--;
-			while (max >> count > 0) count++;
+			while (max >> count > 0)
+				count++;
 			return count;
 		}
 		
@@ -177,8 +167,7 @@ package com.pblabs.engine
 		 * @return A random integer between min/max with appropriate bias.
 		 *
 		 */
-		public static function pickWithBias(min:int, max:int, bias:Number=0):int
-		{
+		public static function pickWithBias(min:int, max:int, bias:Number = 0):int {
 			return clamp((((Math.random() + bias) * (max - min)) + min), min, max);
 		}
 		
@@ -194,17 +183,12 @@ package com.pblabs.engine
 		 * @param abortOnMismatch If true, throw an error if a field in source is absent in destination.
 		 *
 		 */
-		public static function duckAssign(source:Object, destination:Object, abortOnMismatch:Boolean=false):void
-		{
-			for (var field:String in source)
-			{
-				try
-				{
+		public static function duckAssign(source:Object, destination:Object, abortOnMismatch:Boolean = false):void {
+			for (var field:String in source) {
+				try {
 					// Try to assign.
 					destination[field] = source[field];
-				}
-				catch (e:Error)
-				{
+				} catch (e:Error) {
 					// Abort or continue, depending on user settings.
 					if (!abortOnMismatch)
 						continue;
@@ -216,8 +200,7 @@ package com.pblabs.engine
 		/**
 		 * Calculate length of a vector.
 		 */
-		public static function xyLength(x:Number, y:Number):Number
-		{
+		public static function xyLength(x:Number, y:Number):Number {
 			return Math.sqrt((x * x) + (y * y));
 		}
 		
@@ -226,24 +209,17 @@ package com.pblabs.engine
 		 * @param str String to escape.
 		 * @return A string that can be used in an htmlText property.
 		 */
-		public static function escapeHTMLText(str:String):String
-		{
-			var chars:Array =
-			[
-				{char:"&", repl:"|amp|"},
-				{char:"<", repl:"&lt;"},
-				{char:">", repl:"&gt;"},
-				{char:"\'", repl:"&apos;"},
-				{char:"\"", repl:"&quot;"},
-				{char:"|amp|", repl:"&amp;"}
-			];
+		public static function escapeHTMLText(str:String):String {
+			var chars:Array = [{char:"&", repl:"|amp|"},
+							   {char:"<", repl:"&lt;"},
+							   {char:">", repl:"&gt;"},
+							   {char:"\'", repl:"&apos;"},
+							   {char:"\"", repl:"&quot;"},
+							   {char:"|amp|", repl:"&amp;"}];
 			
-			for (var i:int = 0; i < chars.length; i++)
-			{
+			for (var i:int = 0; i < chars.length; i++) {
 				while (str.indexOf(chars[i].char) != -1)
-				{
 					str = str.replace(chars[i].char, chars[i].repl);
-				}
 			}
 			
 			return str;
@@ -255,16 +231,16 @@ package com.pblabs.engine
 		 * @param str String to covert into a boolean.
 		 * @return true or false
 		 */
-		public static function stringToBoolean(str:String):Boolean
-		{
-			switch (str.substring(1, 0).toUpperCase())
-			{
+		public static function stringToBoolean(str:String):Boolean {
+			switch (str.substring(1, 0).toUpperCase()) {
 				case "F":
 				case "0":
 					return false;
+					break;
 				case "T":
 				case "1":
 					return true;
+					break;
 			}
 			
 			return false;
@@ -275,8 +251,7 @@ package com.pblabs.engine
 		 * @param str String to capitalize the first leter of
 		 * @return String with the first letter capitalized.
 		 */
-		public static function capitalize(str:String):String
-		{
+		public static function capitalize(str:String):String {
 			return str.substring(1, 0).toUpperCase() + str.substring(1);
 		}
 		
@@ -284,8 +259,7 @@ package com.pblabs.engine
 		 * Removes all instances of the specified character from
 		 * the beginning and end of the specified string.
 		 */
-		public static function trim(str:String, char:String):String
-		{
+		public static function trim(str:String, char:String):String {
 			return trimBack(trimFront(str, char), char);
 		}
 		
@@ -295,8 +269,7 @@ package com.pblabs.engine
 		 * until the first character in the string does not match char and returns
 		 * the updated string.
 		 */
-		public static function trimFront(str:String, char:String):String
-		{
+		public static function trimFront(str:String, char:String):String {
 			char = stringToCharacter(char);
 			if (str.charAt(0) == char)
 				str = trimFront(str.substring(1), char);
@@ -309,8 +282,7 @@ package com.pblabs.engine
 		 * until the last character in the string does not match char and returns
 		 * the updated string.
 		 */
-		public static function trimBack(str:String, char:String):String
-		{
+		public static function trimBack(str:String, char:String):String {
 			char = stringToCharacter(char);
 			if (str.charAt(str.length - 1) == char)
 				str = trimBack(str.substring(0, str.length - 1), char);
@@ -320,8 +292,7 @@ package com.pblabs.engine
 		/**
 		 * Returns the first character of the string passed to it.
 		 */
-		public static function stringToCharacter(str:String):String
-		{
+		public static function stringToCharacter(str:String):String {
 			if (str.length == 1)
 				return str;
 			return str.slice(0, 1);
@@ -333,12 +304,13 @@ package com.pblabs.engine
 		 * @return The file extension.
 		 *
 		 */
-		public static function getFileExtension(file:String):String
-		{
+		public static function getFileExtension(file:String):String {
 			var extensionIndex:Number = file.lastIndexOf(".");
-			if (extensionIndex == -1)
-				return "";//No extension
-			return file.substr(extensionIndex + 1, file.length);
+			if (extensionIndex == -1) {
+				//No extension
+				return "";
+			} else
+				return file.substr(extensionIndex + 1, file.length);
 		}
 		
 		/**
@@ -347,12 +319,10 @@ package com.pblabs.engine
 		 * @param orientation Which orientation to use: PBUtil.FLIP_HORIZONTAL or PBUtil.FLIP_VERTICAL
 		 *
 		 */
-		public static function flipDisplayObject(obj:DisplayObject, orientation:String):void
-		{
+		public static function flipDisplayObject(obj:DisplayObject, orientation:String):void {
 			var m:Matrix = obj.transform.matrix;
 			
-			switch (orientation)
-			{
+			switch (orientation) {
 				case FLIP_HORIZONTAL:
 					m.a = -1 * m.a;
 					m.tx = obj.width + obj.x;
@@ -371,23 +341,22 @@ package com.pblabs.engine
 		 * @param thisObject Object to display for logging.
 		 * @param obj Object to dump.
 		 */
-		public static function dumpObjectToLogger(thisObject:*, obj:*, level:int=0, output:String=""):String
-		{
+		public static function dumpObjectToLogger(thisObject:*, obj:*, level:int = 0, output:String = ""):String {
 			var tabs:String = "";
-			for (var i:int = 0; i < level; i++) tabs += "\t";
+			for (var i:int = 0; i < level; i++)
+				tabs += "\t";
 			
-			for (var child:* in obj)
-			{
+			for (var child:* in obj) {
 				output += tabs + "[" + child + "] => " + obj[child];
 				
 				var childOutput:String = dumpObjectToLogger(thisObject, obj[child], level + 1);
-				if (childOutput != '') output += ' {\n' + childOutput + tabs + '}';
+				if (childOutput != '')
+					output += ' {\n' + childOutput + tabs + '}';
 				
 				output += "\n";
 			}
 			
-			if (level == 0)
-			{
+			if (level == 0) {
 				Logger.print(thisObject, output);
 				return "";
 			}

@@ -6,167 +6,123 @@
  * This file is licensed under the terms of the MIT license, which is included
  * in the License.html file at the root directory of this SDK.
  ******************************************************************************/
-package com.pblabs.rendering2D
-{
-    import com.pblabs.engine.PBE;
-    import com.pblabs.engine.resource.ImageResource;
-
-    import com.pblabs.engine.resource.Resource;
-    import com.pblabs.engine.resource.ResourceEvent;
-
-    import flash.events.Event;
-    import flash.geom.Point;
+package com.pblabs.rendering2D {
+	import com.pblabs.engine.PBE;
+	import com.pblabs.engine.resource.ImageResource;
 	
-   /**
-    * Render Component that will load and render a ImageResource as a Sprite
-    */ 
-	public class SpriteRenderer extends BitmapRenderer
-	{
+	import com.pblabs.engine.resource.Resource;
+	import com.pblabs.engine.resource.ResourceEvent;
+	
+	import flash.events.Event;
+	import flash.geom.Point;
+	
+	/** Render Component that will load and render a ImageResource as a Sprite */
+	public class SpriteRenderer extends BitmapRenderer {
 		//----------------------------------------------------------
 		// public getter/setter functions 
 		//----------------------------------------------------------
-						
-        
-        /**
-        * Resource (file)name of the ImageResource 
-        */ 
-		public function get fileName():String
-		{
-			return _fileName;
-		}
 		
-		public function set fileName(value:String):void
-		{
-			if (fileName!=value)
-			{
-				if (_resource)
-				{
-					PBE.resourceManager.unload(_resource.filename, ImageResource);
+		/** Resource (file)name of the ImageResource  */
+		public function get fileName():String { return _fileName; }
+		
+		public function set fileName(value:String):void {
+			if (fileName != value) {
+				if (_resource) {
+					//PBE.resourceManager.unload(_resource.filename, ImageResource);
 					_resource = null;
-				}            
+				}
 				_fileName = value;
 				_loading = true;
 				// Tell the ResourceManager to load the ImageResource
-				PBE.resourceManager.load(fileName,ImageResource,imageLoadCompleted,imageLoadFailed,false);
-			}	
+				var resource:ImageResource = PBE.resourceManager.load(fileName, ImageResource, imageLoadCompleted, imageLoadFailed, false) as ImageResource;
+				if (resource && resource.bitmapData)
+					imageLoadCompleted(resource);
+			}
 		}
-						
-   	    /**
-        * Indicates if the resource loading is in progress
-        */ 
-        [EditorData(ignore="true")]
-		public function get loading():Boolean
-		{
-			return _loading;
-		}
-	
-   	    /**
-        * Indicates if the ImageResource has been loaded 
-        */ 
-        [EditorData(ignore="true")]
-		public function get loaded():Boolean
-		{
-			return _loaded;
-		}
-
-   	    /**
-        * Indicates if the ImageResource has failed loading 
-        */
-        [EditorData(ignore="true")]
-		public function get failed():Boolean
-		{
-			return _failed;
-		}
-
-   	    /**
-        * Loaded ImageResource 
-        */ 
-        [EditorData(ignore="true")]
-		public function get resource():ImageResource
-		{
-			return _resource;
-		}
-
+		
+		/** Indicates if the resource loading is in progress */
+		[EditorData(ignore="true")]
+		public function get loading():Boolean { return _loading; }
+		
+		/** Indicates if the ImageResource has been loaded  */
+		[EditorData(ignore="true")]
+		public function get loaded():Boolean { return _loaded; }
+		
+		/** Indicates if the ImageResource has failed loading  */
+		[EditorData(ignore="true")]
+		public function get failed():Boolean { return _failed; }
+		
+		/** Loaded ImageResource  */
+		[EditorData(ignore="true")]
+		public function get resource():ImageResource { return _resource; }
+		
 		//----------------------------------------------------------
 		// public methods 
 		//----------------------------------------------------------
 		
-   	    /**
-        * Constructor 
-        */ 
-		public function SpriteRenderer()
-		{
+		/** Constructor  */
+		public function SpriteRenderer() {
 			super();
 		}
 		
 		//----------------------------------------------------------
 		// private methods 
 		//----------------------------------------------------------
-
-   	    /**
-        * This function will be called if the ImageResource has been loaded correctly 
-        */ 
-		private function imageLoadCompleted(res:ImageResource):void
-		{
+		
+		/** This function will be called if the ImageResource has been loaded correctly  */
+		private function imageLoadCompleted(res:ImageResource):void {
+			if (_resource)
+				return;
+			
 			_loading = false;
 			_loaded = true;
 			_failed = false;
 			_resource = res;
-            _resource.addEventListener(ResourceEvent.LOADED_EVENT, onResourceUpdated, false, 0, true);
+			_resource.addEventListener(ResourceEvent.LOADED_EVENT, onResourceUpdated);
 			// set the registration (alignment) point to the sprite's center
-			registrationPoint = new Point(res.image.bitmapData.width*0.5,res.image.bitmapData.height*0.5);				
+			if (_registrationPoint.x == 0 && _registrationPoint.y == 0)
+				registrationPoint = new Point(res.image.bitmapData.width * 0.5, res.image.bitmapData.height * 0.5);
 			// set the bitmapData of this render object
-			bitmapData = res.image.bitmapData;	
+			bitmapData = res.image.bitmapData;
 			onImageLoadComplete();
 		}
 		
-		/**
-		 * Called when the image is ready and the _displayObject is set.
-		 */
-		protected function onImageLoadComplete():void
-		{
-			
+		/** Called when the image is ready and the _displayObject is set. */
+		protected function onImageLoadComplete():void {
+		
 		}
 		
-        protected function onResourceUpdated(event:ResourceEvent=null):void
-        {
-            imageLoadCompleted(_resource);
-        }
+		protected function onResourceUpdated(event:ResourceEvent = null):void {
+			imageLoadCompleted(_resource);
+		}
 		
-		protected override function dataModified():void
-		{
+		protected override function dataModified():void {
 			// set the registration (alignment) point to the sprite's center
-			registrationPoint = new Point(bitmapData.width*0.5,bitmapData.height*0.5);							
-		}
-
-   	    /**
-        * This function will be called if the ImageResource has failed loading 
-        */ 
-		private function imageLoadFailed(res:ImageResource):void
-		{
-			_loading = false;
-			_failed = true;					
+			if (registrationPoint.x == 0 && registrationPoint.y == 0)
+				registrationPoint = new Point(bitmapData.width * 0.5, bitmapData.height * 0.5);
 		}
 		
-		protected override function onAdd():void
-		{
+		/** This function will be called if the ImageResource has failed loading  */
+		private function imageLoadFailed(res:ImageResource):void {
+			_loading = false;
+			_failed = true;
+		}
+		
+		protected override function onAdd():void {
 			super.onAdd();
-			if (!loading && !_resource && fileName!=null && fileName!="")
-			{
+			if (!loading && !_resource && fileName != null && fileName != "") {
 				_loading = true;
 				// Tell the ResourceManager to load the ImageResource
-				PBE.resourceManager.load(fileName,ImageResource,imageLoadCompleted,imageLoadFailed,false);				
+				PBE.resourceManager.load(fileName, ImageResource, imageLoadCompleted, imageLoadFailed, false);
 			}
 		}
-
-		protected override function onRemove():void
-		{
-			if (_resource)
-			{
-				PBE.resourceManager.unload(_resource.filename, ImageResource);
+		
+		protected override function onRemove():void {
+			if (_resource) {
+				//PBE.resourceManager.unload(_resource.filename, ImageResource);
 				_resource = null;
 				_loaded = false;
-			}   
+			}
 			
 			super.onRemove();
 		}
@@ -179,6 +135,6 @@ package com.pblabs.rendering2D
 		private var _loaded:Boolean = false;
 		private var _failed:Boolean = false;
 		private var _resource:ImageResource = null;
-				
+	
 	}
 }

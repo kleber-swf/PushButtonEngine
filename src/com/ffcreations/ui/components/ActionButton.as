@@ -1,63 +1,28 @@
-package com.ffcreations.ui.components
-{
+package com.ffcreations.ui.components {
 	import com.ffcreations.action.Action;
 	import com.ffcreations.ui.mouse.MouseInputEvent;
-	import com.pblabs.engine.PBE;
+	import com.pblabs.engine.entity.PropertyReference;
 	
-	public class ActionButton extends GUIComponent
-	{
-		
-		
-		//==========================================================
-		//   Fields 
-		//==========================================================
+	public class ActionButton extends GUIComponent {
 		
 		private var _action:Action;
 		
+		public function get action():Action { return _action; }
 		
-		//==========================================================
-		//   Properties 
-		//==========================================================
+		public function set action(value:Action):void { _action = value; }
 		
-		public function get action():Action
-		{
-			return _action;
-		}
-		
-		public function set action(value:Action):void
-		{
-			_action = value;
-		}
-		
-		
-		//==========================================================
-		//   Functions 
-		//==========================================================
-		
-		public override function onFrame(elapsed:Number):void
-		{
+		public override function onFrame(elapsed:Number):void {
 			if (action && action.enabled != enabled)
-			{
 				enabled = action.enabled;
-			}
 			super.onFrame(elapsed);
 		}
 		
-		//--------------------------------------
-		//   Event handlers 
-		//--------------------------------------
-		
-		protected override function onMouseInput(data:MouseInputEvent):void
-		{
+		protected override function onMouseInput(data:MouseInputEvent):void {
 			super.onMouseInput(data);
-			if (enabled)
-			{
-				if (data.type == MouseInputEvent.MOUSE_DOWN)
-				{
+			if (enabled) {
+				if (data.type == MouseInputEvent.MOUSE_UP) {
 					if (action)
-					{
-						action.execute();
-					}
+						action.execute(this);
 				}
 			}
 		}

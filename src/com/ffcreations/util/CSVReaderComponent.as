@@ -1,11 +1,8 @@
-package com.ffcreations.util
-{
+package com.ffcreations.util {
 	import com.pblabs.engine.PBE;
 	import com.pblabs.engine.debug.Logger;
 	import com.pblabs.engine.entity.EntityComponent;
 	import com.pblabs.engine.resource.TextResource;
-	
-	import flash.system.System;
 	
 	import mx.utils.StringUtil;
 	
@@ -14,13 +11,7 @@ package com.ffcreations.util
 	 * Tip: To embed a csv file, use mimeType="application/octet-stream" in Embed tag.
 	 * @author Kleber Lopes da Silva (kleber.swf)
 	 */
-	public class CSVReaderComponent extends EntityComponent
-	{
-		
-		
-		//==========================================================
-		//   Fields 
-		//==========================================================
+	public class CSVReaderComponent extends EntityComponent {
 		
 		private var _resource:TextResource;
 		private var _fileName:String;
@@ -29,9 +20,7 @@ package com.ffcreations.util
 		private var _loaded:Boolean;
 		private var _data:*;
 		
-		/**
-		 * If set to true, the first column is considered titles to a map, <code>data</code> is an <code>Object</code> and all column indexes decrease by 1.
-		 */
+		/** If set to true, the first column is considered titles to a map, <code>data</code> is an <code>Object</code> and all column indexes decrease by 1. */
 		public var mapByFirstColumn:Boolean;
 		
 		/**
@@ -40,48 +29,26 @@ package com.ffcreations.util
 		 */
 		public var separator:String = ";";
 		
-		
-		//==========================================================
-		//   Properties 
-		//==========================================================
-		
 		/**
 		 * The table entire data.
 		 * If <code>mapByFirstColumn</code> is set to true, data is a <code>Object</code>,
 		 * otherwise is an <code>Array</code>.
 		 * @see #mapByFirstColumn
 		 */
-		public function get data():*
-		{
+		public function get data():* {
 			return _data;
 		}
 		
-		/**
-		 * Indicates if the TextResource (csv) has failed loading.
-		 */
-		public function get failed():Boolean
-		{
-			return _failed;
-		}
+		/** Indicates if the TextResource (csv) has failed loading. */
+		public function get failed():Boolean { return _failed; }
 		
-		/**
-		 * Resource (file)name of the TextResource (csv).
-		 */
-		public function get fileName():String
-		{
-			return _fileName;
-		}
+		/** Resource (file)name of the TextResource (csv). */
+		public function get fileName():String { return _fileName; }
 		
-		
-		/**
-		 * @private
-		 */
-		public function set fileName(value:String):void
-		{
-			if (_fileName != value)
-			{
-				if (_resource)
-				{
+		/** @private */
+		public function set fileName(value:String):void {
+			if (_fileName != value) {
+				if (_resource) {
 					PBE.resourceManager.unload(_resource.filename, TextResource);
 					_resource = null;
 				}
@@ -92,96 +59,61 @@ package com.ffcreations.util
 			}
 		}
 		
-		/**
-		 * Indicates if the TextResource (csv) has been loaded.
-		 */
-		public function get loaded():Boolean
-		{
-			return _loaded;
-		}
+		/** Indicates if the TextResource (csv) has been loaded. */
+		public function get loaded():Boolean { return _loaded; }
 		
-		/**
-		 * Indicates if the resource loading is in progress.
-		 */
-		public function get loading():Boolean
-		{
-			return _loading;
-		}
+		/** Indicates if the resource loading is in progress. */
+		public function get loading():Boolean { return _loading; }
 		
-		public function get numRows():int
-		{
-			return _data.length;
-		}
+		public function get numRows():int { return _data.length; }
 		
-		
-		//==========================================================
-		//   Functions 
-		//==========================================================
-		
-		private function loadCompleted(res:TextResource):void
-		{
+		private function loadCompleted(res:TextResource):void {
 			_loading = false;
 			_loaded = true;
 			_failed = false;
 			_resource = res;
 			const text:String = _resource.data;
-			const buffer:Array = text.split("\n");
+			const buffer:Array = text.split("\r\n");
 			const length:int = (!buffer[buffer.length - 1]) ? buffer.length - 1 : buffer.length;
 			
 			if (mapByFirstColumn)
-			{
 				_mapToObject(buffer, length);
-			}
 			else
-			{
 				_mapToArray(buffer, length);
-			}
 			
 			onLoadComplete();
 		}
 		
-		protected function onLoadComplete():void
-		{
+		protected function onLoadComplete():void {
 		
 		}
 		
-		private function _mapToObject(buffer:Array, length:int):void
-		{
+		private function _mapToObject(buffer:Array, length:int):void {
 			_data = new Object();
 			
 			var tmp:Array;
-			for (var i:int = 0; i < length; i++)
-			{
+			for (var i:int = 0; i < length; i++) {
 				tmp = buffer[i].split(separator);
 				if (!StringUtil.trim(tmp[tmp.length - 1]))
-				{
 					tmp.pop();
-				}
 				if (tmp.length > 1)
-				{
 					_data[tmp[0]] = tmp.slice(1);
-				}
 			}
 		}
 		
-		private function _mapToArray(buffer:Array, length:int):void
-		{
+		private function _mapToArray(buffer:Array, length:int):void {
 			_data = new Array(length);
 			
 			var tmp:Array;
-			for (var i:int = 0; i < length; i++)
-			{
+			for (var i:int = 0; i < length; i++) {
 				tmp = buffer[i].split(separator);
 				if (!StringUtil.trim(tmp[tmp.length - 1]))
-				{
 					tmp.pop();
-				}
 				_data[i] = tmp;
 			}
 		}
 		
-		private function loadFailed(res:TextResource):void
-		{
+		private function loadFailed(res:TextResource):void {
 			_loading = false;
 			_failed = true;
 		}
@@ -194,21 +126,15 @@ package com.ffcreations.util
 		 * @see			#mapByFirstColumn
 		 * @see			#data
 		 */
-		public function getCell(row:*, col:int):String
-		{
-			if (mapByFirstColumn)
-			{
+		public function getCell(row:*, col:int):String {
+			if (mapByFirstColumn) {
 				if (row is String)
-				{
 					return (col < _data[row].length) ? _data[row][col] : null;
-				}
 				Logger.warn(this, "getCell", "Trying to get a cell from an Object with a non-String key: '" + row + "'");
 				return null;
 			}
 			if (row is int)
-			{
 				return (row < _data.length && col < _data[row].length) ? _data[row][col] : null;
-			}
 			Logger.warn(this, "getCell", "Trying to get a cell from an Array with a NaN key: '" + row + "'");
 			return null;
 		}
@@ -220,19 +146,13 @@ package com.ffcreations.util
 		 * @see			#mapByFirstColumn
 		 * @see			#data
 		 */
-		public function getRow(row:*):Array
-		{
-			if (mapByFirstColumn)
-			{
+		public function getRow(row:*):Array {
+			if (mapByFirstColumn) {
 				if (row is String)
-				{
 					return _data[row];
-				}
 			}
 			if (row >= 0 && row < _data.length)
-			{
 				return _data[row]
-			}
 			return null;
 			//return (!(_data is Array) || row < _data.length) ? _data[row] : null;
 		}
@@ -246,25 +166,17 @@ package com.ffcreations.util
 		 * @see			#mapByFirstColumn
 		 * @see			#data
 		 */
-		public function getColumn(col:int):*
-		{
+		public function getColumn(col:int):* {
 			var result:*;
-			if (mapByFirstColumn)
-			{
+			if (mapByFirstColumn) {
 				result = new Object();
 				for (var s:String in _data)
-				{
 					result[s] = (col < _data[s].length ? _data[s][col] : "");
-				}
-			}
-			else
-			{
+			} else {
 				const length:int = _data.length;
 				result = new Array(length);
 				for (var i:int = 0; i < length; i++)
-				{
 					result[i] = (col < _data[i].length ? _data[i][col] : "");
-				}
 			}
 			return result;
 		}
@@ -274,26 +186,18 @@ package com.ffcreations.util
 		 * Only works if <code>mapByFirstColumn</code> is <code>true</code>.
 		 * @return An <code>Array</code> with all keys.
 		 */
-		public function getKeyColumn():Array
-		{
+		public function getKeyColumn():Array {
 			if (!mapByFirstColumn)
-			{
 				return null;
-			}
 			const result:Array = new Array(_data.length);
 			var i:int = 0;
 			for (var s:String in _data)
-			{
 				result[i++] = s;
-			}
 			return result;
 		}
 		
-		/**
-		 * @inheritDoc
-		 */
-		protected override function onRemove():void
-		{
+		/** @inheritDoc */
+		protected override function onRemove():void {
 			super.onRemove();
 			_resource = null;
 			_data.length = 0;
